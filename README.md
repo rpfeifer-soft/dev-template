@@ -1,2 +1,2 @@
 # dev-template
-Template to start a new web-application (Docker+Rollup+Typescript)
+Template to start a new web-application (Docker+Rollup+Typescript)!
