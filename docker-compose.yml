@@ -13,6 +13,7 @@ services:
       - SECRETS=/app/options.json
     expose: 
       - "3001"
+      - "8080"
     volumes:
       - ./build:/app/build
       - ./package.json:/app/package.json

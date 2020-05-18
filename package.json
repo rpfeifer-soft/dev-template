@@ -5,7 +5,7 @@
    "main": "index.js",
    "type": "module",
    "scripts": {
-      "clean": "rimraf ./build",
+      "clean": "docker-compose down && rimraf ./build",
       "compile": "tsc",
       "watch": "tsc --watch",
       "bundle": "rollup --watch --config",
@@ -24,16 +24,19 @@
    },
    "homepage": "https://github.com/rpfeifer-soft/dev-template#readme",
    "dependencies": {
-      "express": "^4.17.1"
+      "express": "^4.17.1",
+      "ws": "^7.3.0"
    },
    "devDependencies": {
       "@types/express": "^4.17.6",
       "@types/node": "^14.0.1",
+      "@types/ws": "^7.2.4",
       "prettier": "^2.0.5",
       "rimraf": "^3.0.2",
       "rollup": "^2.10.2",
       "tslint": "^6.1.2",
       "tslint-react": "^5.0.0",
-      "typescript": "^3.9.2"
+      "typescript": "^3.9.2",
+      "wscat": "^4.0.0"
    }
 }

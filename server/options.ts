@@ -4,6 +4,7 @@ import * as fs from 'fs';
 
 interface ISecrets {
    port: number;
+   portWebSockets: number;
    baseUrl: string;
    prodPath: string;
 }
@@ -35,6 +36,10 @@ class Options {
       return this.secrets.port;
    }
 
+   getPortWebSockets() {
+      return this.secrets.portWebSockets;
+   }
+
    getBaseUrl(path?: string) {
       return `${this.secrets.baseUrl}${path || ''}`;
    }
@@ -45,9 +50,10 @@ class Options {
 
    dump(name: string) {
       // tslint:disable:no-console
-      console.log('Application:', name, `(:${this.secrets.port})`);
+      console.log('Application:', name, `(:${this.getPort()})`);
       console.log('------------------');
       console.log('Mode:', this.isRelease() ? 'RELEASE' : 'DEV');
+      console.log('Port (WebSockets):', this.getPortWebSockets);
       console.log('BaseUrl:', this.getBaseUrl());
       console.log('ProdPath:', this.getProdPath());
       console.log('Version:', this.getVersion());
