@@ -1,0 +1,6 @@
+.idea/
+node_modules/
+build/
+coverage/
+.DS_Store
+app/secrets.json

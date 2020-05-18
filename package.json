@@ -1,0 +1,36 @@
+{
+   "name": "dev-template",
+   "version": "1.0.0",
+   "description": "Template to start a new web-application (Docker+Rollup+Typescript)!",
+   "main": "index.js",
+   "type": "module",
+   "scripts": {
+      "clean": "rimraf ./build",
+      "compile": "tsc -b ./app",
+      "watch": "tsc --watch",
+      "watch:webpack": "webpack --config webpack.dev.js --watch",
+      "watch:test": "jest --watch",
+      "test": "echo \"Error: no test specified\" && exit 1"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/rpfeifer-soft/dev-template.git"
+   },
+   "author": "",
+   "license": "ISC",
+   "bugs": {
+      "url": "https://github.com/rpfeifer-soft/dev-template/issues"
+   },
+   "homepage": "https://github.com/rpfeifer-soft/dev-template#readme",
+   "dependencies": {
+      "express": "^4.17.1"
+   },
+   "devDependencies": {
+      "@types/express": "^4.17.6",
+      "@types/node": "^14.0.1",
+      "prettier": "^2.0.5",
+      "tslint": "^6.1.2",
+      "tslint-react": "^5.0.0",
+      "typescript": "^3.9.2"
+   }
+}
