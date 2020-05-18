@@ -8,6 +8,12 @@
          "command": "npm run watch"
       },
       {
+         "name": "Bundling...",
+         "description": "Bundles the client into prod directory.",
+         "execute": false,
+         "command": "npm run bundle"
+      },
+      {
          "name": "Running development...",
          "execute": false,
          "commands": ["echo \"Start the development if compile task is running.\"", "npm run dev"]

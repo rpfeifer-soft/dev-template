@@ -5,6 +5,7 @@ import * as fs from 'fs';
 interface ISecrets {
    port: number;
    baseUrl: string;
+   prodPath: string;
 }
 
 class Options {
@@ -38,12 +39,17 @@ class Options {
       return `${this.secrets.baseUrl}${path || ''}`;
    }
 
+   getProdPath(path?: string) {
+      return `${this.secrets.prodPath}${path || ''}`;
+   }
+
    dump(name: string) {
       // tslint:disable:no-console
       console.log('Application:', name, `(:${this.secrets.port})`);
       console.log('------------------');
       console.log('Mode:', this.isRelease() ? 'RELEASE' : 'DEV');
       console.log('BaseUrl:', this.getBaseUrl());
+      console.log('ProdPath:', this.getProdPath());
       console.log('Version:', this.getVersion());
    }
 }

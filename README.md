@@ -4,6 +4,7 @@ Template to start a new web-application (Docker+Rollup+Typescript)!
 
 ## Contents
 
+- Server/Client
 - Docker
   - node:latest
   - nginx:latest
@@ -11,6 +12,7 @@ Template to start a new web-application (Docker+Rollup+Typescript)!
 - TSLint + Prettier
 - Recommended VSCode-extensions
 - VSCode debugging
+- Rollup
 
 ## Start development
 
@@ -31,6 +33,10 @@ Provide a **secrets.json** file with the necessary parameters to run the applica
 Starting TS-watch
 
     npm run watch
+
+Starting bundling
+
+    npm run bundle
 
 Starting docker
 

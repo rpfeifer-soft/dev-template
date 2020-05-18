@@ -1,10 +1,10 @@
 FROM node:latest
 
-WORKDIR /server
+WORKDIR /app
 
-COPY ./package.json ./package-lock.json /server/
+COPY ./package.json ./package-lock.json /app/
 RUN npm install
-COPY ./build /server/
+COPY ./build /app/
 
 RUN npm install -g nodemon
 
