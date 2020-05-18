@@ -16,7 +16,7 @@
       {
          "name": "Running development...",
          "execute": false,
-         "commands": ["echo \"Start the development if compile task is running.\"", "npm run dev"]
+         "commands": ["echo \"Start the development if compile task is running.\"", "npm run update"]
       }
    ]
 }

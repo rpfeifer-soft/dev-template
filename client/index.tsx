@@ -2,5 +2,5 @@
 
 let app = document.getElementById('app');
 if (app) {
-   app.append('Test');
+   app.innerText = 'Hello World!';
 }
