@@ -1,0 +1,16 @@
+{
+   "autorun": false,
+   "terminals": [
+      {
+         "name": "Typescript compilation...",
+         "description": "Checks typescript files and recompiles them on changes.",
+         "focus": true,
+         "command": "npm run watch"
+      },
+      {
+         "name": "Running development...",
+         "execute": false,
+         "commands": ["echo \"Start the development if compile task is running.\"", "npm run dev"]
+      }
+   ]
+}
