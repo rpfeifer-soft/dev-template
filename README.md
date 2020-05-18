@@ -35,3 +35,7 @@ Starting TS-watch
 Starting docker
 
     npm run dev
+
+### open the website
+
+    http://localhost
