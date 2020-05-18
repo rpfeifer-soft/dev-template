@@ -8,8 +8,6 @@
       "clean": "rimraf ./build",
       "compile": "tsc -b ./app",
       "watch": "tsc --watch",
-      "watch:webpack": "webpack --config webpack.dev.js --watch",
-      "watch:test": "jest --watch",
       "test": "echo \"Error: no test specified\" && exit 1"
    },
    "repository": {
