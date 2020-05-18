@@ -2,22 +2,22 @@ version: "3.1"
 
 services:
 
-  app:
-    container_name: app
+  server:
+    container_name: server
     build: 
       context: .
-      dockerfile: ./app/dev.Dockerfile
+      dockerfile: ./server/dev.Dockerfile
     ports:
       - "9229:9229"
     environment:
-      - SECRETS=/app/options.json
+      - SECRETS=/server/options.json
     expose: 
       - "3001"
     volumes:
-      - ./build:/app/build
-      - ./package.json:/app/package.json
-      - ./nodemon.json:/app/nodemon.json
-      - ./app/secrets.json:/app/options.json
+      - ./build:/server/build
+      - ./package.json:/server/package.json
+      - ./nodemon.json:/server/nodemon.json
+      - ./server/secrets.json:/server/options.json
   
   nginx:
     container_name: nginx
@@ -25,6 +25,6 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - app
+      - server
     volumes:
-      - ./app/dev.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./server/dev.nginx.conf:/etc/nginx/nginx.conf:ro
