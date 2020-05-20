@@ -1,13 +1,15 @@
 /** @format */
 
+import wsTool from '../shared/wsTool.js';
+
 let app = document.getElementById('app');
 if (app) {
    let thisApp = app;
-   thisApp.innerText = 'Hello World!';
+   thisApp.innerText = 'Hello World!!';
 
    let ws = new WebSocket('ws://localhost/ws');
    ws.onopen = function () {
-      ws.send('Init');
+      ws.send('Init ' + wsTool);
    };
    // tslint:disable-next-line: typedef
    ws.onmessage = function (event) {

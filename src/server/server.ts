@@ -5,6 +5,7 @@ import options from './options.js';
 import express from 'express';
 import path from 'path';
 import WebSocket from './websocket.js';
+import wsTool from '../shared/wsTool.js';
 
 const server = express();
 
@@ -18,7 +19,7 @@ server.listen(options.getPort(), () => {
    server.use('/', express.static(options.getProdPath()));
 
    // tslint:disable-next-line: no-console
-   console.log(`Listening on port ${options.getPort()}`);
+   console.log(`Listening on port ${options.getPort()} ${wsTool}`);
 });
 
 const websockets = WebSocket.init(options.getPortWebSockets(), (message) => {

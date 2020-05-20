@@ -19,10 +19,10 @@ const copyPlugin = function (options) {
 };
 
 export default {
-   input: 'build/dist/client/index.js',
+   input: 'dist/client/index.js',
    output: {
-      file: 'build/dist/prod/bundle.js',
+      file: 'dist/prod/bundle.js',
       format: 'es',
    },
-   plugins: [copyPlugin({ src: 'server/index.html', dest: 'build/dist/prod/index.html' })],
+   plugins: [copyPlugin({ src: 'src/server/index.html', dest: 'dist/prod/index.html' })],
 };

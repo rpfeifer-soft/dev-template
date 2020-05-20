@@ -5,7 +5,7 @@
    "main": "index.js",
    "type": "module",
    "scripts": {
-      "clean": "docker-compose down && rimraf ./build",
+      "clean": "docker-compose down && rimraf ./dist",
       "compile": "tsc -b src",
       "watch": "tsc -b src --watch",
       "bundle": "rollup --watch --config",

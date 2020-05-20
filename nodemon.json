@@ -1,5 +1,5 @@
 {
-   "watch": ["build/dist/**/*.js"],
+   "watch": ["dist/**/*.js"],
    "ext": "js",
-   "exec": "node --inspect=0.0.0.0:9229 build/dist/server/server.js"
+   "exec": "node --inspect=0.0.0.0:9229 dist/server/server.js"
 }
