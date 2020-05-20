@@ -6,8 +6,8 @@
    "type": "module",
    "scripts": {
       "clean": "docker-compose down && rimraf ./build",
-      "compile": "tsc",
-      "watch": "tsc --watch",
+      "compile": "tsc -b src",
+      "watch": "tsc -b src --watch",
       "bundle": "rollup --watch --config",
       "dev": "docker-compose up -d",
       "update": "docker-compose build && npm run dev",

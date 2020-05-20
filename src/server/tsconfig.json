@@ -1,0 +1,30 @@
+{
+   "compilerOptions": {
+      "outDir": "../../build/dist/server",
+      "module": "ES2020",
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "target": "ES2020",
+      "lib": ["ES2020", "DOM", "DOM.Iterable", "ScriptHost"],
+      "sourceMap": true,
+      "allowJs": false,
+      "jsx": "react",
+      "rootDir": ".",
+      "forceConsistentCasingInFileNames": true,
+      "noImplicitReturns": true,
+      "noImplicitThis": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "noUnusedLocals": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "preserveConstEnums": true,
+      "baseUrl": "./",
+      "paths": {
+         "*": ["./@types/*"]
+      }
+   },
+   "include": ["**/*.ts"],
+   "exclude": ["node_modules", "build", "scripts", "acceptance-tests", "webpack.*", "jest.*", "src/setupTests.ts"]
+}

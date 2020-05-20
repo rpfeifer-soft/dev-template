@@ -1,6 +1,6 @@
 {
    "compilerOptions": {
-      "outDir": "build/dist",
+      "outDir": "../../build/dist/client",
       "module": "ES2020",
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
@@ -25,5 +25,6 @@
          "*": ["./@types/*"]
       }
    },
+   "include": ["**/*.ts", "**/*.tsx"],
    "exclude": ["node_modules", "build", "scripts", "acceptance-tests", "webpack.*", "jest.*", "src/setupTests.ts"]
 }
