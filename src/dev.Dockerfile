@@ -8,6 +8,6 @@ COPY ./dist /app/
 
 RUN npm install -g nodemon
 
-CMD npm run start:server
+CMD npm run start:dev
 
 EXPOSE 3001

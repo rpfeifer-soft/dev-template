@@ -1,2 +1,1 @@
-ls
-cat test.txt
+docker-compose up

@@ -9,9 +9,12 @@
       "compile": "tsc -b src",
       "bundle": "rollup --config",
       "dockerize": "docker-compose build",
-      "start:dev": "npm run compile && npm run bundle && npm run dockerize && (tsc -b src --watch & rollup --watch --config & docker-compose up)",
-      "start:server": "nodemon",
+      "start:devenv": "npm run compile && npm run bundle && npm run dockerize && (tsc -b src --watch & rollup --watch --config & docker-compose up)",
+      "start:dev": "nodemon",
+      "start:prod": "node dist/server/server.js",
       "test": "echo \"Error: no test specified\" && exit 1",
+      "build": "npm run compile && npm run bundle",
+      "publish": "docker build . --file src/Dockerfile --no-cache --tag rpfeifer/team-manager:dev && docker push rpfeifer/team-manager:dev",
       "ssh": "ssh iserver.local -t \"cd Desktop/dev-template; svn export --force https://github.com/rpfeifer-soft/${npm_package_name}/trunk/install .; bash --login; echo;\""
    },
    "repository": {

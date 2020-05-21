@@ -18,7 +18,7 @@ services:
       - ./dist:/app/dist
       - ./package.json:/app/package.json
       - ./nodemon.json:/app/nodemon.json
-      - ./src/server/secrets.json:/app/options.json
+      - ./install/secrets.json:/app/options.json
   
   nginx:
     container_name: nginx
