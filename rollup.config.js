@@ -3,6 +3,10 @@
 import fs from 'fs';
 import path from 'path';
 
+export const copySettings = {
+   BASE_URL: '',
+};
+
 const copyPlugin = function (options) {
    return {
       load() {
@@ -13,7 +17,13 @@ const copyPlugin = function (options) {
          if (!fs.existsSync(destDir)) {
             fs.mkdirSync(destDir);
          }
-         fs.writeFileSync(options.dest, fs.readFileSync(options.src));
+         if (options.src.indexOf('index.html') != -1) {
+            let content = fs.readFileSync(options.src, 'utf8');
+            content = content.replace('%BASE_URL%', copySettings.BASE_URL);
+            fs.writeFileSync(options.dest, content, 'utf8');
+         } else {
+            fs.writeFileSync(options.dest, fs.readFileSync(options.src));
+         }
       },
    };
 };
