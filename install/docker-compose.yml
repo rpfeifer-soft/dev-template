@@ -2,7 +2,7 @@ version: "3"
 
 services:
 
-  upload:
+  server:
     container_name: dev-server
     image: rpfeifer/team-manager:dev 
     expose: 
@@ -14,7 +14,7 @@ services:
       - ./secrets.json:/app/options.json
     restart: always
 
-  media:
+  nginx:
     container_name: dev-nginx
     image: nginx
     ports:
