@@ -8,7 +8,8 @@ COPY ./package.json ./package-lock.json /app/
 RUN npm install
 
 COPY ./src /app/src/
-COPY ["./rollup.*.js",  "/app/"]
+COPY ./rollup.*.js /app/
+COPY ./install/secrets.json /app/install/
 
 RUN npm run build
 
