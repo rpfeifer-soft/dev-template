@@ -1,9 +1,12 @@
 {
    "name": "dev-template",
    "version": "1.0.0",
-   "description": "Template to start a new web-application (Docker+Rollup+Typescript)!",
-   "main": "index.js",
-   "type": "module",
+   "description": "Template to start a new web-application (Docker+Rollup+WebSocket+Typescript)!",
+   "appid": "dev",
+   "dockerAccount": "rpfeifer/team-manager",
+   "prodServer": "iserver.local",
+   "prodBase": "Desktop/dev-template",
+   "githubAccount": "https://github.com/rpfeifer-soft",
    "scripts": {
       "clean": "docker-compose down && rimraf ./dist",
       "compile": "tsc -b src",
@@ -14,15 +17,15 @@
       "start:prod": "node dist/server/server.js",
       "test": "echo \"Error: no test specified\" && exit 1",
       "build": "npm run compile && npm run bundle",
-      "publish": "docker build . --file src/Dockerfile --no-cache --tag rpfeifer/team-manager:dev && docker push rpfeifer/team-manager:dev",
-      "ssh": "ssh iserver.local -t \"cd Desktop/dev-template; svn export --force https://github.com/rpfeifer-soft/${npm_package_name}/trunk/install .; bash --login; echo;\""
+      "publish": "docker build . --file src/Dockerfile --no-cache --tag ${npm_package_dockerAccount}:${npm_package_appid} && docker push ${npm_package_dockerAccount}:${npm_package_appid}",
+      "ssh": "ssh ${prodServer} -t \"cd ${npm_package_prodBase}; svn export --force ${npm_package_githubAccount}/${npm_package_name}/trunk/install .; bash --login; echo;\""
    },
    "repository": {
       "type": "git",
       "url": "git+https://github.com/rpfeifer-soft/dev-template.git"
    },
-   "author": "",
-   "license": "ISC",
+   "author": "René Pfeifer",
+   "license": "MIT",
    "bugs": {
       "url": "https://github.com/rpfeifer-soft/dev-template/issues"
    },
