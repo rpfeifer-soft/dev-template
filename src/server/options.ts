@@ -53,7 +53,7 @@ class Options {
       console.log('Application:', name, `(:${this.getPort()})`);
       console.log('------------------');
       console.log('Mode:', this.isRelease() ? 'RELEASE' : 'DEV');
-      console.log('Port (WebSockets):', this.getPortWebSockets);
+      console.log('Port (WebSockets):', this.getPortWebSockets());
       console.log('BaseUrl:', this.getBaseUrl());
       console.log('ProdPath:', this.getProdPath());
       console.log('Version:', this.getVersion());

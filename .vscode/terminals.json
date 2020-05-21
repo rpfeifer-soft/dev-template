@@ -2,21 +2,10 @@
    "autorun": false,
    "terminals": [
       {
-         "name": "Typescript compilation...",
-         "description": "Checks typescript files and recompiles them on changes.",
+         "name": "Starting development...",
+         "description": "Rebuilds the typescript and starts the docker-environment incl. watchers.",
          "focus": true,
-         "command": "npm run watch"
-      },
-      {
-         "name": "Bundling...",
-         "description": "Bundles the client into prod directory.",
-         "execute": false,
-         "command": "npm run bundle"
-      },
-      {
-         "name": "Running development...",
-         "execute": false,
-         "commands": ["echo \"Start the development if compile task is running.\"", "npm run update"]
+         "command": "npm run clean && npm run start:dev"
       }
    ]
 }

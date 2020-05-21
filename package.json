@@ -7,10 +7,10 @@
    "scripts": {
       "clean": "docker-compose down && rimraf ./dist",
       "compile": "tsc -b src",
-      "watch": "tsc -b src --watch",
-      "bundle": "rollup --watch --config",
-      "dev": "docker-compose up -d",
-      "update": "docker-compose build && npm run dev",
+      "bundle": "rollup --config",
+      "dockerize": "docker-compose build",
+      "start:dev": "npm run compile && npm run bundle && npm run dockerize && (tsc -b src --watch & rollup --watch --config & docker-compose up)",
+      "start:server": "nodemon",
       "test": "echo \"Error: no test specified\" && exit 1"
    },
    "repository": {

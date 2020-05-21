@@ -1,7 +1,5 @@
 /** @format */
 
-import wsTool from '../shared/wsTool.js';
-
 let app = document.getElementById('app');
 if (app) {
    let thisApp = app;
@@ -9,7 +7,7 @@ if (app) {
 
    let ws = new WebSocket('ws://localhost/ws');
    ws.onopen = function () {
-      ws.send('Init ' + wsTool);
+      ws.send('Init');
    };
    // tslint:disable-next-line: typedef
    ws.onmessage = function (event) {
