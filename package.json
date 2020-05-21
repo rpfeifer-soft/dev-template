@@ -12,7 +12,7 @@
       "start:dev": "npm run compile && npm run bundle && npm run dockerize && (tsc -b src --watch & rollup --watch --config & docker-compose up)",
       "start:server": "nodemon",
       "test": "echo \"Error: no test specified\" && exit 1",
-      "ssh": "ssh iserver.local -t \"cd Desktop/dev-template; svn export --force https://github.com/rpfeifer-soft/${npm_package_name}/trunk/package-server.json package.json; bash --login\""
+      "ssh": "ssh iserver.local -t \"cd Desktop/dev-template; svn export --force https://github.com/rpfeifer-soft/${npm_package_name}/trunk/install/* ./; bash --login\""
    },
    "repository": {
       "type": "git",
