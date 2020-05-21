@@ -5,7 +5,7 @@ if (app) {
    let thisApp = app;
    thisApp.innerText = 'Hello World!!';
 
-   let ws = new WebSocket('ws://localhost/ws');
+   let ws = new WebSocket('ws://' + location.host + '/ws');
    ws.onopen = function () {
       ws.send('Init');
    };
