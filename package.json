@@ -19,7 +19,7 @@
       "test": "echo \"Error: no test specified\" && exit 1",
       "build": "npm run compile && npm run bundle",
       "publish": "docker build . --file src/Dockerfile --no-cache --tag ${npm_package_dockerAccount}:${npm_package_appid} && docker push ${npm_package_dockerAccount}:${npm_package_appid}",
-      "ssh": "ssh ${prodServer} -t \"cd ${npm_package_prodBase}; svn export --force ${npm_package_githubAccount}/${npm_package_name}/trunk/install .; bash --login; echo;\""
+      "ssh": "ssh ${npm_package_prodServer} -t \"cd ${npm_package_prodBase}; svn export --force ${npm_package_githubAccount}/${npm_package_name}/trunk/install .; bash --login; echo;\""
    },
    "repository": {
       "type": "git",
