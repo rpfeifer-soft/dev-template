@@ -32,6 +32,6 @@ COPY --from=build-deps /app/dist/prod /app/dist/prod/
 COPY --from=build-deps /app/dist/server /app/dist/server/
 COPY --from=build-deps /app/dist/shared /app/dist/shared/
 
-CMD npm run start:server
+CMD npm run start:prod
 
 EXPOSE 3001
