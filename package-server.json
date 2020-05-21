@@ -1,0 +1,11 @@
+{
+   "name": "dev-template-install",
+   "version": "1.0.0",
+   "description": "Package to handle server installation",
+   "type": "module",
+   "scripts": {
+      "list": "ls"
+   },
+   "author": "",
+   "license": "ISC"
+}
