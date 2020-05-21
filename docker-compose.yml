@@ -7,8 +7,6 @@ services:
     build: 
       context: .
       dockerfile: ./src/dev.Dockerfile
-    ports:
-      - "9229:9229"
     environment:
       - SECRETS=/app/options.json
     expose: 
@@ -18,7 +16,7 @@ services:
       - ./dist:/app/dist
       - ./package.json:/app/package.json
       - ./nodemon.json:/app/nodemon.json
-      - ./install/secrets.json:/app/options.json
+      - ./src/server/secrets.json:/app/options.json
   
   nginx:
     container_name: nginx

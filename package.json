@@ -2,6 +2,7 @@
    "name": "dev-template",
    "version": "1.0.0",
    "description": "Template to start a new web-application (Docker+Rollup+WebSocket+Typescript)!",
+   "type": "module",
    "appid": "dev",
    "dockerAccount": "rpfeifer/team-manager",
    "prodServer": "iserver.local",
