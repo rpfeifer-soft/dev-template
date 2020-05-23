@@ -7,6 +7,7 @@ interface ISecrets {
    portWebSockets: number;
    baseUrl: string;
    prodPath: string;
+   production: boolean;
 }
 
 class Options {
@@ -24,8 +25,8 @@ class Options {
       this.dump('server');
    }
 
-   isRelease() {
-      return process.env.RELEASE === 'true';
+   isProduction() {
+      return this.secrets.production;
    }
 
    getVersion() {
@@ -52,7 +53,7 @@ class Options {
       // tslint:disable:no-console
       console.log('Application:', name, `(:${this.getPort()})`);
       console.log('------------------');
-      console.log('Mode:', this.isRelease() ? 'RELEASE' : 'DEV');
+      console.log('Mode:', this.isProduction() ? 'Production' : 'Development');
       console.log('Port (WebSockets):', this.getPortWebSockets());
       console.log('BaseUrl:', this.getBaseUrl());
       console.log('ProdPath:', this.getProdPath());
