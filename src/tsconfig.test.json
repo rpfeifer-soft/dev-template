@@ -1,0 +1,23 @@
+{
+   "compilerOptions": {
+      "target": "ES2020",
+      "module": "ES2020",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "allowSyntheticDefaultImports": true,
+      "outDir": "../test",
+      "lib": ["ES2020", "DOM", "DOM.Iterable", "ScriptHost"],
+      "forceConsistentCasingInFileNames": true,
+      "noImplicitReturns": true,
+      "noImplicitThis": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "noUnusedLocals": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "preserveConstEnums": true,
+      "composite": true
+   },
+   "include": ["**/*.test.ts", "**/*.ts"]
+}
