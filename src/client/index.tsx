@@ -1,5 +1,7 @@
 /** @format */
 
+import registerServiceWorker from './registerServiceWorker';
+
 let app = document.getElementById('app');
 if (app) {
    let thisApp = app;
@@ -23,3 +25,5 @@ if (app) {
       thisApp.appendChild(div);
    };
 }
+// tslint:disable-next-line: no-string-literal
+registerServiceWorker(window['isProduction'], '');

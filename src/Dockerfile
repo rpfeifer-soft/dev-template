@@ -32,6 +32,7 @@ COPY --from=run-deps /app /app/
 COPY --from=build-deps /app/dist/prod /app/dist/prod/
 COPY --from=build-deps /app/dist/server /app/dist/server/
 COPY --from=build-deps /app/dist/shared /app/dist/shared/
+COPY --from=build-deps /app/src/client/content/ /app/dist/prod/content/
 
 CMD npm start
 

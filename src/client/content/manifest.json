@@ -1,0 +1,16 @@
+{
+   "short_name": "dev-template",
+   "name": "DEV-Template",
+   "icons": [
+      {
+         "src": "favicon_web.png",
+         "type": "image/png",
+         "sizes": "256x256"
+      }
+   ],
+   "start_url": "../",
+   "background_color": "#FFF",
+   "display": "standalone",
+   "scope": "../",
+   "theme_color": "#FFF"
+}

@@ -4,6 +4,7 @@
    "description": "Template to start a new web-application (Docker+Rollup+WebSocket+Typescript)!",
    "type": "module",
    "appid": "dev",
+   "title": "Development template",
    "dockerAccount": "rpfeifer/team-manager",
    "prodServer": "iserver.local",
    "prodBase": "Desktop/dev-template",

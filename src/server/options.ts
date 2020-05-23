@@ -49,10 +49,15 @@ class Options {
       return `${this.secrets.prodPath}${path || ''}`;
    }
 
+   getTitle() {
+      return process.env.npm_package_title;
+   }
+
    dump(name: string) {
       // tslint:disable:no-console
       console.log('Application:', name, `(:${this.getPort()})`);
       console.log('------------------');
+      console.log('Title:', this.getTitle());
       console.log('Mode:', this.isProduction() ? 'Production' : 'Development');
       console.log('Port (WebSockets):', this.getPortWebSockets());
       console.log('BaseUrl:', this.getBaseUrl());
