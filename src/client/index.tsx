@@ -3,7 +3,7 @@
 let app = document.getElementById('app');
 if (app) {
    let thisApp = app;
-   thisApp.innerText = 'Hello World!!';
+   thisApp.innerText = 'Hello World!';
 
    let baseURI = document.baseURI.substr(location.protocol.length);
    if (location.protocol === 'http:') {

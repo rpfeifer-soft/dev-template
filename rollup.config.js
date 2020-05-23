@@ -2,9 +2,17 @@
 
 import fs from 'fs';
 import path from 'path';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import { terser } from 'rollup-plugin-terser';
+import secrets from './install/secrets.json';
+
+// `npm run build` -> `production` is true
+// `npm run dev` -> `production` is false
+const production = !process.env.ROLLUP_WATCH && !process.env.DEVENV;
 
 export const copySettings = {
-   BASE_URL: '',
+   BASE_URL: production ? `<base href="${secrets.baseUrl}">` : '',
 };
 
 const copyPlugin = function (options) {
@@ -34,5 +42,10 @@ export default {
       file: 'dist/prod/bundle.js',
       format: 'es',
    },
-   plugins: [copyPlugin({ src: 'src/server/index.html', dest: 'dist/prod/index.html' })],
+   plugins: [
+      copyPlugin({ src: 'src/server/index.html', dest: 'dist/prod/index.html' }),
+      resolve(),
+      commonjs(),
+      production && terser(),
+   ],
 };

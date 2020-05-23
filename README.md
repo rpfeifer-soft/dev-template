@@ -33,17 +33,9 @@ Provide a **secrets.json** file with the necessary parameters to run the applica
 
 ### or start the processes manually
 
-Starting TS-watch
+Starting devenv
 
-    npm run watch
-
-Starting bundling
-
-    npm run bundle
-
-Starting docker
-
-    npm run dev
+    npm run devenv
 
 ### open the website
 
