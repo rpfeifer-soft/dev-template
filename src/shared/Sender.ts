@@ -17,6 +17,27 @@ abstract class Sender<T> {
    protected requests: IRequests = {};
    protected nextRequestId = 1;
 
+   handleRequests(data: string | ArrayBuffer) {
+      // Call the handler function
+      let request = WSTool.parseRequest(data);
+      if (request === false) {
+         return false;
+      };
+
+      let foundRequest = this.requests[request.requestId];
+      if (foundRequest) {
+         // Free the request
+         delete request[request.requestId];
+
+         if ('error' in request) {
+            foundRequest.reject(request.error);
+         } else {
+            foundRequest.resolve(request.result);
+         }
+      }
+      return true;
+   }
+
    answer(requestId: number, msg: Message) {
       let data = WSTool.prepareResult(requestId, msg.stringify());
       this.sendRequest(data, requestId);
@@ -57,6 +78,23 @@ abstract class Sender<T> {
             let msgResult = new ctor();
             return msgResult.parse(result);
          });
+   }
+
+   getString(type: T, msg: Message) {
+      return this.send(Message.String, type, msg)
+         .then(p => p.data);
+   }
+   getNumber(type: T, msg: Message) {
+      return this.send(Message.Number, type, msg)
+         .then(p => p.data);
+   }
+   getBoolean(type: T, msg: Message) {
+      return this.send(Message.Boolean, type, msg)
+         .then(p => p.data);
+   }
+   getTime(type: T, msg: Message) {
+      return this.send(Message.Time, type, msg)
+         .then(p => p.data);
    }
 
    abstract socketSend(data: string | ArrayBuffer): void;

@@ -22,47 +22,32 @@ class Server extends Sender<ServerFunc> {
    private handlers: IHandlers = {};
 
    // Init the instance
-   init(url: string, onMessage?: (type: ClientFunc, data: string) => void) {
+   init<T extends Message>(url: string, msgInit: Message, ctor?: new () => T) {
       // Register the correct handler
       let server = this;
       server.socket = new WebSocket(url);
 
-      server.socket.onopen = function () {
-         server.send(Message.String, ServerFunc.Init, new Message.String('Hallo!'))
-            .then(msg => console.log(msg.data))
-            .catch(error => console.error(error));
-      };
-      // tslint:disable-next-line: typedef
-      server.socket.onmessage = (event) => {
-         // Call the handler function
-         let request = WSTool.parseRequest(event.data);
-         if (request !== false) {
-
-            let foundRequest = this.requests[request.requestId];
-            if (foundRequest) {
-               // Free the request
-               delete request[request.requestId];
-
-               if ('error' in request) {
-                  foundRequest.reject(request.error);
-               } else {
-                  foundRequest.resolve(request.result);
-               }
+      return new Promise<T>((resolve, reject) => {
+         server.socket.onopen = function () {
+            if (ctor) {
+               server.send(ctor, ServerFunc.Init, msgInit)
+                  .then(msg => resolve(msg))
+                  .catch(error => reject(error));
+            } else {
+               server.post(ServerFunc.Init, msgInit)
+                  .catch(error => reject(error));
             }
-            return;
-         }
-         let message = WSTool.Server.parse(event.data);
-         if (message !== false) {
-            let msg = message;
-            let handlers = this.handlers[msg.type];
-            if (handlers) {
-
-               handlers.forEach(handler => {
-                  handler(msg.data, msg.requestId || false);
-               });
+         };
+         // tslint:disable-next-line: typedef
+         server.socket.onmessage = (event) => {
+            if (typeof (event.data) !== 'string' && !(event.data instanceof ArrayBuffer)) {
+               throw new Error('Unsupport ws-socket data format!');
             }
-         }
-      };
+            if (!this.handleRequests(event.data)) {
+               this.handleClientMessage(event.data);
+            }
+         };
+      });
    }
 
    on(type: ClientFunc, handler: IMessageHandler) {
@@ -78,6 +63,20 @@ class Server extends Sender<ServerFunc> {
       let handlers = this.handlers[type];
       if (handlers) {
          this.handlers[type] = handlers.filter(p => p !== handler);
+      }
+   }
+
+   handleClientMessage(data: string | ArrayBuffer) {
+      let message = WSTool.Server.parse(data);
+      if (message !== false) {
+         let msg = message;
+         let handlers = this.handlers[msg.type];
+         if (handlers) {
+
+            handlers.forEach(handler => {
+               handler(msg.data, msg.requestId || false);
+            });
+         }
       }
    }
 

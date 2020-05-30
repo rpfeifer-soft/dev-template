@@ -35,24 +35,9 @@ export default class Client extends Sender<ClientFunc> {
          if (typeof (data) !== 'string' && !(data instanceof ArrayBuffer)) {
             throw new Error('Unsupport ws-socket data format!');
          }
-         // Call the handler function
-         let request = WSTool.parseRequest(data);
-         if (request !== false) {
-
-            let foundRequest = this.requests[request.requestId];
-            if (foundRequest) {
-               // Free the request
-               delete request[request.requestId];
-
-               if ('error' in request) {
-                  foundRequest.reject(request.error);
-               } else {
-                  foundRequest.resolve(request.result);
-               }
-            }
-            return;
+         if (!this.handleRequests(data)) {
+            Clients.handleClientMessage(this, data);
          }
-         Clients.handleClientMessage(this, data);
       });
       return this;
    }
