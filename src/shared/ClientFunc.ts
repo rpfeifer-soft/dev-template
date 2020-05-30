@@ -1,6 +1,8 @@
 /** @format */
 
-export enum ClientFunc {
+enum ClientFunc {
    Hello,
    ClickFromClient
 }
+
+export default ClientFunc;

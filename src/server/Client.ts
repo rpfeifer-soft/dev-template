@@ -3,8 +3,8 @@
 import ws from 'ws';
 import WSTool from '../shared/wsTool.js';
 import Message from '../shared/Message.js';
-import { ClientFunc } from '../shared/ClientFunc.js';
-import clientHandler from './ClientHandler.js';
+import ClientFunc from '../shared/ClientFunc.js';
+import Clients from './Clients.js';
 
 interface IRequests {
    [requestId: number]: {
@@ -64,10 +64,7 @@ export default class Client {
             }
             return;
          }
-         let message = WSTool.Client.parse(data);
-         if (message !== false) {
-            clientHandler(this, message.type, message.data, message.requestId || false);
-         }
+         Clients.handleClientMessage(this, data);
       });
       return this;
    }

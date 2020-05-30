@@ -2,9 +2,8 @@
 
 import WSTool from '../shared/wsTool.js';
 import Message from '../shared/Message.js';
-import { ServerFunc } from '../shared/ServerFunc.js';
-import { ClientFunc } from '../shared/ClientFunc.js';
-import serverHandler from './ServerHandler.js';
+import ServerFunc from '../shared/ServerFunc.js';
+import ClientFunc from '../shared/ClientFunc.js';
 
 interface IRequests {
    [requestId: number]: {
@@ -15,6 +14,12 @@ interface IRequests {
    };
 }
 
+interface IMessageHandler {
+   (data: string, requestId: number | false): void;
+}
+
+type IHandlers = { [key in ClientFunc]?: IMessageHandler[] };
+
 class Server {
    public static readonly instance: Server = new Server();
 
@@ -24,6 +29,9 @@ class Server {
    // The pending requests
    private requests: IRequests = {};
    private nextRequestId = 1;
+
+   // The message handlers
+   private handlers: IHandlers = {};
 
    // Init the instance
    init(url: string, onMessage?: (type: ClientFunc, data: string) => void) {
@@ -57,9 +65,42 @@ class Server {
          }
          let message = WSTool.Server.parse(event.data);
          if (message !== false) {
-            serverHandler(message.type, message.data, message.requestId || false);
+            let msg = message;
+            let handlers = this.handlers[msg.type];
+            if (handlers) {
+
+               handlers.forEach(handler => {
+                  handler(msg.data, msg.requestId || false);
+               });
+            }
          }
       };
+   }
+
+   on(type: ClientFunc, handler: IMessageHandler) {
+      let handlers = this.handlers[type];
+      if (handlers === undefined) {
+         handlers = [];
+         this.handlers[type] = handlers;
+      }
+      handlers.push(handler);
+   }
+
+   off(type: ClientFunc, handler: IMessageHandler) {
+      let handlers = this.handlers[type];
+      if (handlers) {
+         this.handlers[type] = handlers.filter(p => p !== handler);
+      }
+   }
+
+   answer(requestId: number, msg: Message) {
+      let data = WSTool.prepareResult(requestId, msg.stringify());
+      this.sendRequest(data, requestId);
+   }
+
+   error(requestId: number, reason: string) {
+      let data = WSTool.prepareError(requestId, reason);
+      this.sendRequest(data, requestId);
    }
 
    // Push a message (result does not matter)

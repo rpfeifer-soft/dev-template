@@ -1,6 +1,8 @@
 /** @format */
 
-export enum ServerFunc {
+enum ServerFunc {
    Init,
    Click
 }
+
+export default ServerFunc;

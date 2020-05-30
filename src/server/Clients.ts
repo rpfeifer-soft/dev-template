@@ -3,7 +3,15 @@
 import ws from 'ws';
 import Client from './Client.js';
 import Message from '../shared/Message.js';
-import { ClientFunc } from '../shared/ClientFunc.js';
+import ClientFunc from '../shared/ClientFunc.js';
+import ServerFunc from '../shared/ServerFunc.js';
+import WSTool from '../shared/wsTool.js';
+
+interface IMessageHandler {
+   (client: Client, data: string, requestId: number | false): void;
+}
+
+type IHandlers = { [key in ServerFunc]?: IMessageHandler[] };
 
 class Clients {
    // One singleton
@@ -18,6 +26,9 @@ class Clients {
 
    // Save the clients
    private clients: Client[] = [];
+
+   // The message handlers
+   private handlers: IHandlers = {};
 
    // Check for readyness
    get ready() { return !!this.server; }
@@ -50,6 +61,36 @@ class Clients {
       clients.server.on('close', () => {
          clearInterval(clients.interval);
       });
+   }
+
+   on(type: ServerFunc, handler: IMessageHandler) {
+      let handlers = this.handlers[type];
+      if (handlers === undefined) {
+         handlers = [];
+         this.handlers[type] = handlers;
+      }
+      handlers.push(handler);
+   }
+
+   off(type: ServerFunc, handler: IMessageHandler) {
+      let handlers = this.handlers[type];
+      if (handlers) {
+         this.handlers[type] = handlers.filter(p => p !== handler);
+      }
+   }
+
+   handleClientMessage(client: Client, data: string | ArrayBuffer) {
+      let message = WSTool.Server.parse(data);
+      if (message !== false) {
+         let msg = message;
+         let handlers = this.handlers[msg.type];
+         if (handlers) {
+
+            handlers.forEach(handler => {
+               handler(client, msg.data, msg.requestId || false);
+            });
+         }
+      }
    }
 
    // broadcast a message

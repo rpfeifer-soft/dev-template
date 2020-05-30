@@ -2,8 +2,9 @@
 
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
-import { ServerFunc } from '../shared/ServerFunc';
+import ServerFunc from '../shared/ServerFunc';
 import Message from '../shared/Message';
+import ClientFunc from '../shared/ClientFunc';
 
 let app = document.getElementById('app');
 if (app) {
@@ -25,6 +26,16 @@ if (app) {
    button.onclick = () => {
       Server.post(ServerFunc.Click, new Message.Time(new Date()));
    };
+
+   Server.on(ClientFunc.ClickFromClient, (data, _) => {
+      console.log('Click', data);
+   });
+   Server.on(ClientFunc.Hello, (data, _) => {
+      console.log('Hello', data);
+   });
+   Server.on(ClientFunc.ClickFromClient, (data, _) => {
+      console.log('Click2', data);
+   });
 }
 // tslint:disable-next-line: no-string-literal
 registerServiceWorker(window['isProduction'], '');
