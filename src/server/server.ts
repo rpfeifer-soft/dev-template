@@ -24,15 +24,14 @@ server.listen(options.getPort(), () => {
    // tslint:disable-next-line: no-console
    console.log(`Listening on port ${options.getPort()} ${wsTool}`);
 
-   Clients.on(ServerFunc.Init, (client, data, requestId) => {
-      let initMsg = Message.String.parse(data);
+   Clients.on(ServerFunc.Init, Message.String, (msg, requestId, client) => {
       if (requestId) {
          client.answer(requestId,
-            new Message.String(initMsg.data ? initMsg.data + ' ' + client.id : 'No data!'));
+            new Message.String(msg.data ? msg.data + ' ' + client.id : 'No data!'));
       }
    });
-   Clients.on(ServerFunc.Click, (_, data) => {
-      Clients.broadcast(ClientFunc.ClickFromClient, Message.Time.parse(data));
+   Clients.on(ServerFunc.Click, Message.Time, (msg) => {
+      Clients.broadcast(ClientFunc.ClickFromClient, msg);
    });
 });
 

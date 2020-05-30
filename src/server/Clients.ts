@@ -7,11 +7,16 @@ import ClientFunc from '../shared/ClientFunc.js';
 import ServerFunc from '../shared/ServerFunc.js';
 import WSTool from '../shared/wsTool.js';
 
-interface IMessageHandler {
-   (client: Client, data: string, requestId: number | false): void;
+interface IMessageHandler<T extends Message> {
+   (msg: T, requestId: number | false, client: Client): void;
 }
 
-type IHandlers = { [key in ServerFunc]?: IMessageHandler[] };
+interface IHandlerData<T extends Message> {
+   ctor: new () => Message;
+   handler: IMessageHandler<T>;
+}
+
+type IHandlers = { [key in ServerFunc]?: IHandlerData<Message>[] };
 
 class Clients {
    // One singleton
@@ -63,19 +68,19 @@ class Clients {
       });
    }
 
-   on(type: ServerFunc, handler: IMessageHandler) {
+   on<T extends Message>(type: ServerFunc, ctor: new () => T, handler: IMessageHandler<T>) {
       let handlers = this.handlers[type];
       if (handlers === undefined) {
          handlers = [];
          this.handlers[type] = handlers;
       }
-      handlers.push(handler);
+      handlers.push({ ctor, handler });
    }
 
-   off(type: ServerFunc, handler: IMessageHandler) {
+   off<T extends Message>(type: ServerFunc, handler: IMessageHandler<T>) {
       let handlers = this.handlers[type];
       if (handlers) {
-         this.handlers[type] = handlers.filter(p => p !== handler);
+         this.handlers[type] = handlers.filter(p => p.handler !== handler);
       }
    }
 
@@ -86,8 +91,10 @@ class Clients {
          let handlers = this.handlers[msg.type];
          if (handlers) {
 
-            handlers.forEach(handler => {
-               handler(client, msg.data, msg.requestId || false);
+            handlers.forEach(handlerData => {
+               let handlerMsg = new handlerData.ctor();
+               handlerMsg.parse(msg.data);
+               handlerData.handler(handlerMsg, msg.requestId || false, client);
             });
          }
       }
