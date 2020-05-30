@@ -2,17 +2,9 @@
 
 import WSTool from '../shared/wsTool.js';
 import Message from '../shared/Message.js';
+import Sender from '../shared/Sender.js';
 import ServerFunc from '../shared/ServerFunc.js';
 import ClientFunc from '../shared/ClientFunc.js';
-
-interface IRequests {
-   [requestId: number]: {
-      // tslint:disable-next-line: no-any
-      resolve: (value: string) => void;
-      // tslint:disable-next-line: no-any
-      reject: (reason: string) => void;
-   };
-}
 
 interface IMessageHandler {
    (data: string, requestId: number | false): void;
@@ -20,15 +12,11 @@ interface IMessageHandler {
 
 type IHandlers = { [key in ClientFunc]?: IMessageHandler[] };
 
-class Server {
+class Server extends Sender<ServerFunc> {
    public static readonly instance: Server = new Server();
 
    // The server to use
    private socket: WebSocket;
-
-   // The pending requests
-   private requests: IRequests = {};
-   private nextRequestId = 1;
 
    // The message handlers
    private handlers: IHandlers = {};
@@ -93,58 +81,11 @@ class Server {
       }
    }
 
-   answer(requestId: number, msg: Message) {
-      let data = WSTool.prepareResult(requestId, msg.stringify());
-      this.sendRequest(data, requestId);
+   prepare(type: ServerFunc, data: string, requestId: number | false) {
+      return WSTool.Client.prepare(type, data, requestId);
    }
 
-   error(requestId: number, reason: string) {
-      let data = WSTool.prepareError(requestId, reason);
-      this.sendRequest(data, requestId);
-   }
-
-   // Push a message (result does not matter)
-   push(type: ServerFunc, msg: Message) {
-      // No requestId necessary
-      let data = WSTool.Client.prepare(type, msg.stringify(), false);
-      this.sendRequest(data);
-   }
-
-   post(type: ServerFunc, msg: Message) {
-      let promise = new Promise<string>((resolve, reject) => {
-         let requestId = this.nextRequestId++;
-         let data = WSTool.Client.prepare(type, msg.stringify(), requestId);
-         this.sendRequest(data, requestId, resolve, reject);
-      });
-      return promise
-         .then(result => true);
-   }
-
-   send<T extends Message>(ctor: (new () => T), type: ServerFunc, msg: Message) {
-      let promise = new Promise<string>((resolve, reject) => {
-         let requestId = this.nextRequestId++;
-         let data = WSTool.Client.prepare(type, msg.stringify(), requestId);
-         this.sendRequest(data, requestId, resolve, reject);
-      });
-      return promise
-         .then(result => {
-            let msgResult = new ctor();
-            return msgResult.parse(result);
-         });
-   }
-
-   private sendRequest(
-      data: string | ArrayBuffer,
-      requestId?: number,
-      resolve?: (value: string) => void,
-      reject?: (reason: string) => void
-   ) {
-      if (requestId && resolve && reject) {
-         // Handle the returns
-         this.requests[requestId] = {
-            resolve, reject
-         };
-      }
+   socketSend(data: string | ArrayBuffer) {
       this.socket.send(data);
    }
 }
