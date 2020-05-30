@@ -3,7 +3,7 @@
 // read options
 import options from './options.js';
 import express from 'express';
-import WebSocket from './websocket.js';
+import Clients from './Clients.js';
 import wsTool from '../shared/wsTool.js';
 import getIndexHtml from './index.js';
 
@@ -22,18 +22,4 @@ server.listen(options.getPort(), () => {
    console.log(`Listening on port ${options.getPort()} ${wsTool}`);
 });
 
-const websockets = WebSocket.init(options.getPortWebSockets(), (message) => {
-   // tslint:disable-next-line: no-console
-   if (message.data === 'Init') {
-      return {
-         data: 'Received init at the server!'
-      };
-   }
-   // tslint:disable-next-line: no-console
-   console.log('Received message: %s', message.data);
-   return false;
-});
-
-setInterval(() => {
-   websockets.broadcast(new Date().toTimeString());
-}, 2000);
+Clients.init({ port: options.getPortWebSockets() });

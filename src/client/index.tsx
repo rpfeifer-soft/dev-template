@@ -1,6 +1,9 @@
 /** @format */
 
 import registerServiceWorker from './registerServiceWorker';
+import Server from './Server.js';
+import { ServerFunc } from '../shared/ServerFunc';
+import Message from '../shared/Message';
 
 let app = document.getElementById('app');
 if (app) {
@@ -13,16 +16,14 @@ if (app) {
    } else {
       baseURI = 'wss:' + baseURI;
    }
-   let ws = new WebSocket(baseURI + 'ws');
-   ws.onopen = function () {
-      ws.send('Init');
-   };
-   // tslint:disable-next-line: typedef
-   ws.onmessage = function (event) {
-      let div = document.createElement('div');
-      div.appendChild(
-         document.createTextNode(event.data));
-      thisApp.appendChild(div);
+
+   Server.init(baseURI + 'ws');
+
+   let button = document.createElement('button');
+   app.appendChild(button);
+   button.innerText = 'Click';
+   button.onclick = () => {
+      Server.post(ServerFunc.Click, new Message.Time(new Date()));
    };
 }
 // tslint:disable-next-line: no-string-literal
