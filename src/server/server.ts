@@ -4,7 +4,6 @@
 import options from './options.js';
 import express from 'express';
 import Clients from './Clients.js';
-import wsTool from '../shared/wsTool.js';
 import getIndexHtml from './index.js';
 import ServerFunc from '../shared/ServerFunc.js';
 import Message from '../shared/Message.js';
@@ -22,7 +21,7 @@ server.listen(options.getPort(), () => {
    });
 
    // eslint-disable-next-line no-console
-   console.log(`Listening on port ${options.getPort()} ${wsTool}`);
+   console.log(`Listening on port ${options.getPort()}`);
 
    Clients.on(ServerFunc.Init, Message.String, (msg, requestId, client) => {
       if (requestId) {

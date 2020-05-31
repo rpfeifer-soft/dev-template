@@ -5,6 +5,7 @@ import Message from './Message.js';
 
 interface IRequests {
    [requestId: number]: {
+      time: number;
       // tslint:disable-next-line: no-any
       resolve: (value: string | ArrayBuffer) => void;
       // tslint:disable-next-line: no-any
@@ -27,7 +28,7 @@ abstract class Sender<T> {
       let foundRequest = this.requests[request.requestId];
       if (foundRequest) {
          // Free the request
-         delete request[request.requestId];
+         delete this.requests[request.requestId];
 
          if ('error' in request) {
             foundRequest.reject(request.error);
@@ -57,7 +58,7 @@ abstract class Sender<T> {
 
    async post(type: T, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
-         let requestId = this.nextRequestId++;
+         let requestId = this.getNextRequestId();
          let data = this.prepare(type, msg.stringify(), requestId);
          this.sendRequest(data, requestId, resolve, reject);
       });
@@ -67,7 +68,7 @@ abstract class Sender<T> {
 
    async send<U extends Message>(ctor: (new () => U), type: T, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
-         let requestId = this.nextRequestId++;
+         let requestId = this.getNextRequestId();
          let data = this.prepare(type, msg.stringify(), requestId);
          this.sendRequest(data, requestId, resolve, reject);
       });
@@ -102,10 +103,41 @@ abstract class Sender<T> {
       if (requestId && resolve && reject) {
          // Handle the returns
          this.requests[requestId] = {
+            time: new Date().valueOf(),
             resolve, reject
          };
       }
       this.socketSend(data);
+   }
+
+   private getNextRequestId() {
+      const requestCacheSize = 256;
+      // eslint-disable-next-line no-console
+      console.log('#reqs: ' + Object.keys(this.requests).length + ' : ', Object.keys(this.requests));
+      let twice = false;
+      let oldest = new Date().valueOf();
+      let oldestId = 0;
+      while (this.requests[this.nextRequestId]) {
+         let request = this.requests[this.nextRequestId];
+         if (oldest > request.time) {
+            oldest = request.time;
+            oldestId = this.nextRequestId;
+         }
+         if (this.nextRequestId + 1 === requestCacheSize) {
+            this.nextRequestId = 1;
+            if (twice) {
+               // All slots full (search oldest slot)
+               this.nextRequestId = oldestId;
+               break;
+            }
+            twice = true;
+         } else {
+            this.nextRequestId++;
+         }
+      }
+      let next = this.nextRequestId;
+      this.nextRequestId = ((this.nextRequestId + 1) % requestCacheSize) || 1;
+      return next;
    }
 
    abstract prepare(type: T, data: string | ArrayBuffer, requestId: number | false): string | ArrayBuffer;
