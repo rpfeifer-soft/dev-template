@@ -22,7 +22,7 @@ abstract class Sender<T> {
       let request = WSTool.parseRequest(data);
       if (request === false) {
          return false;
-      };
+      }
 
       let foundRequest = this.requests[request.requestId];
       if (foundRequest) {
@@ -47,8 +47,6 @@ abstract class Sender<T> {
       let data = WSTool.prepareError(requestId, reason);
       this.sendRequest(data, requestId);
    }
-
-   abstract prepare(type: T, data: string, requestId: number | false): string | ArrayBuffer;
 
    // Push a message (result does not matter)
    push(type: T, msg: Message) {
@@ -97,8 +95,6 @@ abstract class Sender<T> {
          .then(p => p.data);
    }
 
-   abstract socketSend(data: string | ArrayBuffer): void;
-
    private sendRequest(
       data: string | ArrayBuffer,
       requestId?: number,
@@ -113,6 +109,10 @@ abstract class Sender<T> {
       }
       this.socketSend(data);
    }
+
+   abstract prepare(type: T, data: string, requestId: number | false): string | ArrayBuffer;
+
+   abstract socketSend(data: string | ArrayBuffer): void;
 }
 
 export default Sender;

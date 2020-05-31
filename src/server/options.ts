@@ -1,4 +1,5 @@
 /** @format */
+/* eslint-disable no-console */
 
 import * as fs from 'fs';
 
@@ -54,7 +55,6 @@ class Options {
    }
 
    dump(name: string) {
-      // tslint:disable:no-console
       console.log('Application:', name, `(:${this.getPort()})`);
       console.log('------------------');
       console.log('Title:', this.getTitle());

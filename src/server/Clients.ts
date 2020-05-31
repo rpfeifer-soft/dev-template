@@ -36,7 +36,9 @@ class Clients {
    private handlers: IHandlers = {};
 
    // Check for readyness
-   get ready() { return !!this.server; }
+   get ready() {
+      return !!this.server;
+   }
 
    // Init the instance
    init(options: ws.ServerOptions) {

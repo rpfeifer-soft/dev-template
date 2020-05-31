@@ -3,7 +3,7 @@
 import test from 'tape';
 import Message from './Message.js';
 
-// tslint:disable-next-line: no-console
+// eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
 
 test('Check default classes', (assert) => {

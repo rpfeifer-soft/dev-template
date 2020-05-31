@@ -7,8 +7,9 @@ abstract class Message {
    abstract stringify(): string;
 }
 
+// eslint-disable-next-line no-redeclare
 namespace Message {
-   // tslint:disable-next-line: no-any
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    export function toJSON(value: any): string {
       if (value === undefined) {
          return 'undefined';
@@ -16,7 +17,7 @@ namespace Message {
       return JSON.stringify(value);
    }
 
-   // tslint:disable-next-line: no-any
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    export function fromJSON(text: string): any {
       if (text === 'undefined') {
          return undefined;
@@ -46,28 +47,31 @@ namespace Message {
       }
    }
 
+   // eslint-disable-next-line id-blacklist
    export class Boolean extends Data<boolean> {
       static parse(data: string) {
          return Message.parseMessage(Boolean, data);
       }
    }
+   // eslint-disable-next-line id-blacklist
    export class String extends Data<string> {
       static parse(data: string) {
          return Message.parseMessage(String, data);
       }
    }
+   // eslint-disable-next-line id-blacklist
    export class Number extends Data<number> {
       static parse(data: string) {
          return Message.parseMessage(Number, data);
       }
    }
    export class Time extends Data<Date> {
-      static parse(data: string) {
-         return Message.parseMessage(Time, data);
-      }
-
       constructor(data?: Date) {
          super(data ? new Date(data.getTime()) : undefined);
+      }
+
+      static parse(data: string) {
+         return Message.parseMessage(Time, data);
       }
 
       parse(data: string) {

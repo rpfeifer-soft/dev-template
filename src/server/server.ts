@@ -21,7 +21,7 @@ server.listen(options.getPort(), () => {
       res.send(getIndexHtml());
    });
 
-   // tslint:disable-next-line: no-console
+   // eslint-disable-next-line no-console
    console.log(`Listening on port ${options.getPort()} ${wsTool}`);
 
    Clients.on(ServerFunc.Init, Message.String, (msg, requestId, client) => {
