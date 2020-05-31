@@ -4,7 +4,7 @@ import ws from 'ws';
 import Client from './Client.js';
 import Message from '../shared/Message.js';
 import { ServerMethod, ServerFunction, isServerFunction, ClientMethod } from '../shared/Functions.js';
-import WSTool from '../shared/wsTool.js';
+import WSTool from '../shared/WSTool.js';
 
 interface IMethodHandler<T extends Message> {
    (msg: T, client: Client): void;

@@ -1,7 +1,7 @@
 /** @format */
 
 import ws from 'ws';
-import WSTool from '../shared/wsTool.js';
+import WSTool from '../shared/WSTool.js';
 import Sender from '../shared/Sender.js';
 import { ClientMethod, ClientFunction } from '../shared/Functions.js';
 import Clients from './Clients.js';

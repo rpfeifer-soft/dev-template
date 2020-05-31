@@ -1,6 +1,6 @@
 /** @format */
 
-import WSTool from './wsTool.js';
+import WSTool from './WSTool.js';
 import Message from './Message.js';
 
 interface IRequests {

@@ -1,6 +1,6 @@
 /** @format */
 
-import WSTool from '../shared/wsTool.js';
+import WSTool from '../shared/WSTool.js';
 import Message from '../shared/Message.js';
 import Sender from '../shared/Sender.js';
 import { ServerMethod, ServerFunction, ClientMethod, ClientFunction, isClientFunction } from '../shared/Functions.js';
