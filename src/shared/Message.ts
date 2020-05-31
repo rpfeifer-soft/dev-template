@@ -1,7 +1,6 @@
 /** @format */
 
-import TextEncoder from './TextEncoder.js';
-import TextDecoder from './TextDecoder.js';
+import ByteArray from './ByteArray.js';
 
 abstract class Message {
 
@@ -60,18 +59,15 @@ namespace Message {
       }
 
       parse(data: ArrayBuffer) {
-         if (data.byteLength === 0) {
-            this.data = undefined;
-         } else {
-            let textDecoder = new TextDecoder();
-            this.data = textDecoder.decode(new Uint8Array(data.slice(0, data.byteLength - 1)));
-         }
+         let bytes = new ByteArray(data);
+         this.data = bytes.getString();
          return this;
       }
 
       stringify() {
-         let textEncoder = new TextEncoder();
-         return textEncoder.encode(this.data === undefined ? '' : this.data + '\0').buffer;
+         let bytes = new ByteArray();
+         bytes.addString(this.data);
+         return bytes.getArrayBuffer();
       }
    }
    // eslint-disable-next-line id-blacklist
@@ -81,17 +77,15 @@ namespace Message {
       }
 
       parse(data: ArrayBuffer) {
-         let view = new DataView(data);
-         let value = view.getUint8(0);
-         this.data = value === 2 ? undefined : value === 1;
+         let bytes = new ByteArray(data);
+         this.data = bytes.getBoolean();
          return this;
       }
 
       stringify() {
-         let buffer = new ArrayBuffer(8);
-         let view = new DataView(buffer);
-         view.setUint8(0, this.data === undefined ? 2 : (this.data ? 1 : 0));
-         return buffer;
+         let bytes = new ByteArray();
+         bytes.addBoolean(this.data);
+         return bytes.getArrayBuffer();
       }
    }
    // eslint-disable-next-line id-blacklist
@@ -101,17 +95,15 @@ namespace Message {
       }
 
       parse(data: ArrayBuffer) {
-         let view = new DataView(data);
-         let value = view.getFloat64(0);
-         this.data = isNaN(value) ? undefined : value;
+         let bytes = new ByteArray(data);
+         this.data = bytes.getNumber();
          return this;
       }
 
       stringify() {
-         let buffer = new ArrayBuffer(8);
-         let view = new DataView(buffer);
-         view.setFloat64(0, this.data === undefined ? NaN : this.data);
-         return buffer;
+         let bytes = new ByteArray();
+         bytes.addNumber(this.data);
+         return bytes.getArrayBuffer();
       }
    }
    export class Time extends Data<Date> {
@@ -124,18 +116,17 @@ namespace Message {
       }
 
       parse(data: ArrayBuffer) {
-         let view = new DataView(data);
-         let time = view.getFloat64(0) || undefined;
+         let bytes = new ByteArray(data);
+         let time = bytes.getNumber();
          this.data = time ? new Date(time) : undefined;
          return this;
       }
 
       stringify() {
-         let time = this.data ? this.data.getTime() : 0;
-         let buffer = new ArrayBuffer(8);
-         let view = new DataView(buffer);
-         view.setFloat64(0, time);
-         return buffer;
+         let bytes = new ByteArray();
+         let time = this.data ? this.data.getTime() : undefined;
+         bytes.addNumber(time);
+         return bytes.getArrayBuffer();
       }
    }
 }
