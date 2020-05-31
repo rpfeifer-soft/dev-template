@@ -34,8 +34,8 @@ enum PacketType {
 // Low level support to allow binary transport
 
 // PacketType.Result
-// 1 | RequestId | data
-// 2 | RequestId | type | data
+// 1 | RequestId (1 Byte) | data
+// 2 | RequestId (1 Byte) | type (2 Byte) | data
 function parseData<T>(data: string | ArrayBuffer): T {
    if (typeof (data) === 'string') {
       return JSON.parse(data) as T;
@@ -43,12 +43,12 @@ function parseData<T>(data: string | ArrayBuffer): T {
    // Arraybuffer
    let view = new DataView(data);
    let packet = view.getUint8(0) as PacketType;
-   let requestId = view.getUint32(1);
-   let content = data.slice(packet === PacketType.Result ? 5 : 9);
+   let requestId = view.getUint8(1);
+   let content = data.slice(packet === PacketType.Result ? 2 : 4);
 
    if (packet === PacketType.Message) {
       // IClientMessage | IServerMessage
-      let type = view.getUint32(5);
+      let type = view.getUint16(2);
       return {
          type: type,
          data: content,
@@ -63,21 +63,21 @@ function parseData<T>(data: string | ArrayBuffer): T {
 }
 
 // PacketType.Result
-// 1 | RequestId | data
-// 2 | RequestId | type | data
+// 1 | RequestId (1 Byte) | data
+// 2 | RequestId (1 Byte) | type (2 Byte) | data
 function createPacket(
    packet: PacketType,
    data: ArrayBuffer,
    requestId?: number,
    type?: ServerMethod | ServerFunction | ClientMethod | ClientFunction
 ) {
-   let offset = packet === PacketType.Result ? 5 : 9;
+   let offset = packet === PacketType.Result ? 2 : 4;
    let buffer = new ArrayBuffer(data.byteLength + offset);
    let view = new DataView(buffer);
    view.setUint8(0, packet);
-   view.setUint32(1, requestId || 0);
+   view.setUint8(1, requestId || 0);
    if (packet === PacketType.Message) {
-      view.setUint32(5, type || 0);
+      view.setUint16(2, type || 0);
    }
    new Uint8Array(buffer).set(new Uint8Array(data), offset);
    return buffer;
