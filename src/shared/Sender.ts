@@ -55,44 +55,42 @@ abstract class Sender<T> {
       this.sendRequest(data);
    }
 
-   post(type: T, msg: Message) {
+   async post(type: T, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
          let requestId = this.nextRequestId++;
          let data = this.prepare(type, msg.stringify(), requestId);
          this.sendRequest(data, requestId, resolve, reject);
       });
-      return promise
-         .then(result => true);
+      await promise;
+      return true;
    }
 
-   send<U extends Message>(ctor: (new () => U), type: T, msg: Message) {
+   async send<U extends Message>(ctor: (new () => U), type: T, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
          let requestId = this.nextRequestId++;
          let data = this.prepare(type, msg.stringify(), requestId);
          this.sendRequest(data, requestId, resolve, reject);
       });
-      return promise
-         .then(result => {
-            let msgResult = new ctor();
-            return msgResult.parse(result);
-         });
+      const result = await promise;
+      let msgResult = new ctor();
+      return msgResult.parse(result);
    }
 
-   getString(type: T, msg: Message) {
-      return this.send(Message.String, type, msg)
-         .then(p => p.data);
+   async getString(type: T, msg: Message) {
+      const p = await this.send(Message.String, type, msg);
+      return p.data;
    }
-   getNumber(type: T, msg: Message) {
-      return this.send(Message.Number, type, msg)
-         .then(p => p.data);
+   async getNumber(type: T, msg: Message) {
+      const p = await this.send(Message.Number, type, msg);
+      return p.data;
    }
-   getBoolean(type: T, msg: Message) {
-      return this.send(Message.Boolean, type, msg)
-         .then(p => p.data);
+   async getBoolean(type: T, msg: Message) {
+      const p = await this.send(Message.Boolean, type, msg);
+      return p.data;
    }
-   getTime(type: T, msg: Message) {
-      return this.send(Message.Time, type, msg)
-         .then(p => p.data);
+   async getTime(type: T, msg: Message) {
+      const p = await this.send(Message.Time, type, msg);
+      return p.data;
    }
 
    private sendRequest(
