@@ -16,7 +16,7 @@
       "watch": "tsc -b -w src & rollup -c -w",
       "devenv": "npm run compile && rollup -c --environment DEVENV && docker-compose build && (npm run watch & docker-compose up)",
       "nodemon": "nodemon",
-      "start": "node dist/server/server.js",
+      "start": "node dist/server/start.js",
       "list": "ps aux | grep ${npm_package_name}",
       "test": "tsc --project ./src/tsconfig.test.json && rollup -c ./src/rollup.test.js && node ./test/all.js && rimraf ./test",
       "build": "npm run compile && rollup -c",
