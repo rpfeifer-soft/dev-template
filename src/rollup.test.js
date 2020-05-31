@@ -8,6 +8,6 @@ export default {
       file: 'test/all.js',
       format: 'es',
    },
-   external: ['tape'],
+   external: ['tape', 'ws'],
    plugins: [multi()],
 };

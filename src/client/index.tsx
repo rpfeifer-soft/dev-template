@@ -2,9 +2,8 @@
 
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
-import { ServerFunction } from '../shared/ServerFunc.js';
+import { ServerFunction, ClientMethod } from '../shared/Functions.js';
 import Message from '../shared/Message';
-import { ClientMethod } from '../shared/ClientFunc.js';
 
 let app = document.getElementById('app');
 if (app) {

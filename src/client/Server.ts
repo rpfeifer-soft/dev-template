@@ -3,8 +3,7 @@
 import WSTool from '../shared/wsTool.js';
 import Message from '../shared/Message.js';
 import Sender from '../shared/Sender.js';
-import { ServerMethod, ServerFunction } from '../shared/ServerFunc.js';
-import { ClientMethod, ClientFunction, isClientFunction } from '../shared/ClientFunc.js';
+import { ServerMethod, ServerFunction, ClientMethod, ClientFunction, isClientFunction } from '../shared/Functions.js';
 
 interface IMethodHandler<T extends Message> {
    (msg: T): void;

@@ -1,7 +1,6 @@
 /** @format */
 
-import { ServerMethod, ServerFunction } from './ServerFunc.js';
-import { ClientFunction, ClientMethod } from './ClientFunc.js';
+import { ServerMethod, ServerFunction, ClientFunction, ClientMethod } from './Functions.js';
 
 interface IRequestError {
    requestId: number;

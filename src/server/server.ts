@@ -5,9 +5,8 @@ import options from './options.js';
 import express from 'express';
 import Clients from './Clients.js';
 import getIndexHtml from './index.js';
-import { ServerFunction } from '../shared/ServerFunc.js';
+import { ServerFunction, ClientMethod } from '../shared/Functions.js';
 import Message from '../shared/Message.js';
-import { ClientMethod } from '../shared/ClientFunc.js';
 
 const server = express();
 

@@ -3,8 +3,7 @@
 import ws from 'ws';
 import Client from './Client.js';
 import Message from '../shared/Message.js';
-import { ClientMethod } from '../shared/ClientFunc.js';
-import { ServerMethod, ServerFunction, isServerFunction } from '../shared/ServerFunc.js';
+import { ServerMethod, ServerFunction, isServerFunction, ClientMethod } from '../shared/Functions.js';
 import WSTool from '../shared/wsTool.js';
 
 interface IMethodHandler<T extends Message> {
