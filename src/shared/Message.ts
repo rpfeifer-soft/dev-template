@@ -52,19 +52,19 @@ namespace Message {
 
    // eslint-disable-next-line id-blacklist
    export class Boolean extends Data<boolean> {
-      static parse(data: string) {
+      static parse(data: string | ArrayBuffer) {
          return Message.parseMessage(Boolean, data);
       }
    }
    // eslint-disable-next-line id-blacklist
    export class String extends Data<string> {
-      static parse(data: string) {
+      static parse(data: string | ArrayBuffer) {
          return Message.parseMessage(String, data);
       }
    }
    // eslint-disable-next-line id-blacklist
    export class Number extends Data<number> {
-      static parse(data: string) {
+      static parse(data: string | ArrayBuffer) {
          return Message.parseMessage(Number, data);
       }
    }
@@ -73,7 +73,7 @@ namespace Message {
          super(data ? new Date(data.getTime()) : undefined);
       }
 
-      static parse(data: string) {
+      static parse(data: string | ArrayBuffer) {
          return Message.parseMessage(Time, data);
       }
 

@@ -3,10 +3,10 @@
 import ws from 'ws';
 import WSTool from '../shared/wsTool.js';
 import Sender from '../shared/Sender.js';
-import ClientFunc from '../shared/ClientFunc.js';
+import { ClientMethod, ClientFunction } from '../shared/ClientFunc.js';
 import Clients from './Clients.js';
 
-export default class Client extends Sender<ClientFunc> {
+export default class Client extends Sender<ClientMethod, ClientFunction> {
    // The id of the client
    public readonly id: number;
 
@@ -61,7 +61,7 @@ export default class Client extends Sender<ClientFunc> {
       this.isAlive = false;
    }
 
-   prepare(type: ClientFunc, data: string | ArrayBuffer, requestId: number | false) {
+   prepare(type: ClientMethod | ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
       return WSTool.Server.prepare(type, data, requestId);
    }
 

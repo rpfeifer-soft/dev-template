@@ -2,9 +2,9 @@
 
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
-import ServerFunc from '../shared/ServerFunc';
+import { ServerFunction } from '../shared/ServerFunc.js';
 import Message from '../shared/Message';
-import ClientFunc from '../shared/ClientFunc';
+import { ClientMethod } from '../shared/ClientFunc.js';
 
 let app = document.getElementById('app');
 if (app) {
@@ -25,17 +25,17 @@ if (app) {
    app.appendChild(button);
    button.innerText = 'Click';
    button.onclick = async () => {
-      Server.post(ServerFunc.Click, new Message.Time(new Date()));
-      console.log(await Server.getString(ServerFunc.Init, new Message.String('Test')));
+      Server.post(ServerFunction.Click, new Message.Time(new Date()));
+      console.log(await Server.getString(ServerFunction.Init, new Message.String('Test')));
    };
 
-   Server.on(ClientFunc.ClickFromClient, Message.Time, (msg) => {
+   Server.on(ClientMethod.ClickFromClient, Message.Time, (msg) => {
       console.log('Click', msg.data);
    });
-   Server.on(ClientFunc.Hello, Message.String, (msg) => {
+   Server.on(ClientMethod.Hello, Message.String, (msg) => {
       console.log('Hello', msg.data);
    });
-   Server.on(ClientFunc.ClickFromClient, Message.Time, (msg) => {
+   Server.on(ClientMethod.ClickFromClient, Message.Time, (msg) => {
       console.log('Click2', msg.data);
    });
 }

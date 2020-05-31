@@ -5,9 +5,9 @@ import options from './options.js';
 import express from 'express';
 import Clients from './Clients.js';
 import getIndexHtml from './index.js';
-import ServerFunc from '../shared/ServerFunc.js';
+import { ServerFunction } from '../shared/ServerFunc.js';
 import Message from '../shared/Message.js';
-import ClientFunc from '../shared/ClientFunc.js';
+import { ClientMethod } from '../shared/ClientFunc.js';
 
 const server = express();
 
@@ -23,14 +23,12 @@ server.listen(options.getPort(), () => {
    // eslint-disable-next-line no-console
    console.log(`Listening on port ${options.getPort()}`);
 
-   Clients.on(ServerFunc.Init, Message.String, (msg, requestId, client) => {
-      if (requestId) {
-         client.answer(requestId,
-            new Message.String(msg.data ? msg.data + ' ' + client.id : 'No data!'));
-      }
+   Clients.on(ServerFunction.Init, Message.String, async (msg, client) => {
+      return new Message.String(msg.data ? msg.data + ' ' + client.id : 'No data!');
    });
-   Clients.on(ServerFunc.Click, Message.Time, (msg) => {
-      Clients.broadcast(ClientFunc.ClickFromClient, msg);
+   Clients.on(ServerFunction.Click, Message.Time, async (msg) => {
+      Clients.broadcast(ClientMethod.ClickFromClient, msg);
+      return new Message.Boolean(true);
    });
 });
 

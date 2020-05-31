@@ -13,7 +13,7 @@ interface IRequests {
    };
 }
 
-abstract class Sender<T> {
+abstract class Sender<TMethod, TFunction> {
    // The pending requests
    protected requests: IRequests = {};
    protected nextRequestId = 1;
@@ -50,13 +50,13 @@ abstract class Sender<T> {
    }
 
    // Push a message (result does not matter)
-   push(type: T, msg: Message) {
+   push(type: TMethod, msg: Message) {
       // No requestId necessary
       let data = this.prepare(type, msg.stringify(), false);
       this.sendRequest(data);
    }
 
-   async post(type: T, msg: Message) {
+   async post(type: TFunction, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
          let requestId = this.getNextRequestId();
          let data = this.prepare(type, msg.stringify(), requestId);
@@ -66,7 +66,7 @@ abstract class Sender<T> {
       return true;
    }
 
-   async send<U extends Message>(ctor: (new () => U), type: T, msg: Message) {
+   async send<U extends Message>(ctor: (new () => U), type: TFunction, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
          let requestId = this.getNextRequestId();
          let data = this.prepare(type, msg.stringify(), requestId);
@@ -77,19 +77,19 @@ abstract class Sender<T> {
       return msgResult.parse(result);
    }
 
-   async getString(type: T, msg: Message) {
+   async getString(type: TFunction, msg: Message) {
       const p = await this.send(Message.String, type, msg);
       return p.data;
    }
-   async getNumber(type: T, msg: Message) {
+   async getNumber(type: TFunction, msg: Message) {
       const p = await this.send(Message.Number, type, msg);
       return p.data;
    }
-   async getBoolean(type: T, msg: Message) {
+   async getBoolean(type: TFunction, msg: Message) {
       const p = await this.send(Message.Boolean, type, msg);
       return p.data;
    }
-   async getTime(type: T, msg: Message) {
+   async getTime(type: TFunction, msg: Message) {
       const p = await this.send(Message.Time, type, msg);
       return p.data;
    }
@@ -112,8 +112,7 @@ abstract class Sender<T> {
 
    private getNextRequestId() {
       const requestCacheSize = 256;
-      // eslint-disable-next-line no-console
-      console.log('#reqs: ' + Object.keys(this.requests).length + ' : ', Object.keys(this.requests));
+
       let twice = false;
       let oldest = new Date().valueOf();
       let oldestId = 0;
@@ -140,7 +139,11 @@ abstract class Sender<T> {
       return next;
    }
 
-   abstract prepare(type: T, data: string | ArrayBuffer, requestId: number | false): string | ArrayBuffer;
+   abstract prepare(
+      type: TFunction | TMethod,
+      data: string | ArrayBuffer,
+      requestId: number | false
+   ): string | ArrayBuffer;
 
    abstract socketSend(data: string | ArrayBuffer): void;
 }
