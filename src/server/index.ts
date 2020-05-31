@@ -1,5 +1,5 @@
 /** @format */
-import options from './options.js';
+import options from './Options.js';
 
 export default function getIndexHtml() {
    return `<!DOCTYPE html>

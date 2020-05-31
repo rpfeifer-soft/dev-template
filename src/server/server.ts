@@ -1,10 +1,10 @@
 /** @format */
 
 // read options
-import options from './options.js';
+import options from './Options.js';
 import express from 'express';
 import Clients from './Clients.js';
-import getIndexHtml from './index.js';
+import getIndexHtml from './Index.js';
 import { ServerFunction, ClientMethod } from '../shared/Functions.js';
 import Message from '../shared/Message.js';
 
