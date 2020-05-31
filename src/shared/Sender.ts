@@ -6,7 +6,7 @@ import Message from './Message.js';
 interface IRequests {
    [requestId: number]: {
       // tslint:disable-next-line: no-any
-      resolve: (value: string) => void;
+      resolve: (value: string | ArrayBuffer) => void;
       // tslint:disable-next-line: no-any
       reject: (reason: string) => void;
    };
@@ -108,7 +108,7 @@ abstract class Sender<T> {
       this.socketSend(data);
    }
 
-   abstract prepare(type: T, data: string, requestId: number | false): string | ArrayBuffer;
+   abstract prepare(type: T, data: string | ArrayBuffer, requestId: number | false): string | ArrayBuffer;
 
    abstract socketSend(data: string | ArrayBuffer): void;
 }

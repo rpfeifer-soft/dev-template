@@ -31,6 +31,7 @@ class Server extends Sender<ServerFunc> {
       // Register the correct handler
       let server = this;
       server.socket = new WebSocket(url);
+      server.socket.binaryType = 'arraybuffer';
 
       return new Promise<T>((resolve, reject) => {
          server.socket.onopen = function () {
@@ -44,12 +45,16 @@ class Server extends Sender<ServerFunc> {
             }
          };
          // tslint:disable-next-line: typedef
-         server.socket.onmessage = (event) => {
-            if (typeof (event.data) !== 'string' && !(event.data instanceof ArrayBuffer)) {
+         server.socket.onmessage = async (event) => {
+            let data = event.data;
+            if (event.data instanceof Blob) {
+               data = await new Response(event.data).arrayBuffer();
+            }
+            if (typeof (data) !== 'string' && !(data instanceof ArrayBuffer)) {
                throw new Error('Unsupport ws-socket data format!');
             }
-            if (!this.handleRequests(event.data)) {
-               this.handleClientMessage(event.data);
+            if (!this.handleRequests(data)) {
+               this.handleClientMessage(data);
             }
          };
       });
@@ -87,7 +92,7 @@ class Server extends Sender<ServerFunc> {
       }
    }
 
-   prepare(type: ServerFunc, data: string, requestId: number | false) {
+   prepare(type: ServerFunc, data: string | ArrayBuffer, requestId: number | false) {
       return WSTool.Client.prepare(type, data, requestId);
    }
 

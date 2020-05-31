@@ -2,9 +2,9 @@
 
 abstract class Message {
 
-   abstract parse(data: string): this;
+   abstract parse(data: string | ArrayBuffer): this;
 
-   abstract stringify(): string;
+   abstract stringify(): string | ArrayBuffer;
 }
 
 // eslint-disable-next-line no-redeclare
@@ -25,7 +25,7 @@ namespace Message {
       return JSON.parse(text);
    }
 
-   export function parseMessage<T extends Message>(ctor: (new () => T), data: string) {
+   export function parseMessage<T extends Message>(ctor: (new () => T), data: string | ArrayBuffer) {
       let msg = new ctor();
       return msg.parse(data);
    }
@@ -37,12 +37,15 @@ namespace Message {
          super();
       }
 
-      parse(data: string) {
+      parse(data: string | ArrayBuffer) {
+         if (typeof (data) !== 'string') {
+            throw new Error('ArrayBuffer not support for generic data!');
+         }
          this.data = Message.fromJSON(data) as U;
          return this;
       }
 
-      stringify() {
+      stringify(): string | ArrayBuffer {
          return Message.toJSON(this.data);
       }
    }
@@ -74,14 +77,19 @@ namespace Message {
          return Message.parseMessage(Time, data);
       }
 
-      parse(data: string) {
-         let time = Message.fromJSON(data) as number | undefined;
+      parse(data: ArrayBuffer) {
+         let view = new DataView(data);
+         let time = view.getFloat64(0) || undefined;
          this.data = time ? new Date(time) : undefined;
          return this;
       }
 
       stringify() {
-         return Message.toJSON(this.data ? this.data.getTime() : undefined);
+         let time = this.data ? this.data.getTime() : 0;
+         let buffer = new ArrayBuffer(8);
+         let view = new DataView(buffer);
+         view.setFloat64(0, time);
+         return buffer;
       }
    }
 }

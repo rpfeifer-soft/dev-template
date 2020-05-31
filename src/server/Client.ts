@@ -32,6 +32,9 @@ export default class Client extends Sender<ClientFunc> {
       });
 
       this.server.on('message', (data) => {
+         if (data instanceof Uint8Array) {
+            data = new Uint8Array(data).buffer;
+         }
          if (typeof (data) !== 'string' && !(data instanceof ArrayBuffer)) {
             throw new Error('Unsupport ws-socket data format!');
          }
@@ -58,7 +61,7 @@ export default class Client extends Sender<ClientFunc> {
       this.isAlive = false;
    }
 
-   prepare(type: ClientFunc, data: string, requestId: number | false) {
+   prepare(type: ClientFunc, data: string | ArrayBuffer, requestId: number | false) {
       return WSTool.Server.prepare(type, data, requestId);
    }
 
