@@ -18,8 +18,7 @@ module.exports = {
         "node": true
     },
     "extends": [
-        "prettier",
-        "prettier/@typescript-eslint"
+        "prettier"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -27,8 +26,7 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint",
-        "@typescript-eslint/tslint"
+        "@typescript-eslint"
     ],
     "rules": {
         "@typescript-eslint/dot-notation": "error",
@@ -159,34 +157,6 @@ module.exports = {
                 "markers": [
                     "/"
                 ]
-            }
-        ],
-        "@typescript-eslint/tslint/config": [
-            "error",
-            {
-                "rules": {
-                    "jsx-boolean-value": true,
-                    "jsx-curly-spacing": true,
-                    "jsx-key": true,
-                    "jsx-no-bind": true,
-                    "jsx-no-string-ref": true,
-                    "jsx-self-close": true,
-                    "typedef": [
-                        true,
-                        "parameter",
-                        "property-declaration"
-                    ],
-                    "whitespace": [
-                        true,
-                        "check-branch",
-                        "check-decl",
-                        "check-module",
-                        "check-operator",
-                        "check-separator",
-                        "check-type",
-                        "check-typecast"
-                    ]
-                }
             }
         ]
     }

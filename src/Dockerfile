@@ -3,9 +3,9 @@ FROM node as build-deps
 
 WORKDIR /app
 
-COPY ./package.json ./package-lock.json /app/
+COPY ./package.json /app/
 
-RUN npm install
+RUN npm install --loglevel=error
 
 COPY ./src /app/src/
 COPY ./rollup.*.js /app/
