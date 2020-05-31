@@ -2,6 +2,7 @@
 
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import externalGlobals from 'rollup-plugin-external-globals';
 import { terser } from 'rollup-plugin-terser';
 
 // `npm run build` -> `production` is true
@@ -14,5 +15,13 @@ export default {
       file: 'dist/prod/bundle.js',
       format: 'es',
    },
-   plugins: [resolve(), commonjs(), production && terser()],
+   plugins: [
+      externalGlobals({
+         './TextEncoder.js': 'TextEncoder',
+         './TextDecoder.js': 'TextDecoder',
+      }),
+      resolve(),
+      commonjs(),
+      production && terser(),
+   ],
 };

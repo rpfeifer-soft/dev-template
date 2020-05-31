@@ -65,6 +65,8 @@ test('Create number data message', (assert) => {
    assert.equal(msg.data, undefined);
    msg = new Message.Number(-19.78);
    assert.equal(msg.data, -19.78);
+   msg = new Message.Number(0);
+   assert.equal(msg.data, 0);
    assert.end();
 });
 
@@ -78,6 +80,10 @@ test('Serialize number data message', (assert) => {
    assert.equal(msg.data, msgOrig.data);
 
    msgOrig = new Message.Number(-19.78);
+   msg = Message.Number.parse(msgOrig.stringify());
+   assert.equal(msg.data, msgOrig.data);
+
+   msgOrig = new Message.Number(0);
    msg = Message.Number.parse(msgOrig.stringify());
    assert.equal(msg.data, msgOrig.data);
    assert.end();
@@ -131,41 +137,3 @@ test('Serialize date data message', (assert) => {
    }
    assert.end();
 });
-
-/*
-interface TestMessage {
-   testNumber: number;
-   testBool: boolean;
-}
-class TestMessage extends Message {
-
-   static parseResult(result: Message.IMessageResult) {
-      let json: TestMessage = JSON.parse(result.data);
-      let msg = new TestMessage(result);
-      return msg;
-   }
-
-   constructor(msg?: Message) {
-      super('Test', msg);
-   }
-
-   stringifyData() {
-      return JSON.stringify({
-         testNumber: this.testNumber,
-         testBool: this.testBool
-      });
-   }
-}
-type ITestMessage = Pick<TestMessage, keyof TestMessage>;
-
-test('Send a message and return string', (assert) => {
-   setTimeout(() => {
-      handleAnswer(1, 'result', '');
-   }, 2000);
-   assert.plan(3);
-   assert.pass('Sending the message!');
-   send<string>(new Message.Data('test', 'data'))
-      .then(result => assert.equal(result, 'result', 'compare the returning string.'));
-   assert.pass('Result arrived?');
-});
-*/

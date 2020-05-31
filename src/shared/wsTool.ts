@@ -58,7 +58,7 @@ function parseData<T>(data: string | ArrayBuffer): T {
    // IRequestResult
    return {
       requestId: requestId,
-      result: data
+      result: content
    } as IRequestResult as unknown as T;
 }
 

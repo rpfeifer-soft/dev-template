@@ -18,7 +18,7 @@ if (app) {
    }
 
    Server.init(baseURI + 'ws', new Message.String('Was?'), Message.String)
-      .then(p => console.log('Init-Result: ' + p.data));
+      .then(p => console.log('Init-Result: :' + p.data + ':'));
 
    let button = document.createElement('button');
    app.appendChild(button);
