@@ -34,8 +34,9 @@ if (app) {
    Server.on(ClientMethod.Hello, (msg) => {
       console.log('Hello', msg.data);
    });
-   Server.on(ClientMethod.ClickFromClient, (msg) => {
+   Server.on(ClientMethod.ClickFromClient, async (msg) => {
       console.log('Click2', msg.data);
+      console.log('length = ' + (await Server.call(ServerFunction.Cool, new Message.String('Mein Name'))).data);
    });
 }
 // tslint:disable-next-line: no-string-literal

@@ -9,7 +9,8 @@ function assertAllHandled(x: never): never {
 
 export enum ServerFunction {
    Init = 1,
-   Click
+   Click,
+   Cool
 }
 export enum ServerMethod {
    Ping = 100
@@ -25,6 +26,7 @@ export enum ClientMethod {
 
 type StringParams =
    ServerFunction.Init |
+   ServerFunction.Cool |
    ClientMethod.Hello;
 
 type BooleanParams =
@@ -45,6 +47,7 @@ function getParameter(type: ServerFunction | ServerMethod | ClientFunction | Cli
    switch (type) {
       case ServerFunction.Init:
       case ClientMethod.Hello:
+      case ServerFunction.Cool:
          return Message.String;
 
       case ServerMethod.Ping:
@@ -67,9 +70,13 @@ type StringReturns =
 type BooleanReturns =
    ServerFunction.Click;
 
+type NumberReturns =
+   ServerFunction.Cool;
+
 type Returns<T> =
    T extends StringReturns ? Message.String :
    T extends BooleanReturns ? Message.Boolean :
+   T extends NumberReturns ? Message.Number :
    never;
 
 function getReturns(type: ServerFunction | ClientFunction): new () => Message {
@@ -81,6 +88,9 @@ function getReturns(type: ServerFunction | ClientFunction): new () => Message {
 
       case ServerFunction.Click:
          return Message.Boolean;
+
+      case ServerFunction.Cool:
+         return Message.Number;
 
       default:
          return assertAllHandled(type);
@@ -95,6 +105,7 @@ export function isServerFunction(value: ServerMethod | ServerFunction): value is
 
       case ServerFunction.Init:
       case ServerFunction.Click:
+      case ServerFunction.Cool:
          return true;
    }
    assertAllHandled(value);
@@ -154,6 +165,7 @@ export function ImplementsServer<T>() {
          // FUNCTIONS
          on(...args: OnArgs<ServerFunction.Init>): void;
          on(...args: OnArgs<ServerFunction.Click>): void;
+         on(...args: OnArgs<ServerFunction.Cool>): void;
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          on(type: ServerMethod | ServerFunction, handler: any) {
@@ -277,6 +289,7 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       // FUNCTIONS
       call(...args: CallArgs<ServerFunction.Init>): ReturnArg<ServerFunction.Init>;
       call(...args: CallArgs<ServerFunction.Click>): ReturnArg<ServerFunction.Click>;
+      call(...args: CallArgs<ServerFunction.Cool>): ReturnArg<ServerFunction.Cool>;
 
       call(type: ServerFunction | ServerMethod, msg: Message): Promise<Message> | void {
          if (isServerFunction(type)) {

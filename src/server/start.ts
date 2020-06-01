@@ -30,6 +30,9 @@ server.listen(options.getPort(), () => {
       Clients.broadcast(ClientMethod.ClickFromClient, msg);
       return new Message.Boolean(true);
    });
+   Clients.on(ServerFunction.Cool, async (msg) => {
+      return new Message.Number(msg.data === undefined ? -1 : msg.data.length);
+   });
 });
 
 Clients.init({ port: options.getPortWebSockets() });
