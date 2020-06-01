@@ -5,7 +5,7 @@ import WSTool from '../shared/WSTool.js';
 import Sender from '../shared/Sender.js';
 import { ClientMethod, ClientFunction, ImplementsServerClient } from '../shared/Functions.js';
 
-class Client extends Sender<ClientMethod, ClientFunction> {
+class ClientBase extends Sender<ClientMethod, ClientFunction> {
    // The id of the client
    public readonly id: number;
 
@@ -23,7 +23,7 @@ class Client extends Sender<ClientMethod, ClientFunction> {
    }
 
    // Init the client
-   init(handleClientMessage: (client: Client, data: string | ArrayBuffer) => void) {
+   init(handleClientMessage: (client: ClientBase, data: string | ArrayBuffer) => void) {
       this.isAlive = true;
 
       this.server.on('pong', () => {
@@ -69,7 +69,7 @@ class Client extends Sender<ClientMethod, ClientFunction> {
    }
 }
 
-class ClientWrapper extends ImplementsServerClient(Client) {
+class Client extends ImplementsServerClient(ClientBase) {
 }
 
-export default ClientWrapper;
+export default Client;

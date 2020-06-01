@@ -72,14 +72,17 @@ export interface IServerHandler<T> {
 type ServerConstructor<T = {}> = new (...args: any[]) => T & IServerHandler<T>;
 
 export function ImplementsServer<T>() {
+   type Action<I> = (msg: I, client: T) => void;
+   type Func<I, O> = (msg: I, client: T) => Promise<O>;
+
    return function <TBase extends ServerConstructor>(Base: TBase) {
       return class extends Base {
          // METHODS
-         on(type: ServerMethod.Ping, handler: (msg: Message.Boolean, client: T) => void): void;
+         on(type: ServerMethod.Ping, handler: Action<Message.Boolean>): void;
 
          // FUNCTIONS
-         on(type: ServerFunction.Init, handler: (msg: Message.String, client: T) => Promise<Message.String>): void;
-         on(type: ServerFunction.Click, handler: (msg: Message.Time, client: T) => Promise<Message.Boolean>): void;
+         on(type: ServerFunction.Init, handler: Func<Message.String, Message.String>): void;
+         on(type: ServerFunction.Click, handler: Func<Message.Time, Message.Boolean>): void;
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          on(type: ServerMethod | ServerFunction, handler: any) {
@@ -183,6 +186,9 @@ export interface IClientHandler extends ISenderHandler<ServerMethod, ServerFunct
 type ClientConstructor<T = {}> = new (...args: any[]) => T & IClientHandler;
 
 export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
+   type Action<I> = (msg: I) => void;
+   type Func<I, O> = (msg: I) => Promise<O>;
+
    return class extends Base {
 
       init(url: string, msg: Message.String): Promise<Message.String> {
@@ -190,11 +196,11 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       }
 
       // METHODS
-      on(type: ClientMethod.Hello, handler: (msg: Message.String) => void): void;
-      on(type: ClientMethod.ClickFromClient, handler: (msg: Message.Time) => void): void;
+      on(type: ClientMethod.Hello, handler: Action<Message.String>): void;
+      on(type: ClientMethod.ClickFromClient, handler: Action<Message.Time>): void;
 
       // FUNCTIONS
-      on(type: ClientFunction.GetVersion, handler: (msg: Message.Boolean) => Promise<Message.String>): void;
+      on(type: ClientFunction.GetVersion, handler: Func<Message.Boolean, Message.String>): void;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       on(type: ClientMethod | ClientFunction, handler: any) {
