@@ -116,7 +116,53 @@ export function ImplementsServer<T>() {
    };
 }
 
-export interface IClientHandler {
+interface ISenderHandler<TMethod, TFunction> {
+   pushMethod: (
+      type: TMethod,
+      msg: Message
+   ) => void;
+
+   sendFunction: (
+      ctor: new () => Message,
+      type: TFunction,
+      msg: Message
+   ) => Promise<Message>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ServerClientConstructor<T = {}> = new (...args: any[]) => T & ISenderHandler<ClientMethod, ClientFunction>;
+
+export function ImplementsServerClient<TBase extends ServerClientConstructor>(Base: TBase) {
+   return class extends Base {
+
+      // METHODS
+      call(type: ClientMethod.Hello, msg: Message.String): void;
+      call(type: ClientMethod.ClickFromClient, msg: Message.Time): void;
+
+      // FUNCTIONS
+      call(type: ClientFunction.GetVersion, msg: Message.Boolean): Promise<Message.String>;
+
+      call(type: ClientFunction | ClientMethod, msg: Message): Promise<Message> | void {
+         if (isClientFunction(type)) {
+            let ctorReturnType: new () => Message;
+            switch (type) {
+               case ClientFunction.GetVersion:
+                  ctorReturnType = Message.String;
+                  break;
+
+               default:
+                  assertAllHandled(type);
+                  return;
+            }
+            return this.sendFunction(ctorReturnType, type, msg);
+         } else {
+            return this.pushMethod(type, msg);
+         }
+      }
+   };
+}
+
+export interface IClientHandler extends ISenderHandler<ServerMethod, ServerFunction> {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    initServer: (url: string, msgInit: Message) => any;
 
@@ -131,17 +177,6 @@ export interface IClientHandler {
       ctor: new () => Message,
       handler: (msg: Message) => Promise<Message>
    ) => void;
-
-   pushMethod: (
-      type: ServerMethod,
-      msg: Message
-   ) => void;
-
-   sendFunction: (
-      ctor: new () => Message,
-      type: ServerFunction,
-      msg: Message
-   ) => Promise<Message>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

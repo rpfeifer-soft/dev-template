@@ -18,7 +18,38 @@ abstract class Sender<TMethod, TFunction> {
    protected requests: IRequests = {};
    protected nextRequestId = 1;
 
-   handleRequests(data: string | ArrayBuffer) {
+   // Push a message (result does not matter)
+   pushMethod(type: TMethod, msg: Message) {
+      // No requestId necessary
+      let data = this.prepare(type, msg.stringify(), false);
+      this.sendRequest(data);
+   }
+
+   answer(requestId: number, msg: Message) {
+      let data = WSTool.prepareResult(requestId, msg.stringify());
+      this.sendRequest(data, requestId);
+   }
+
+   error(requestId: number, reason: string | Error) {
+      if (typeof reason !== 'string') {
+         reason = reason.message;
+      }
+      let data = WSTool.prepareError(requestId, reason);
+      this.sendRequest(data, requestId);
+   }
+
+   async sendFunction<U extends Message>(ctor: (new () => U), type: TFunction, msg: Message) {
+      let promise = new Promise<string>((resolve, reject) => {
+         let requestId = this.getNextRequestId();
+         let data = this.prepare(type, msg.stringify(), requestId);
+         this.sendRequest(data, requestId, resolve, reject);
+      });
+      const result = await promise;
+      let msgResult = new ctor();
+      return msgResult.parse(result);
+   }
+
+   protected handleRequests(data: string | ArrayBuffer) {
       // Call the handler function
       let request = WSTool.parseRequest(data);
       if (request === false) {
@@ -37,34 +68,6 @@ abstract class Sender<TMethod, TFunction> {
          }
       }
       return true;
-   }
-
-   answer(requestId: number, msg: Message) {
-      let data = WSTool.prepareResult(requestId, msg.stringify());
-      this.sendRequest(data, requestId);
-   }
-
-   error(requestId: number, reason: string) {
-      let data = WSTool.prepareError(requestId, reason);
-      this.sendRequest(data, requestId);
-   }
-
-   // Push a message (result does not matter)
-   pushMethod(type: TMethod, msg: Message) {
-      // No requestId necessary
-      let data = this.prepare(type, msg.stringify(), false);
-      this.sendRequest(data);
-   }
-
-   async sendFunction<U extends Message>(ctor: (new () => U), type: TFunction, msg: Message) {
-      let promise = new Promise<string>((resolve, reject) => {
-         let requestId = this.getNextRequestId();
-         let data = this.prepare(type, msg.stringify(), requestId);
-         this.sendRequest(data, requestId, resolve, reject);
-      });
-      const result = await promise;
-      let msgResult = new ctor();
-      return msgResult.parse(result);
    }
 
    private sendRequest(
@@ -112,13 +115,13 @@ abstract class Sender<TMethod, TFunction> {
       return next;
    }
 
-   abstract prepare(
+   protected abstract prepare(
       type: TFunction | TMethod,
       data: string | ArrayBuffer,
       requestId: number | false
    ): string | ArrayBuffer;
 
-   abstract socketSend(data: string | ArrayBuffer): void;
+   protected abstract socketSend(data: string | ArrayBuffer): void;
 }
 
 export default Sender;

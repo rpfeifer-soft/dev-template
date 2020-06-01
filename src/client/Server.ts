@@ -157,7 +157,9 @@ class ServerBase extends Sender<ServerMethod, ServerFunction> implements IClient
                let promise = handlerData.handler(handlerMsg);
                if (serverMessage.requestId) {
                   let requestId = serverMessage.requestId;
-                  promise.then(answerMsg => this.answer(requestId, answerMsg));
+                  promise
+                     .then(answerMsg => this.answer(requestId, answerMsg))
+                     .catch(reason => this.error(requestId, reason));
                }
             });
          }

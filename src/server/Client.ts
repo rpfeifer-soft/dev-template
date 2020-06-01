@@ -3,9 +3,9 @@
 import ws from 'ws';
 import WSTool from '../shared/WSTool.js';
 import Sender from '../shared/Sender.js';
-import { ClientMethod, ClientFunction } from '../shared/Functions.js';
+import { ClientMethod, ClientFunction, ImplementsServerClient } from '../shared/Functions.js';
 
-export default class Client extends Sender<ClientMethod, ClientFunction> {
+class Client extends Sender<ClientMethod, ClientFunction> {
    // The id of the client
    public readonly id: number;
 
@@ -60,11 +60,16 @@ export default class Client extends Sender<ClientMethod, ClientFunction> {
       this.isAlive = false;
    }
 
-   prepare(type: ClientMethod | ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
+   protected prepare(type: ClientMethod | ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
       return WSTool.Server.prepare(type, data, requestId);
    }
 
-   socketSend(data: string | ArrayBuffer) {
+   protected socketSend(data: string | ArrayBuffer) {
       this.server.send(data);
    }
 }
+
+class ClientWrapper extends ImplementsServerClient(Client) {
+}
+
+export default ClientWrapper;

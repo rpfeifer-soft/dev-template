@@ -23,6 +23,7 @@ server.listen(options.getPort(), () => {
    console.log(`Listening on port ${options.getPort()}`);
 
    Clients.on(ServerFunction.Init, async (msg, client) => {
+      client.call(ClientMethod.Hello, new Message.String('Yes'));
       return new Message.String(msg.data ? msg.data + ' ' + client.id : 'No data!');
    });
    Clients.on(ServerFunction.Click, async (msg) => {

@@ -165,7 +165,9 @@ class ClientsBase implements IServerHandler<Client> {
                let promise = handlerData.handler(handlerMsg, client);
                if (clientMessage.requestId) {
                   let requestId = clientMessage.requestId;
-                  promise.then(answerMsg => client.answer(requestId, answerMsg));
+                  promise
+                     .then(answerMsg => client.answer(requestId, answerMsg))
+                     .catch(reason => client.error(requestId, reason));
                }
             });
          }
