@@ -1,7 +1,7 @@
 /** @format */
 
 import test from 'tape';
-import ByteArray from './ByteArray.js';
+import ByteArray from '../shared/ByteArray.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: ByteArray\x1b[0m');

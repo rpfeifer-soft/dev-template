@@ -1,7 +1,7 @@
 /** @format */
 
 import test from 'tape';
-import WSTool from './WSTool.js';
+import WSTool from '../shared/WSTool.js';
 
 test('default export is 8', (assert) => {
    assert.ok(WSTool.Client, 'WSTools contains Client');

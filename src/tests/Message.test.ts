@@ -1,7 +1,7 @@
 /** @format */
 
 import test from 'tape';
-import { Bool, Double, Text, Time } from './Message.js';
+import { Bool, Double, Text, Time } from '../shared/Message.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');

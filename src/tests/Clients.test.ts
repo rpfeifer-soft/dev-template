@@ -1,7 +1,7 @@
 /** @format */
 
 import test from 'tape';
-import Clients from './Clients.js';
+import Clients from '../server/Clients.js';
 // import Message from '../shared/Message.js';
 
 // eslint-disable-next-line no-console

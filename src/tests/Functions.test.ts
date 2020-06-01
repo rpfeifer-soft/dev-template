@@ -4,7 +4,7 @@ import test from 'tape';
 import {
    ServerFunction, ServerMethod, ClientFunction, ClientMethod,
    isServerFunction, isClientFunction
-} from './Functions.js';
+} from '../shared/Functions.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Functions tests\x1b[0m');
