@@ -23,6 +23,70 @@ export enum ClientMethod {
    ClickFromClient
 }
 
+type StringParams =
+   ServerFunction.Init |
+   ClientMethod.Hello;
+
+type BooleanParams =
+   ServerMethod.Ping |
+   ClientFunction.GetVersion;
+
+type TimeParams =
+   ServerFunction.Click |
+   ClientMethod.ClickFromClient;
+
+type Parameter<T> =
+   T extends StringParams ? Message.String :
+   T extends TimeParams ? Message.Time :
+   T extends BooleanParams ? Message.Boolean :
+   never;
+
+function getParameter(type: ServerFunction | ServerMethod | ClientFunction | ClientMethod): new () => Message {
+   switch (type) {
+      case ServerFunction.Init:
+      case ClientMethod.Hello:
+         return Message.String;
+
+      case ServerMethod.Ping:
+      case ClientFunction.GetVersion:
+         return Message.Boolean;
+
+      case ServerFunction.Click:
+      case ClientMethod.ClickFromClient:
+         return Message.Time;
+
+      default:
+         return assertAllHandled(type);
+   }
+}
+
+type StringReturns =
+   ServerFunction.Init |
+   ClientFunction.GetVersion;
+
+type BooleanReturns =
+   ServerFunction.Click;
+
+type Returns<T> =
+   T extends StringReturns ? Message.String :
+   T extends BooleanReturns ? Message.Boolean :
+   never;
+
+function getReturns(type: ServerFunction | ClientFunction): new () => Message {
+   switch (type) {
+
+      case ServerFunction.Init:
+      case ClientFunction.GetVersion:
+         return Message.String;
+
+      case ServerFunction.Click:
+         return Message.Boolean;
+
+      default:
+         return assertAllHandled(type);
+   }
+}
+
 export function isServerFunction(value: ServerMethod | ServerFunction): value is ServerFunction {
    // eslint-disable-next-line default-case
    switch (value) {
@@ -75,34 +139,25 @@ export function ImplementsServer<T>() {
    type Action<I> = (msg: I, client: T) => void;
    type Func<I, O> = (msg: I, client: T) => Promise<O>;
 
+   type OnArgs<T> = [T, Returns<T> extends never
+      ? Action<Parameter<T>>
+      : Func<Parameter<T>, Returns<T>>
+   ];
+
+   type BroadcastArgs<T> = [T, Parameter<T>];
+
    return function <TBase extends ServerConstructor>(Base: TBase) {
       return class extends Base {
          // METHODS
-         on(type: ServerMethod.Ping, handler: Action<Message.Boolean>): void;
+         on(...args: OnArgs<ServerMethod.Ping>): void;
 
          // FUNCTIONS
-         on(type: ServerFunction.Init, handler: Func<Message.String, Message.String>): void;
-         on(type: ServerFunction.Click, handler: Func<Message.Time, Message.Boolean>): void;
+         on(...args: OnArgs<ServerFunction.Init>): void;
+         on(...args: OnArgs<ServerFunction.Click>): void;
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          on(type: ServerMethod | ServerFunction, handler: any) {
-            let ctorParameter: new () => Message;
-            switch (type) {
-               case ServerMethod.Ping:
-                  ctorParameter = Message.Boolean;
-                  break;
-
-               case ServerFunction.Init:
-                  ctorParameter = Message.String;
-                  break;
-               case ServerFunction.Click:
-                  ctorParameter = Message.Time;
-                  break;
-
-               default:
-                  assertAllHandled(type);
-                  return;
-            }
+            let ctorParameter = getParameter(type);
             if (isServerFunction(type)) {
                this.onFunction(type, ctorParameter, handler);
             } else {
@@ -110,8 +165,9 @@ export function ImplementsServer<T>() {
             }
          }
 
-         broadcast(type: ClientMethod.Hello, msg: Message.String): void;
-         broadcast(type: ClientMethod.ClickFromClient, msg: Message.Time): void;
+         broadcast(...args: BroadcastArgs<ClientMethod.Hello>): void;
+         broadcast(...args: BroadcastArgs<ClientMethod.ClickFromClient>): void;
+
          broadcast(type: ClientMethod, msg: Message) {
             this.broadcastMethod(type, msg);
          }
@@ -136,27 +192,22 @@ interface ISenderHandler<TMethod, TFunction> {
 type ServerClientConstructor<T = {}> = new (...args: any[]) => T & ISenderHandler<ClientMethod, ClientFunction>;
 
 export function ImplementsServerClient<TBase extends ServerClientConstructor>(Base: TBase) {
+
+   type CallArgs<T> = [T, Parameter<T>];
+   type ReturnArg<T> = Promise<Returns<T>>;
+
    return class extends Base {
 
       // METHODS
-      call(type: ClientMethod.Hello, msg: Message.String): void;
-      call(type: ClientMethod.ClickFromClient, msg: Message.Time): void;
+      call(...args: CallArgs<ClientMethod.Hello>): void;
+      call(...args: CallArgs<ClientMethod.ClickFromClient>): void;
 
       // FUNCTIONS
-      call(type: ClientFunction.GetVersion, msg: Message.Boolean): Promise<Message.String>;
+      call(...args: CallArgs<ClientFunction.GetVersion>): ReturnArg<ClientFunction.GetVersion>;
 
       call(type: ClientFunction | ClientMethod, msg: Message): Promise<Message> | void {
          if (isClientFunction(type)) {
-            let ctorReturnType: new () => Message;
-            switch (type) {
-               case ClientFunction.GetVersion:
-                  ctorReturnType = Message.String;
-                  break;
-
-               default:
-                  assertAllHandled(type);
-                  return;
-            }
+            let ctorReturnType = getReturns(type);
             return this.sendFunction(ctorReturnType, type, msg);
          } else {
             return this.pushMethod(type, msg);
@@ -189,6 +240,14 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
    type Action<I> = (msg: I) => void;
    type Func<I, O> = (msg: I) => Promise<O>;
 
+   type OnArgs<T> = [T, Returns<T> extends never
+      ? Action<Parameter<T>>
+      : Func<Parameter<T>, Returns<T>>
+   ];
+
+   type CallArgs<T> = [T, Parameter<T>];
+   type ReturnArg<T> = Promise<Returns<T>>;
+
    return class extends Base {
 
       init(url: string, msg: Message.String): Promise<Message.String> {
@@ -196,31 +255,15 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       }
 
       // METHODS
-      on(type: ClientMethod.Hello, handler: Action<Message.String>): void;
-      on(type: ClientMethod.ClickFromClient, handler: Action<Message.Time>): void;
+      on(...args: OnArgs<ClientMethod.Hello>): void;
+      on(...args: OnArgs<ClientMethod.ClickFromClient>): void;
 
       // FUNCTIONS
-      on(type: ClientFunction.GetVersion, handler: Func<Message.Boolean, Message.String>): void;
+      on(...args: OnArgs<ClientFunction.GetVersion>): void;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       on(type: ClientMethod | ClientFunction, handler: any) {
-         let ctorParameter: new () => Message;
-         switch (type) {
-            case ClientMethod.Hello:
-               ctorParameter = Message.String;
-               break;
-            case ClientMethod.ClickFromClient:
-               ctorParameter = Message.Time;
-               break;
-
-            case ClientFunction.GetVersion:
-               ctorParameter = Message.Boolean;
-               break;
-
-            default:
-               assertAllHandled(type);
-               return;
-         }
+         let ctorParameter = getParameter(type);
          if (isClientFunction(type)) {
             this.onFunction(type, ctorParameter, handler);
          } else {
@@ -229,27 +272,15 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       }
 
       // METHODS
-      call(type: ServerMethod.Ping, msg: Message.Boolean): void;
+      call(...args: CallArgs<ServerMethod.Ping>): void;
 
       // FUNCTIONS
-      call(type: ServerFunction.Init, msg: Message.String): Promise<Message.String>;
-      call(type: ServerFunction.Click, msg: Message.Time): Promise<Message.Boolean>;
+      call(...args: CallArgs<ServerFunction.Init>): ReturnArg<ServerFunction.Init>;
+      call(...args: CallArgs<ServerFunction.Click>): ReturnArg<ServerFunction.Click>;
 
       call(type: ServerFunction | ServerMethod, msg: Message): Promise<Message> | void {
          if (isServerFunction(type)) {
-            let ctorReturnType: new () => Message;
-            switch (type) {
-               case ServerFunction.Init:
-                  ctorReturnType = Message.String;
-                  break;
-               case ServerFunction.Click:
-                  ctorReturnType = Message.Boolean;
-                  break;
-
-               default:
-                  assertAllHandled(type);
-                  return;
-            }
+            let ctorReturnType = getReturns(type);
             return this.sendFunction(ctorReturnType, type, msg);
          } else {
             return this.pushMethod(type, msg);
