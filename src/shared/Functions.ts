@@ -1,7 +1,7 @@
 /* eslint-disable id-blacklist */
 /** @format */
 
-import Message from './Message.js';
+import Message, { Text, Time, Bool, Double } from './Message.js';
 
 function assertAllHandled(x: never): never {
    return x;
@@ -24,73 +24,81 @@ export enum ClientMethod {
    ClickFromClient
 }
 
-type StringParams =
-   ServerFunction.Init |
-   ServerFunction.Cool |
-   ClientMethod.Hello;
-
 type BooleanParams =
    ServerMethod.Ping |
    ClientFunction.GetVersion;
+
+type DoubleParams =
+   never;
+
+type TextParams =
+   ServerFunction.Init |
+   ServerFunction.Cool |
+   ClientMethod.Hello;
 
 type TimeParams =
    ServerFunction.Click |
    ClientMethod.ClickFromClient;
 
 type Parameter<T> =
-   T extends StringParams ? Message.String :
-   T extends TimeParams ? Message.Time :
-   T extends BooleanParams ? Message.Boolean :
+   T extends BooleanParams ? Bool :
+   T extends DoubleParams ? Double :
+   T extends TextParams ? Text :
+   T extends TimeParams ? Time :
    never;
 
 function getParameter(type: ServerFunction | ServerMethod | ClientFunction | ClientMethod): new () => Message {
    switch (type) {
+      case ServerMethod.Ping:
+      case ClientFunction.GetVersion:
+         return Bool;
+
       case ServerFunction.Init:
       case ClientMethod.Hello:
       case ServerFunction.Cool:
-         return Message.String;
-
-      case ServerMethod.Ping:
-      case ClientFunction.GetVersion:
-         return Message.Boolean;
+         return Text;
 
       case ServerFunction.Click:
       case ClientMethod.ClickFromClient:
-         return Message.Time;
+         return Time;
 
       default:
          return assertAllHandled(type);
    }
 }
 
-type StringReturns =
-   ServerFunction.Init |
-   ClientFunction.GetVersion;
-
 type BooleanReturns =
    ServerFunction.Click;
 
-type NumberReturns =
+type DoubleReturns =
    ServerFunction.Cool;
 
+type TextReturns =
+   ServerFunction.Init |
+   ClientFunction.GetVersion;
+
+type TimeReturns =
+   never;
+
 type Returns<T> =
-   T extends StringReturns ? Message.String :
-   T extends BooleanReturns ? Message.Boolean :
-   T extends NumberReturns ? Message.Number :
+   T extends BooleanReturns ? Bool :
+   T extends DoubleReturns ? Double :
+   T extends TextReturns ? Text :
+   T extends TimeReturns ? Time :
    never;
 
 function getReturns(type: ServerFunction | ClientFunction): new () => Message {
    switch (type) {
 
-      case ServerFunction.Init:
-      case ClientFunction.GetVersion:
-         return Message.String;
-
       case ServerFunction.Click:
-         return Message.Boolean;
+         return Bool;
 
       case ServerFunction.Cool:
-         return Message.Number;
+         return Double;
+
+      case ServerFunction.Init:
+      case ClientFunction.GetVersion:
+         return Text;
 
       default:
          return assertAllHandled(type);
@@ -262,7 +270,7 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
 
    return class extends Base {
 
-      init(url: string, msg: Message.String): Promise<Message.String> {
+      init(url: string, msg: Text): Promise<Text> {
          return this.initServer(url, msg);
       }
 

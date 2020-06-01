@@ -31,103 +31,119 @@ namespace Message {
       let msg = new ctor();
       return msg.parse(data);
    }
+}
 
-   // Special data implementation
-   class Data<U> extends Message {
-
-      constructor(public data?: U) {
-         super();
-      }
-
-      parse(data: string | ArrayBuffer) {
-         if (typeof (data) !== 'string') {
-            throw new Error('ArrayBuffer not support for generic data!');
-         }
-         this.data = Message.fromJSON(data) as U;
-         return this;
-      }
-
-      stringify(): string | ArrayBuffer {
-         return Message.toJSON(this.data);
-      }
+export class Bool extends Message {
+   constructor(public data?: boolean) {
+      super();
    }
 
-   // eslint-disable-next-line id-blacklist
-   export class String extends Data<string> {
-      static parse(data: string | ArrayBuffer) {
-         return Message.parseMessage(String, data);
-      }
-
-      parse(data: ArrayBuffer) {
-         let bytes = new ByteArray(data);
-         this.data = bytes.getString();
-         return this;
-      }
-
-      stringify() {
-         let bytes = new ByteArray();
-         bytes.addString(this.data);
-         return bytes.getArrayBuffer();
-      }
+   static parse(data: string | ArrayBuffer) {
+      return Message.parseMessage(Bool, data);
    }
-   // eslint-disable-next-line id-blacklist
-   export class Boolean extends Data<boolean> {
-      static parse(data: string | ArrayBuffer) {
-         return Message.parseMessage(Boolean, data);
-      }
 
-      parse(data: ArrayBuffer) {
-         let bytes = new ByteArray(data);
-         this.data = bytes.getBoolean();
-         return this;
-      }
-
-      stringify() {
-         let bytes = new ByteArray();
-         bytes.addBoolean(this.data);
-         return bytes.getArrayBuffer();
-      }
+   parse(data: ArrayBuffer) {
+      let bytes = new ByteArray(data);
+      this.data = bytes.getBoolean();
+      return this;
    }
-   // eslint-disable-next-line id-blacklist
-   export class Number extends Data<number> {
-      static parse(data: string | ArrayBuffer) {
-         return Message.parseMessage(Number, data);
-      }
 
-      parse(data: ArrayBuffer) {
-         let bytes = new ByteArray(data);
-         this.data = bytes.getNumber();
-         return this;
-      }
-
-      stringify() {
-         let bytes = new ByteArray();
-         bytes.addNumber(this.data);
-         return bytes.getArrayBuffer();
-      }
+   stringify() {
+      let bytes = new ByteArray();
+      bytes.addBoolean(this.data);
+      return bytes.getArrayBuffer();
    }
-   export class Time extends Data<Date> {
-      constructor(data?: Date) {
-         super(data ? new Date(data.getTime()) : undefined);
-      }
+}
 
-      static parse(data: string | ArrayBuffer) {
-         return Message.parseMessage(Time, data);
-      }
+export class Double extends Message {
+   constructor(public data?: number) {
+      super();
+   }
 
-      parse(data: ArrayBuffer) {
-         let bytes = new ByteArray(data);
-         let time = bytes.getNumber();
-         this.data = time ? new Date(time) : undefined;
-         return this;
-      }
+   static parse(data: string | ArrayBuffer) {
+      return Message.parseMessage(Double, data);
+   }
 
-      stringify() {
-         let bytes = new ByteArray();
-         let time = this.data ? this.data.getTime() : undefined;
-         bytes.addNumber(time);
-         return bytes.getArrayBuffer();
+   parse(data: ArrayBuffer) {
+      let bytes = new ByteArray(data);
+      this.data = bytes.getNumber();
+      return this;
+   }
+
+   stringify() {
+      let bytes = new ByteArray();
+      bytes.addNumber(this.data);
+      return bytes.getArrayBuffer();
+   }
+}
+
+export class Text extends Message {
+   constructor(public data?: string) {
+      super();
+   }
+
+   static parse(data: string | ArrayBuffer) {
+      return Message.parseMessage(Text, data);
+   }
+
+   parse(data: ArrayBuffer) {
+      let bytes = new ByteArray(data);
+      this.data = bytes.getString();
+      return this;
+   }
+
+   stringify() {
+      let bytes = new ByteArray();
+      bytes.addString(this.data);
+      return bytes.getArrayBuffer();
+   }
+}
+
+export class Time extends Message {
+   data?: Date;
+
+   constructor(data?: Date) {
+      super();
+      // Make a copy
+      this.data = data ? new Date(data.getTime()) : undefined;
+   }
+
+   static parse(data: string | ArrayBuffer) {
+      return Message.parseMessage(Time, data);
+   }
+
+   parse(data: ArrayBuffer) {
+      let bytes = new ByteArray(data);
+      let time = bytes.getNumber();
+      this.data = time ? new Date(time) : undefined;
+      return this;
+   }
+
+   stringify() {
+      let bytes = new ByteArray();
+      let time = this.data ? this.data.getTime() : undefined;
+      bytes.addNumber(time);
+      return bytes.getArrayBuffer();
+   }
+}
+
+// Special data implementation
+export class Json<U> extends Message {
+
+   constructor(public data?: U) {
+      super();
+   }
+
+   parse(data: string | ArrayBuffer) {
+      if (typeof (data) !== 'string') {
+         throw new Error('ArrayBuffer not support for generic data!');
       }
+      this.data = Message.fromJSON(data) as U;
+      return this;
+   }
+
+   stringify(): string | ArrayBuffer {
+      return Message.toJSON(this.data);
    }
 }
 

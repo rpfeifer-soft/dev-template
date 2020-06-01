@@ -1,7 +1,7 @@
 /** @format */
 
 import WSTool from '../shared/WSTool.js';
-import Message from '../shared/Message.js';
+import Message, { Bool } from '../shared/Message.js';
 import Sender from '../shared/Sender.js';
 import {
    ServerMethod, ServerFunction, ClientMethod, ClientFunction,
@@ -89,7 +89,7 @@ class ServerBase extends Sender<ServerMethod, ServerFunction> implements IClient
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    async callInit(msgInit: any): Promise<Message> {
-      return new Message.Boolean(false);;
+      return new Bool(false);;
    }
 
    // Init the instance
