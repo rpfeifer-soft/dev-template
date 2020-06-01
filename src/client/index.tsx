@@ -36,7 +36,11 @@ if (app) {
    });
    Server.on(ClientMethod.ClickFromClient, async (msg) => {
       console.log('Click2', msg.data);
-      console.log('length = ' + (await Server.call(ServerFunction.Cool, new Message.String('Mein Name'))).data);
+      try {
+         console.log('length = ' + (await Server.call(ServerFunction.Cool, new Message.String('Mein Name'))).data);
+      } catch (reason) {
+         console.error(reason);
+      }
    });
 }
 // tslint:disable-next-line: no-string-literal

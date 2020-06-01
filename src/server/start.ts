@@ -31,6 +31,9 @@ server.listen(options.getPort(), () => {
       return new Message.Boolean(true);
    });
    Clients.on(ServerFunction.Cool, async (msg) => {
+      if (1 + 1 === 2) {
+         throw new Error('Ein Fehler!');
+      }
       return new Message.Number(msg.data === undefined ? -1 : msg.data.length);
    });
 });
