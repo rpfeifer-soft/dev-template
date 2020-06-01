@@ -28,13 +28,13 @@ if (app) {
       console.log(await Server.getString(ServerFunction.Init, new Message.String('Test')));
    };
 
-   Server.on(ClientMethod.ClickFromClient, Message.Time, (msg) => {
+   Server.onMethod(ClientMethod.ClickFromClient, Message.Time, (msg) => {
       console.log('Click', msg.data);
    });
-   Server.on(ClientMethod.Hello, Message.String, (msg) => {
+   Server.onMethod(ClientMethod.Hello, Message.String, (msg) => {
       console.log('Hello', msg.data);
    });
-   Server.on(ClientMethod.ClickFromClient, Message.Time, (msg) => {
+   Server.onMethod(ClientMethod.ClickFromClient, Message.Time, (msg) => {
       console.log('Click2', msg.data);
    });
 }

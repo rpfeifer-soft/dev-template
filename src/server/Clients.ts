@@ -130,30 +130,30 @@ class Clients {
       });
    }
 
-   on<T extends Message, U extends Message>(
+   onMethod<T extends Message, U extends Message>(
       type: ServerMethod,
       ctor: new () => T,
       handler: IMethodHandler<T>
-   ): void;
+   ) {
+      this.onMethodOrFunction(type, ctor, handler);
+   }
 
-   on<T extends Message, U extends Message>(
+   onFunction<T extends Message, U extends Message>(
       type: ServerFunction,
       ctor: new () => T,
       handler: IFunctionHandler<T, U>
-   ): void;
-
-   on<T extends Message, U extends Message>(
-      type: ServerMethod | ServerFunction,
-      ctor: new () => T,
-      handler: IMethodHandler<T> | IFunctionHandler<T, U>
    ) {
-      if (isServerFunction(type)) {
-         this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
-      } else {
-         this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
-      }
+      this.onMethodOrFunction(type, ctor, handler);
    }
 
+   off<T extends Message, U extends Message>(
+      type: ServerMethod,
+      handler: IMethodHandler<T>
+   ): void;
+   off<T extends Message, U extends Message>(
+      type: ServerFunction,
+      handler: IFunctionHandler<T, U>
+   ): void;
    off<T extends Message, U extends Message>(
       type: ServerMethod | ServerFunction,
       handler: IMethodHandler<T> | IFunctionHandler<T, U>
@@ -222,6 +222,18 @@ class Clients {
          nextId++;
       }
       return nextId;
+   }
+
+   private onMethodOrFunction<T extends Message, U extends Message>(
+      type: ServerMethod | ServerFunction,
+      ctor: new () => T,
+      handler: IMethodHandler<T> | IFunctionHandler<T, U>
+   ) {
+      if (isServerFunction(type)) {
+         this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
+      } else {
+         this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
+      }
    }
 }
 

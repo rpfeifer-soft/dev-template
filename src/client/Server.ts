@@ -120,30 +120,30 @@ class Server extends Sender<ServerMethod, ServerFunction> {
       });
    }
 
-   on<T extends Message, U extends Message>(
+   onMethod<T extends Message>(
       type: ClientMethod,
       ctor: new () => T,
       handler: IMethodHandler<T>
-   ): void;
+   ) {
+      return this.onMethodOrFunction(type, ctor, handler);
+   }
 
-   on<T extends Message, U extends Message>(
+   onFunction<T extends Message, U extends Message>(
       type: ClientFunction,
       ctor: new () => T,
       handler: IFunctionHandler<T, U>
-   ): void;
-
-   on<T extends Message, U extends Message>(
-      type: ClientMethod | ClientFunction,
-      ctor: new () => T,
-      handler: IMethodHandler<T> | IFunctionHandler<T, U>
    ) {
-      if (isClientFunction(type)) {
-         this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
-      } else {
-         this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
-      }
+      return this.onMethodOrFunction(type, ctor, handler);
    }
 
+   off<T extends Message, U extends Message>(
+      type: ClientMethod,
+      handler: IMethodHandler<T>
+   ): void;
+   off<T extends Message, U extends Message>(
+      type: ClientFunction,
+      handler: IFunctionHandler<T, U>
+   ): void;
    off<T extends Message, U extends Message>(
       type: ClientMethod | ClientFunction,
       handler: IMethodHandler<T> | IFunctionHandler<T, U>
@@ -193,6 +193,18 @@ class Server extends Sender<ServerMethod, ServerFunction> {
 
    socketSend(data: string | ArrayBuffer) {
       this.socket.send(data);
+   }
+
+   private onMethodOrFunction<T extends Message, U extends Message>(
+      type: ClientMethod | ClientFunction,
+      ctor: new () => T,
+      handler: IMethodHandler<T> | IFunctionHandler<T, U>
+   ) {
+      if (isClientFunction(type)) {
+         this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
+      } else {
+         this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
+      }
    }
 }
 
