@@ -83,17 +83,17 @@ export function ImplementsServer<T>() {
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          on(type: ServerMethod | ServerFunction, handler: any) {
-            let ctor: new () => Message;
+            let ctorParameter: new () => Message;
             switch (type) {
                case ServerMethod.Ping:
-                  ctor = Message.Boolean;
+                  ctorParameter = Message.Boolean;
                   break;
 
                case ServerFunction.Init:
-                  ctor = Message.String;
+                  ctorParameter = Message.String;
                   break;
                case ServerFunction.Click:
-                  ctor = Message.Time;
+                  ctorParameter = Message.Time;
                   break;
 
                default:
@@ -101,9 +101,9 @@ export function ImplementsServer<T>() {
                   return;
             }
             if (isServerFunction(type)) {
-               this.onFunction(type, ctor, handler);
+               this.onFunction(type, ctorParameter, handler);
             } else {
-               this.onMethod(type, ctor, handler);
+               this.onMethod(type, ctorParameter, handler);
             }
          }
 
@@ -116,8 +116,10 @@ export function ImplementsServer<T>() {
    };
 }
 
-
 export interface IClientHandler {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   initServer: (url: string, msgInit: Message) => any;
+
    onMethod: (
       type: ClientMethod,
       ctor: new () => Message,
@@ -129,6 +131,17 @@ export interface IClientHandler {
       ctor: new () => Message,
       handler: (msg: Message) => Promise<Message>
    ) => void;
+
+   pushMethod: (
+      type: ServerMethod,
+      msg: Message
+   ) => void;
+
+   sendFunction: (
+      ctor: new () => Message,
+      type: ServerFunction,
+      msg: Message
+   ) => Promise<Message>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -136,6 +149,11 @@ type ClientConstructor<T = {}> = new (...args: any[]) => T & IClientHandler;
 
 export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
    return class extends Base {
+
+      init(url: string, msg: Message.String): Promise<Message.String> {
+         return this.initServer(url, msg);
+      }
+
       // METHODS
       on(type: ClientMethod.Hello, handler: (msg: Message.String) => void): void;
       on(type: ClientMethod.ClickFromClient, handler: (msg: Message.Time) => void): void;
@@ -145,17 +163,17 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       on(type: ClientMethod | ClientFunction, handler: any) {
-         let ctor: new () => Message;
+         let ctorParameter: new () => Message;
          switch (type) {
             case ClientMethod.Hello:
-               ctor = Message.String;
+               ctorParameter = Message.String;
                break;
             case ClientMethod.ClickFromClient:
-               ctor = Message.Time;
+               ctorParameter = Message.Time;
                break;
 
             case ClientFunction.GetVersion:
-               ctor = Message.Boolean;
+               ctorParameter = Message.Boolean;
                break;
 
             default:
@@ -163,9 +181,37 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
                return;
          }
          if (isClientFunction(type)) {
-            this.onFunction(type, ctor, handler);
+            this.onFunction(type, ctorParameter, handler);
          } else {
-            this.onMethod(type, ctor, handler);
+            this.onMethod(type, ctorParameter, handler);
+         }
+      }
+
+      // METHODS
+      call(type: ServerMethod.Ping, msg: Message.Boolean): void;
+
+      // FUNCTIONS
+      call(type: ServerFunction.Init, msg: Message.String): Promise<Message.String>;
+      call(type: ServerFunction.Click, msg: Message.Time): Promise<Message.Boolean>;
+
+      call(type: ServerFunction | ServerMethod, msg: Message): Promise<Message> | void {
+         if (isServerFunction(type)) {
+            let ctorReturnType: new () => Message;
+            switch (type) {
+               case ServerFunction.Init:
+                  ctorReturnType = Message.String;
+                  break;
+               case ServerFunction.Click:
+                  ctorReturnType = Message.Boolean;
+                  break;
+
+               default:
+                  assertAllHandled(type);
+                  return;
+            }
+            return this.sendFunction(ctorReturnType, type, msg);
+         } else {
+            return this.pushMethod(type, msg);
          }
       }
    };

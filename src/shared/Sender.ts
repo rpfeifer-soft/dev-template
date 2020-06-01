@@ -50,23 +50,13 @@ abstract class Sender<TMethod, TFunction> {
    }
 
    // Push a message (result does not matter)
-   push(type: TMethod, msg: Message) {
+   pushMethod(type: TMethod, msg: Message) {
       // No requestId necessary
       let data = this.prepare(type, msg.stringify(), false);
       this.sendRequest(data);
    }
 
-   async post(type: TFunction, msg: Message) {
-      let promise = new Promise<string>((resolve, reject) => {
-         let requestId = this.getNextRequestId();
-         let data = this.prepare(type, msg.stringify(), requestId);
-         this.sendRequest(data, requestId, resolve, reject);
-      });
-      await promise;
-      return true;
-   }
-
-   async send<U extends Message>(ctor: (new () => U), type: TFunction, msg: Message) {
+   async sendFunction<U extends Message>(ctor: (new () => U), type: TFunction, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
          let requestId = this.getNextRequestId();
          let data = this.prepare(type, msg.stringify(), requestId);
@@ -75,23 +65,6 @@ abstract class Sender<TMethod, TFunction> {
       const result = await promise;
       let msgResult = new ctor();
       return msgResult.parse(result);
-   }
-
-   async getString(type: TFunction, msg: Message) {
-      const p = await this.send(Message.String, type, msg);
-      return p.data;
-   }
-   async getNumber(type: TFunction, msg: Message) {
-      const p = await this.send(Message.Number, type, msg);
-      return p.data;
-   }
-   async getBoolean(type: TFunction, msg: Message) {
-      const p = await this.send(Message.Boolean, type, msg);
-      return p.data;
-   }
-   async getTime(type: TFunction, msg: Message) {
-      const p = await this.send(Message.Time, type, msg);
-      return p.data;
    }
 
    private sendRequest(

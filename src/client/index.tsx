@@ -17,15 +17,15 @@ if (app) {
       baseURI = 'wss:' + baseURI;
    }
 
-   Server.init(baseURI + 'ws', new Message.String('Was?'), Message.String)
+   Server.init(baseURI + 'ws', new Message.String('Was?'))
       .then(p => console.log('Init-Result: :' + p.data + ':'));
 
    let button = document.createElement('button');
    app.appendChild(button);
    button.innerText = 'Click';
    button.onclick = async () => {
-      Server.post(ServerFunction.Click, new Message.Time(new Date()));
-      console.log(await Server.getString(ServerFunction.Init, new Message.String('Test')));
+      Server.call(ServerFunction.Click, new Message.Time(new Date()));
+      console.log(await (await Server.call(ServerFunction.Init, new Message.String('Test'))).data);
    };
 
    Server.on(ClientMethod.ClickFromClient, (msg) => {

@@ -188,7 +188,7 @@ class ClientsBase implements IServerHandler<Client> {
       }
       // Send to all clients
       this.clients.forEach(client => {
-         client.push(type, msg);
+         client.pushMethod(type, msg);
       });
    }
 
@@ -224,7 +224,7 @@ class ClientsBase implements IServerHandler<Client> {
    private addClient(socket: ws) {
       let client = new Client(this.nextId(), socket);
       // Push to the list, after initializing it
-      this.clients.push(client.init(this.handleClientMessage));
+      this.clients.push(client.init(this.handleClientMessage.bind(this)));
    }
 
    // get the next available id for the client

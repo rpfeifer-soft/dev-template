@@ -82,28 +82,29 @@ class Handlers {
 
 class ServerBase extends Sender<ServerMethod, ServerFunction> implements IClientHandler {
    // The server to use
-   private socket: WebSocket;
+   socket: WebSocket;
 
    // The message handlers
-   private handlers = new Handlers();
+   handlers = new Handlers();
+
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   async callInit(msgInit: any): Promise<Message> {
+      return new Message.Boolean(false);;
+   }
 
    // Init the instance
-   init<T extends Message>(url: string, msgInit: Message, ctor?: new () => T) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   initServer(url: string, msgInit: any) {
       // Register the correct handler
       let server = this;
       server.socket = new WebSocket(url);
       server.socket.binaryType = 'arraybuffer';
 
-      return new Promise<T>((resolve, reject) => {
+      return new Promise<Message>((resolve, reject) => {
          server.socket.onopen = function () {
-            if (ctor) {
-               server.send(ctor, ServerFunction.Init, msgInit)
-                  .then(msg => resolve(msg))
-                  .catch(error => reject(error));
-            } else {
-               server.post(ServerFunction.Init, msgInit)
-                  .catch(error => reject(error));
-            }
+            server.callInit(msgInit)
+               .then(msg => resolve(msg))
+               .catch(error => reject(error));
          };
          // tslint:disable-next-line: typedef
          server.socket.onmessage = async (event) => {
@@ -212,10 +213,14 @@ class ServerBase extends Sender<ServerMethod, ServerFunction> implements IClient
 class Server extends ImplementsClient(ServerBase) {
    // One singleton
    public static readonly instance: Server = new Server();
+
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   callInit(msgInit: any): Promise<Message> {
+      return this.call(ServerFunction.Init, msgInit);
+   }
 }
 
 export default Server.instance as Pick<
    Server,
-   'init' | 'on' | 'off' | 'post' |
-   'getString' | 'getBoolean' | 'getNumber' | 'getTime'
+   'init' | 'on' | 'off' | 'call'
 >;
