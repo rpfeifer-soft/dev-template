@@ -61,6 +61,11 @@ export interface IServerHandler<T> {
       ctor: new () => Message,
       handler: (msg: Message, client: T) => Promise<Message>
    ) => void;
+
+   broadcastMethod: (
+      type: ClientMethod,
+      msg: Message
+   ) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -100,6 +105,12 @@ export function ImplementsServer<T>() {
             } else {
                this.onMethod(type, ctor, handler);
             }
+         }
+
+         broadcast(type: ClientMethod.Hello, msg: Message.String): void;
+         broadcast(type: ClientMethod.ClickFromClient, msg: Message.Time): void;
+         broadcast(type: ClientMethod, msg: Message) {
+            this.broadcastMethod(type, msg);
          }
       };
    };

@@ -182,7 +182,7 @@ class ClientsBase implements IServerHandler<Client> {
    }
 
    // broadcast a message
-   broadcast(type: ClientMethod, msg: Message) {
+   broadcastMethod(type: ClientMethod, msg: Message) {
       if (!this.ready) {
          throw new Error('Server not ready. Call init first!');
       }
