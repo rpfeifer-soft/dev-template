@@ -3,7 +3,10 @@
 import WSTool from '../shared/WSTool.js';
 import Message from '../shared/Message.js';
 import Sender from '../shared/Sender.js';
-import { ServerMethod, ServerFunction, ClientMethod, ClientFunction, isClientFunction } from '../shared/Functions.js';
+import {
+   ServerMethod, ServerFunction, ClientMethod, ClientFunction,
+   isClientFunction, IClientHandler, ImplementsClient
+} from '../shared/Functions.js';
 
 interface IMethodHandler<T extends Message> {
    (msg: T): void;
@@ -77,9 +80,7 @@ class Handlers {
    }
 }
 
-class Server extends Sender<ServerMethod, ServerFunction> {
-   public static readonly instance: Server = new Server();
-
+class ServerBase extends Sender<ServerMethod, ServerFunction> implements IClientHandler {
    // The server to use
    private socket: WebSocket;
 
@@ -118,22 +119,6 @@ class Server extends Sender<ServerMethod, ServerFunction> {
             }
          };
       });
-   }
-
-   onMethod<T extends Message>(
-      type: ClientMethod,
-      ctor: new () => T,
-      handler: IMethodHandler<T>
-   ) {
-      return this.onMethodOrFunction(type, ctor, handler);
-   }
-
-   onFunction<T extends Message, U extends Message>(
-      type: ClientFunction,
-      ctor: new () => T,
-      handler: IFunctionHandler<T, U>
-   ) {
-      return this.onMethodOrFunction(type, ctor, handler);
    }
 
    off<T extends Message, U extends Message>(
@@ -195,6 +180,22 @@ class Server extends Sender<ServerMethod, ServerFunction> {
       this.socket.send(data);
    }
 
+   onMethod<T extends Message>(
+      type: ClientMethod,
+      ctor: new () => T,
+      handler: IMethodHandler<T>
+   ) {
+      return this.onMethodOrFunction(type, ctor, handler);
+   }
+
+   onFunction<T extends Message, U extends Message>(
+      type: ClientFunction,
+      ctor: new () => T,
+      handler: IFunctionHandler<T, U>
+   ) {
+      return this.onMethodOrFunction(type, ctor, handler);
+   }
+
    private onMethodOrFunction<T extends Message, U extends Message>(
       type: ClientMethod | ClientFunction,
       ctor: new () => T,
@@ -206,6 +207,11 @@ class Server extends Sender<ServerMethod, ServerFunction> {
          this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
       }
    }
+}
+
+class Server extends ImplementsClient(ServerBase) {
+   // One singleton
+   public static readonly instance: Server = new Server();
 }
 
 export default Server.instance;

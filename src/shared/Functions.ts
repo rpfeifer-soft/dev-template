@@ -64,10 +64,10 @@ export interface IServerHandler<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MethodConstructor<T = {}> = new (...args: any[]) => T & IServerHandler<T>;
+type ServerConstructor<T = {}> = new (...args: any[]) => T & IServerHandler<T>;
 
 export function ImplementsServer<T>() {
-   return function <TBase extends MethodConstructor>(Base: TBase) {
+   return function <TBase extends ServerConstructor>(Base: TBase) {
       return class extends Base {
          // METHODS
          on(type: ServerMethod.Ping, handler: (msg: Message.Boolean, client: T) => void): void;
@@ -102,5 +102,60 @@ export function ImplementsServer<T>() {
             }
          }
       };
+   };
+}
+
+
+export interface IClientHandler {
+   onMethod: (
+      type: ClientMethod,
+      ctor: new () => Message,
+      handler: (msg: Message) => void
+   ) => void;
+
+   onFunction: (
+      type: ClientFunction,
+      ctor: new () => Message,
+      handler: (msg: Message) => Promise<Message>
+   ) => void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ClientConstructor<T = {}> = new (...args: any[]) => T & IClientHandler;
+
+export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
+   return class extends Base {
+      // METHODS
+      on(type: ClientMethod.Hello, handler: (msg: Message.String) => void): void;
+      on(type: ClientMethod.ClickFromClient, handler: (msg: Message.Time) => void): void;
+
+      // FUNCTIONS
+      on(type: ClientFunction.GetVersion, handler: (msg: Message.Boolean) => Promise<Message.String>): void;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      on(type: ClientMethod | ClientFunction, handler: any) {
+         let ctor: new () => Message;
+         switch (type) {
+            case ClientMethod.Hello:
+               ctor = Message.String;
+               break;
+            case ClientMethod.ClickFromClient:
+               ctor = Message.Time;
+               break;
+
+            case ClientFunction.GetVersion:
+               ctor = Message.Boolean;
+               break;
+
+            default:
+               assertAllHandled(type);
+               return;
+         }
+         if (isClientFunction(type)) {
+            this.onFunction(type, ctor, handler);
+         } else {
+            this.onMethod(type, ctor, handler);
+         }
+      }
    };
 }

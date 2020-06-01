@@ -130,22 +130,6 @@ class ClientsBase implements IServerHandler<Client> {
       });
    }
 
-   onMethod<T extends Message, U extends Message>(
-      type: ServerMethod,
-      ctor: new () => T,
-      handler: IMethodHandler<T>
-   ) {
-      this.onMethodOrFunction(type, ctor, handler);
-   }
-
-   onFunction<T extends Message, U extends Message>(
-      type: ServerFunction,
-      ctor: new () => T,
-      handler: IFunctionHandler<T, U>
-   ) {
-      this.onMethodOrFunction(type, ctor, handler);
-   }
-
    off<T extends Message, U extends Message>(
       type: ServerMethod,
       handler: IMethodHandler<T>
@@ -208,6 +192,34 @@ class ClientsBase implements IServerHandler<Client> {
       });
    }
 
+   onMethod<T extends Message, U extends Message>(
+      type: ServerMethod,
+      ctor: new () => T,
+      handler: IMethodHandler<T>
+   ) {
+      this.onMethodOrFunction(type, ctor, handler);
+   }
+
+   onFunction<T extends Message, U extends Message>(
+      type: ServerFunction,
+      ctor: new () => T,
+      handler: IFunctionHandler<T, U>
+   ) {
+      this.onMethodOrFunction(type, ctor, handler);
+   }
+
+   private onMethodOrFunction<T extends Message, U extends Message>(
+      type: ServerMethod | ServerFunction,
+      ctor: new () => T,
+      handler: IMethodHandler<T> | IFunctionHandler<T, U>
+   ) {
+      if (isServerFunction(type)) {
+         this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
+      } else {
+         this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
+      }
+   }
+
    // Add a new client
    private addClient(socket: ws) {
       let client = new Client(this.nextId(), socket);
@@ -222,18 +234,6 @@ class ClientsBase implements IServerHandler<Client> {
          nextId++;
       }
       return nextId;
-   }
-
-   private onMethodOrFunction<T extends Message, U extends Message>(
-      type: ServerMethod | ServerFunction,
-      ctor: new () => T,
-      handler: IMethodHandler<T> | IFunctionHandler<T, U>
-   ) {
-      if (isServerFunction(type)) {
-         this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
-      } else {
-         this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
-      }
    }
 }
 
