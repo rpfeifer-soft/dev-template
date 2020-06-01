@@ -224,7 +224,7 @@ class ClientsBase implements IServerHandler<Client> {
    private addClient(socket: ws) {
       let client = new Client(this.nextId(), socket);
       // Push to the list, after initializing it
-      this.clients.push(client.init());
+      this.clients.push(client.init(this.handleClientMessage));
    }
 
    // get the next available id for the client
@@ -242,4 +242,7 @@ class Clients extends ImplementsServer<Client>()(ClientsBase) {
    public static readonly instance: Clients = new Clients();
 }
 
-export default Clients.instance;
+export default Clients.instance as Pick<
+   Clients,
+   'init' | 'ready' | 'on' | 'off' | 'broadcast'
+>;

@@ -214,4 +214,8 @@ class Server extends ImplementsClient(ServerBase) {
    public static readonly instance: Server = new Server();
 }
 
-export default Server.instance;
+export default Server.instance as Pick<
+   Server,
+   'init' | 'on' | 'off' | 'post' |
+   'getString' | 'getBoolean' | 'getNumber' | 'getTime'
+>;

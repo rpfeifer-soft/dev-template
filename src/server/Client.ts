@@ -4,7 +4,6 @@ import ws from 'ws';
 import WSTool from '../shared/WSTool.js';
 import Sender from '../shared/Sender.js';
 import { ClientMethod, ClientFunction } from '../shared/Functions.js';
-import Clients from './Clients.js';
 
 export default class Client extends Sender<ClientMethod, ClientFunction> {
    // The id of the client
@@ -24,7 +23,7 @@ export default class Client extends Sender<ClientMethod, ClientFunction> {
    }
 
    // Init the client
-   init() {
+   init(handleClientMessage: (client: Client, data: string | ArrayBuffer) => void) {
       this.isAlive = true;
 
       this.server.on('pong', () => {
@@ -39,7 +38,7 @@ export default class Client extends Sender<ClientMethod, ClientFunction> {
             throw new Error('Unsupport ws-socket data format!');
          }
          if (!this.handleRequests(data)) {
-            Clients.handleClientMessage(this, data);
+            handleClientMessage(this, data);
          }
       });
       return this;
