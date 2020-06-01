@@ -24,7 +24,7 @@ server.listen(options.getPort(), () => {
 
    Clients.on(ServerFunction.Init, async (msg, client) => {
       client.call(ClientMethod.Hello, new Text('Yes'));
-      return new Text(msg.data ? msg.data + ' ' + client.id : 'No data!');
+      return new Text(msg.browser ? msg.browser + ' ' + client.id : 'No data!');
    });
    Clients.on(ServerFunction.Click, async (msg) => {
       Clients.broadcast(ClientMethod.ClickFromClient, msg);

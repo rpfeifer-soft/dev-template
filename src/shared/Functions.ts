@@ -2,6 +2,7 @@
 /** @format */
 
 import Message, { Text, Time, Bool, Double } from './Message.js';
+import MsgInit from './Messages/MsgInit.js';
 
 function assertAllHandled(x: never): never {
    return x;
@@ -32,7 +33,6 @@ type DoubleParams =
    never;
 
 type TextParams =
-   ServerFunction.Init |
    ServerFunction.Cool |
    ClientMethod.Hello;
 
@@ -45,20 +45,36 @@ type Parameter<T> =
    T extends DoubleParams ? Double :
    T extends TextParams ? Text :
    T extends TimeParams ? Time :
+   T extends ServerFunction.Init ? MsgInit :
    never;
 
-function getParameter(type: ServerFunction | ServerMethod | ClientFunction | ClientMethod): new () => Message {
+function getServerParameter(type: ServerFunction | ServerMethod): new () => Message {
    switch (type) {
       case ServerMethod.Ping:
-      case ClientFunction.GetVersion:
          return Bool;
 
-      case ServerFunction.Init:
-      case ClientMethod.Hello:
       case ServerFunction.Cool:
          return Text;
 
       case ServerFunction.Click:
+         return Time;
+
+      case ServerFunction.Init:
+         return MsgInit;
+
+      default:
+         return assertAllHandled(type);
+   }
+}
+
+function getClientParameter(type: ClientFunction | ClientMethod): new () => Message {
+   switch (type) {
+      case ClientFunction.GetVersion:
+         return Bool;
+
+      case ClientMethod.Hello:
+         return Text;
+
       case ClientMethod.ClickFromClient:
          return Time;
 
@@ -87,7 +103,7 @@ type Returns<T> =
    T extends TimeReturns ? Time :
    never;
 
-function getReturns(type: ServerFunction | ClientFunction): new () => Message {
+function getServerReturns(type: ServerFunction): new () => Message {
    switch (type) {
 
       case ServerFunction.Click:
@@ -97,6 +113,16 @@ function getReturns(type: ServerFunction | ClientFunction): new () => Message {
          return Double;
 
       case ServerFunction.Init:
+         return Text;
+
+      default:
+         return assertAllHandled(type);
+   }
+}
+
+function getClientReturns(type: ClientFunction): new () => Message {
+   switch (type) {
+
       case ClientFunction.GetVersion:
          return Text;
 
@@ -177,7 +203,7 @@ export function ImplementsServer<T>() {
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          on(type: ServerMethod | ServerFunction, handler: any) {
-            let ctorParameter = getParameter(type);
+            let ctorParameter = getServerParameter(type);
             if (isServerFunction(type)) {
                this.onFunction(type, ctorParameter, handler);
             } else {
@@ -227,7 +253,7 @@ export function ImplementsServerClient<TBase extends ServerClientConstructor>(Ba
 
       call(type: ClientFunction | ClientMethod, msg: Message): Promise<Message> | void {
          if (isClientFunction(type)) {
-            let ctorReturnType = getReturns(type);
+            let ctorReturnType = getClientReturns(type);
             return this.sendFunction(ctorReturnType, type, msg);
          } else {
             return this.pushMethod(type, msg);
@@ -270,7 +296,7 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
 
    return class extends Base {
 
-      init(url: string, msg: Text): Promise<Text> {
+      init(url: string, msg: Parameter<ServerFunction.Init>): Promise<Returns<ServerFunction.Init>> {
          return this.initServer(url, msg);
       }
 
@@ -283,7 +309,7 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       on(type: ClientMethod | ClientFunction, handler: any) {
-         let ctorParameter = getParameter(type);
+         let ctorParameter = getClientParameter(type);
          if (isClientFunction(type)) {
             this.onFunction(type, ctorParameter, handler);
          } else {
@@ -301,7 +327,7 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
 
       call(type: ServerFunction | ServerMethod, msg: Message): Promise<Message> | void {
          if (isServerFunction(type)) {
-            let ctorReturnType = getReturns(type);
+            let ctorReturnType = getServerReturns(type);
             return this.sendFunction(ctorReturnType, type, msg);
          } else {
             return this.pushMethod(type, msg);

@@ -129,21 +129,49 @@ export class Time extends Message {
 
 // Special data implementation
 export class Json<U> extends Message {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   protected schema: Record<keyof U, boolean | ((write: boolean, value: any) => any)>;
 
-   constructor(public data?: U) {
-      super();
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   static dateSerializer(write: boolean, value: any) {
+      if (write) {
+         return value !== undefined ? value.getTime() : undefined;
+      } else {
+         return value !== undefined ? new Date(value) : undefined;
+      }
    }
 
    parse(data: string | ArrayBuffer) {
       if (typeof (data) !== 'string') {
          throw new Error('ArrayBuffer not support for generic data!');
       }
-      this.data = Message.fromJSON(data) as U;
+      let json = Message.fromJSON(data);
+      let entries = Object.entries(this.schema);
+      entries.forEach(([key, value]) => {
+         if (value === true) {
+            // Copy as is
+            this[key] = json[key];
+         }
+         if (typeof value === 'function') {
+            this[key] = value(false, json[key]);
+         }
+      });
       return this;
    }
 
    stringify(): string | ArrayBuffer {
-      return Message.toJSON(this.data);
+      let json = {};
+      let entries = Object.entries(this.schema);
+      entries.forEach(([key, value]) => {
+         if (value === true) {
+            // Copy as is
+            json[key] = this[key];
+         }
+         if (typeof value === 'function') {
+            json[key] = value(true, this[key]);
+         }
+      });
+      return Message.toJSON(json);
    }
 }
 

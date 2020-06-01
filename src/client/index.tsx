@@ -4,6 +4,7 @@ import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
 import { ServerFunction, ClientMethod } from '../shared/Functions.js';
 import { Time, Text } from '../shared/Message.js';
+import MsgInit from '../shared/Messages/MsgInit';
 
 let app = document.getElementById('app');
 if (app) {
@@ -17,7 +18,12 @@ if (app) {
       baseURI = 'wss:' + baseURI;
    }
 
-   Server.init(baseURI + 'ws', new Text('Was?'))
+   let msgInit = new MsgInit();
+   msgInit.url = location.href;
+   msgInit.browser = navigator.userAgent;
+   msgInit.time = new Date();
+
+   Server.init(baseURI + 'ws', msgInit)
       .then(p => console.log('Init-Result: :' + p.data + ':'));
 
    let button = document.createElement('button');
@@ -25,7 +31,6 @@ if (app) {
    button.innerText = 'Click';
    button.onclick = async () => {
       Server.call(ServerFunction.Click, new Time(new Date()));
-      console.log(await (await Server.call(ServerFunction.Init, new Text('Test'))).data);
    };
 
    Server.on(ClientMethod.ClickFromClient, (msg) => {

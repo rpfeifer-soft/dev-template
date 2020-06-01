@@ -2,6 +2,7 @@
 
 import test from 'tape';
 import { Bool, Double, Text, Time } from '../shared/Message.js';
+import MsgInit from '../shared/Messages/MsgInit.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
@@ -134,6 +135,24 @@ test('Serialize date data message', (assert) => {
    assert.ok(msgOrig.data);
    if (msg.data && msgOrig.data) {
       assert.equal(msg.data.valueOf(), msgOrig.data.valueOf());
+   }
+   assert.end();
+});
+
+test.only('Serialize JSON data', (assert) => {
+   let msgOrig = new MsgInit();
+   msgOrig.browser = 'Browser';
+   msgOrig.url = 'url';
+   msgOrig.time = new Date(Date.now());
+
+   let msg = MsgInit.parse(msgOrig.stringify());
+   assert.equals(msg.browser, msgOrig.browser);
+   assert.equals(msg.url, msgOrig.url);
+   if (msg.time && msgOrig.time) {
+      assert.equals(msg.time.valueOf(), msgOrig.time.valueOf());
+   } else {
+      assert.notok(msg.time);
+      assert.notok(msgOrig.time);
    }
    assert.end();
 });
