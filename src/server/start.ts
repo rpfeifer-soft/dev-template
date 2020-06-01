@@ -22,10 +22,10 @@ server.listen(options.getPort(), () => {
    // eslint-disable-next-line no-console
    console.log(`Listening on port ${options.getPort()}`);
 
-   Clients.onFunction(ServerFunction.Init, Message.String, async (msg, client) => {
+   Clients.on(ServerFunction.Init, async (msg, client) => {
       return new Message.String(msg.data ? msg.data + ' ' + client.id : 'No data!');
    });
-   Clients.onFunction(ServerFunction.Click, Message.Time, async (msg) => {
+   Clients.on(ServerFunction.Click, async (msg) => {
       Clients.broadcast(ClientMethod.ClickFromClient, msg);
       return new Message.Boolean(true);
    });

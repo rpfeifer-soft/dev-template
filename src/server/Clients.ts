@@ -3,7 +3,10 @@
 import ws from 'ws';
 import Client from './Client.js';
 import Message from '../shared/Message.js';
-import { ServerMethod, ServerFunction, isServerFunction, ClientMethod } from '../shared/Functions.js';
+import {
+   ServerMethod, ServerFunction, isServerFunction, ClientMethod,
+   IServerHandler, ImplementsServer
+} from '../shared/Functions.js';
 import WSTool from '../shared/WSTool.js';
 
 interface IMethodHandler<T extends Message> {
@@ -78,10 +81,7 @@ class Handlers {
    }
 }
 
-class Clients {
-   // One singleton
-   public static readonly instance: Clients = new Clients();
-
+class ClientsBase implements IServerHandler<Client> {
    // The server to use
    private server: ws.Server;
 
@@ -235,6 +235,11 @@ class Clients {
          this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
       }
    }
+}
+
+class Clients extends ImplementsServer<Client>()(ClientsBase) {
+   // One singleton
+   public static readonly instance: Clients = new Clients();
 }
 
 export default Clients.instance;
