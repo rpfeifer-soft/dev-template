@@ -7,9 +7,14 @@ import MsgInit from './Messages/MsgInit.js';
 type Unpack<T> =
    T extends (infer U)[] ? U : T;
 
-function assertAllHandled(x: never): never {
-   return x;
-};
+type First<T> =
+   T extends [(infer U), (infer V)] ? U : T;
+
+type Second<T> =
+   T extends [(infer U), (infer V)] ? V : T;
+
+type Analyze<T extends ((msg: Message) => Message | void)>
+   = [Unpack<Parameters<T>>, ReturnType<T>];
 
 export enum ServerFunction {
    Init = 1,
@@ -18,43 +23,35 @@ export enum ServerFunction {
    Ping
 }
 
-namespace ServerFunctions {
+interface IApiDefs {
+   [key: number]: [new () => Message, (new () => Message) | undefined];
+};
+
+export namespace ServerFunctions {
+   const apiDefs: IApiDefs = {};
+
+   // Declare the functions
    declare function Init(msg: MsgInit): Text;
    declare function Click(msg: Time): Bool;
    declare function Cool(msg: Text): Double;
    declare function Ping(msg: Bool): void;
 
-   export type Parameter<T> =
-      T extends ServerFunction.Init ? Unpack<Parameters<typeof Init>> :
-      T extends ServerFunction.Click ? Unpack<Parameters<typeof Click>> :
-      T extends ServerFunction.Cool ? Unpack<Parameters<typeof Cool>> :
-      T extends ServerFunction.Ping ? Unpack<Parameters<typeof Ping>> :
+   // Declare the api
+   apiDefs[ServerFunction.Init] = [MsgInit, Text];
+   apiDefs[ServerFunction.Click] = [Time, Bool];
+   apiDefs[ServerFunction.Cool] = [Text, Double];
+   apiDefs[ServerFunction.Ping] = [Bool, undefined];
+
+   // Declare the types
+   export type Packing<T> =
+      T extends ServerFunction.Init ? Analyze<typeof Init> :
+      T extends ServerFunction.Click ? Analyze<typeof Click> :
+      T extends ServerFunction.Cool ? Analyze<typeof Cool> :
+      T extends ServerFunction.Ping ? Analyze<typeof Ping> :
       never;
 
-   export type Return<T> =
-      T extends ServerFunction.Init ? ReturnType<typeof Init> :
-      T extends ServerFunction.Click ? ReturnType<typeof Click> :
-      T extends ServerFunction.Cool ? ReturnType<typeof Cool> :
-      T extends ServerFunction.Ping ? ReturnType<typeof Ping> :
-      never;
-
-   function getApi(type: ServerFunction): [new () => Message, (new () => Message) | undefined] {
-      switch (type) {
-         case ServerFunction.Init:
-            return [MsgInit, Text];
-
-         case ServerFunction.Click:
-            return [Time, Bool];
-
-         case ServerFunction.Cool:
-            return [Text, Double];
-
-         case ServerFunction.Ping:
-            return [Bool, undefined];
-
-         default:
-            return assertAllHandled(type);
-      }
+   export function getApi(type: ServerFunction): [new () => Message, (new () => Message) | undefined] {
+      return apiDefs[type];
    }
 
    export function getServerParameter(type: ServerFunction) {
@@ -72,37 +69,28 @@ export enum ClientFunction {
    ClickFromClient
 }
 
-namespace ClientFunctions {
+export namespace ClientFunctions {
+   const apiDefs: IApiDefs = {};
+
+   // Declare the functions
    declare function GetVersion(msg: Bool): Text;
    declare function Hello(msg: Text): void;
    declare function ClickFromClient(msg: Time): void;
 
-   export type Parameter<T> =
-      T extends ClientFunction.GetVersion ? Unpack<Parameters<typeof GetVersion>> :
-      T extends ClientFunction.Hello ? Unpack<Parameters<typeof Hello>> :
-      T extends ClientFunction.ClickFromClient ? Unpack<Parameters<typeof ClickFromClient>> :
+   // Declare the api
+   apiDefs[ClientFunction.GetVersion] = [Bool, Text];
+   apiDefs[ClientFunction.Hello] = [Text, undefined];
+   apiDefs[ClientFunction.ClickFromClient] = [Time, undefined];
+
+   // Declare the types
+   export type Packing<T> =
+      T extends ClientFunction.GetVersion ? Analyze<typeof GetVersion> :
+      T extends ClientFunction.Hello ? Analyze<typeof Hello> :
+      T extends ClientFunction.ClickFromClient ? Analyze<typeof ClickFromClient> :
       never;
 
-   export type Return<T> =
-      T extends ClientFunction.GetVersion ? ReturnType<typeof GetVersion> :
-      T extends ClientFunction.Hello ? ReturnType<typeof Hello> :
-      T extends ClientFunction.ClickFromClient ? ReturnType<typeof ClickFromClient> :
-      never;
-
-   function getApi(type: ClientFunction): [new () => Message, (new () => Message) | undefined] {
-      switch (type) {
-         case ClientFunction.GetVersion:
-            return [Bool, Text];
-
-         case ClientFunction.Hello:
-            return [Text, undefined];
-
-         case ClientFunction.ClickFromClient:
-            return [Time, undefined];
-
-         default:
-            return assertAllHandled(type);
-      }
+   export function getApi(type: ClientFunction): [new () => Message, (new () => Message) | undefined] {
+      return apiDefs[type];
    }
 
    export function getClientParameter(type: ClientFunction) {
@@ -115,12 +103,12 @@ namespace ClientFunctions {
 }
 
 type Parameter<T> =
-   ServerFunctions.Parameter<T> |
-   ClientFunctions.Parameter<T>;
+   First<ServerFunctions.Packing<T>> |
+   First<ClientFunctions.Packing<T>>;
 
 type Returns<T> =
-   ServerFunctions.Return<T> |
-   ClientFunctions.Return<T>;
+   Second<ServerFunctions.Packing<T>> |
+   Second<ClientFunctions.Packing<T>>;
 
 export interface IServerHandler<T> {
    onFunction: (
