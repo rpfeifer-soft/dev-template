@@ -1,6 +1,6 @@
 /** @format */
 
-import { ServerMethod, ServerFunction, ClientFunction, ClientMethod } from './Functions.js';
+import { ServerFunction, ClientFunction } from './Functions.js';
 
 interface IRequestError {
    requestId: number;
@@ -15,13 +15,13 @@ interface IRequestResult {
 type IRequest = IRequestError | IRequestResult;
 
 interface IClientMessage {
-   type: ServerMethod | ServerFunction;
+   type: ServerFunction;
    data: string | ArrayBuffer;
    requestId?: number;
 }
 
 interface IServerMessage {
-   type: ClientMethod | ClientFunction;
+   type: ClientFunction;
    data: string | ArrayBuffer;
    requestId?: number;
 }
@@ -69,7 +69,7 @@ function createPacket(
    packet: PacketType,
    data: ArrayBuffer,
    requestId?: number,
-   type?: ServerMethod | ServerFunction | ClientMethod | ClientFunction
+   type?: ServerFunction | ClientFunction
 ) {
    let offset = packet === PacketType.Result ? 2 : 4;
    let buffer = new ArrayBuffer(data.byteLength + offset);
@@ -151,7 +151,7 @@ namespace WSTool {
          return parseMessage<IClientMessage>(data);
       }
 
-      static prepare(type: ServerMethod | ServerFunction, data: string | ArrayBuffer, requestId: number | false) {
+      static prepare(type: ServerFunction, data: string | ArrayBuffer, requestId: number | false) {
          let json: IClientMessage = {
             type,
             requestId: requestId ? requestId : undefined,
@@ -166,7 +166,7 @@ namespace WSTool {
          return parseMessage<IServerMessage>(data);
       }
 
-      static prepare(type: ClientMethod | ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
+      static prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
          let json: IServerMessage = {
             type,
             requestId: requestId ? requestId : undefined,

@@ -5,7 +5,7 @@ import options from './Options.js';
 import express from 'express';
 import Clients from './Clients.js';
 import getIndexHtml from './Index.js';
-import { ServerFunction, ClientMethod } from '../shared/Functions.js';
+import { ServerFunction, ClientFunction } from '../shared/Functions.js';
 import { Text, Bool, Double } from '../shared/Message.js';
 
 const server = express();
@@ -23,11 +23,11 @@ server.listen(options.getPort(), () => {
    console.log(`Listening on port ${options.getPort()}`);
 
    Clients.on(ServerFunction.Init, async (msg, client) => {
-      client.call(ClientMethod.Hello, new Text('Yes'));
+      client.call(ClientFunction.Hello, new Text('Yes'));
       return new Text(msg.browser ? msg.browser + ' ' + client.id : 'No data!');
    });
    Clients.on(ServerFunction.Click, async (msg) => {
-      Clients.broadcast(ClientMethod.ClickFromClient, msg);
+      Clients.broadcast(ClientFunction.ClickFromClient, msg);
       return new Bool(true);
    });
    Clients.on(ServerFunction.Cool, async (msg) => {

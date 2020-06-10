@@ -4,17 +4,13 @@ import ws from 'ws';
 import Client from './Client.js';
 import Message from '../shared/Message.js';
 import {
-   ServerMethod, ServerFunction, isServerFunction, ClientMethod,
+   ServerFunction, ClientFunction,
    IServerHandler, ImplementsServer
 } from '../shared/Functions.js';
 import WSTool from '../shared/WSTool.js';
 
-interface IMethodHandler<T extends Message> {
-   (msg: T, client: Client): void;
-}
-
 interface IFunctionHandler<T extends Message, U extends Message> {
-   (msg: T, client: Client): Promise<U>;
+   (msg: T, client: Client): Promise<U> | void;
 }
 
 interface IHandlerData<T> {
@@ -23,35 +19,7 @@ interface IHandlerData<T> {
 }
 
 class Handlers {
-   private methodHandlers: { [fkey: number]: IHandlerData<IMethodHandler<Message>>[] } = {};
    private functionHandlers: { [fkey: number]: IHandlerData<IFunctionHandler<Message, Message>>[] } = {};
-
-   addMethod<T extends Message, U extends Message>(
-      type: ServerMethod,
-      ctor: new () => Message,
-      handler: IMethodHandler<T>
-   ) {
-      let handlers = this.methodHandlers[type];
-      if (handlers === undefined) {
-         handlers = [];
-         this.methodHandlers[type] = handlers;
-      }
-      handlers.push({ ctor, handler });
-   }
-
-   removeMethod<T extends Message>(
-      type: ServerMethod,
-      handler: IMethodHandler<T>
-   ) {
-      let handlers = this.methodHandlers[type];
-      if (handlers) {
-         this.methodHandlers[type] = handlers.filter(p => p.handler !== handler);
-      }
-   }
-
-   getMethods(type: ServerMethod) {
-      return this.methodHandlers[type];
-   }
 
    addFunction<T extends Message, U extends Message>(
       type: ServerFunction,
@@ -131,22 +99,10 @@ class ClientsBase implements IServerHandler<Client> {
    }
 
    off<T extends Message, U extends Message>(
-      type: ServerMethod,
-      handler: IMethodHandler<T>
-   ): void;
-   off<T extends Message, U extends Message>(
       type: ServerFunction,
       handler: IFunctionHandler<T, U>
-   ): void;
-   off<T extends Message, U extends Message>(
-      type: ServerMethod | ServerFunction,
-      handler: IMethodHandler<T> | IFunctionHandler<T, U>
    ) {
-      if (isServerFunction(type)) {
-         this.handlers.removeFunction(type, handler as IFunctionHandler<T, U>);
-      } else {
-         this.handlers.removeMethod(type, handler as IMethodHandler<T>);
-      }
+      this.handlers.removeFunction(type, handler as IFunctionHandler<T, U>);
    }
 
    handleClientMessage(client: Client, data: string | ArrayBuffer) {
@@ -156,35 +112,27 @@ class ClientsBase implements IServerHandler<Client> {
       }
 
       let clientMessage = message;
-      if (isServerFunction(clientMessage.type)) {
-         let functionHandlers = this.handlers.getFunctions(clientMessage.type);
-         if (functionHandlers) {
-            functionHandlers.forEach(handlerData => {
-               let handlerMsg = new handlerData.ctor();
-               handlerMsg.parse(clientMessage.data);
-               let promise = handlerData.handler(handlerMsg, client);
+
+      let functionHandlers = this.handlers.getFunctions(clientMessage.type);
+      if (functionHandlers) {
+         functionHandlers.forEach(handlerData => {
+            let handlerMsg = new handlerData.ctor();
+            handlerMsg.parse(clientMessage.data);
+            let promise = handlerData.handler(handlerMsg, client);
+            if (promise) {
                if (clientMessage.requestId) {
                   let requestId = clientMessage.requestId;
                   promise
                      .then(answerMsg => client.answer(requestId, answerMsg))
                      .catch(reason => client.error(requestId, reason));
                }
-            });
-         }
-      } else {
-         let methodHandlers = this.handlers.getMethods(clientMessage.type);
-         if (methodHandlers) {
-            methodHandlers.forEach(handlerData => {
-               let handlerMsg = new handlerData.ctor();
-               handlerMsg.parse(clientMessage.data);
-               handlerData.handler(handlerMsg, client);
-            });
-         }
+            }
+         });
       }
    }
 
    // broadcast a message
-   broadcastMethod(type: ClientMethod, msg: Message) {
+   broadcastMethod(type: ClientFunction, msg: Message) {
       if (!this.ready) {
          throw new Error('Server not ready. Call init first!');
       }
@@ -194,32 +142,12 @@ class ClientsBase implements IServerHandler<Client> {
       });
    }
 
-   onMethod<T extends Message, U extends Message>(
-      type: ServerMethod,
-      ctor: new () => T,
-      handler: IMethodHandler<T>
-   ) {
-      this.onMethodOrFunction(type, ctor, handler);
-   }
-
    onFunction<T extends Message, U extends Message>(
       type: ServerFunction,
       ctor: new () => T,
       handler: IFunctionHandler<T, U>
    ) {
-      this.onMethodOrFunction(type, ctor, handler);
-   }
-
-   private onMethodOrFunction<T extends Message, U extends Message>(
-      type: ServerMethod | ServerFunction,
-      ctor: new () => T,
-      handler: IMethodHandler<T> | IFunctionHandler<T, U>
-   ) {
-      if (isServerFunction(type)) {
-         this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
-      } else {
-         this.handlers.addMethod(type, ctor, handler as IMethodHandler<T>);
-      }
+      this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
    }
 
    // Add a new client

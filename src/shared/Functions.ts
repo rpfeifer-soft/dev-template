@@ -14,11 +14,8 @@ function assertAllHandled(x: never): never {
 export enum ServerFunction {
    Init = 1,
    Click,
-   Cool
-}
-
-export enum ServerMethod {
-   Ping = 100
+   Cool,
+   Ping
 }
 
 namespace ServerFunctions {
@@ -31,19 +28,19 @@ namespace ServerFunctions {
       T extends ServerFunction.Init ? Unpack<Parameters<typeof Init>> :
       T extends ServerFunction.Click ? Unpack<Parameters<typeof Click>> :
       T extends ServerFunction.Cool ? Unpack<Parameters<typeof Cool>> :
-      T extends ServerMethod.Ping ? Unpack<Parameters<typeof Ping>> :
+      T extends ServerFunction.Ping ? Unpack<Parameters<typeof Ping>> :
       never;
 
    export type Return<T> =
       T extends ServerFunction.Init ? ReturnType<typeof Init> :
       T extends ServerFunction.Click ? ReturnType<typeof Click> :
       T extends ServerFunction.Cool ? ReturnType<typeof Cool> :
-      T extends ServerMethod.Ping ? ReturnType<typeof Ping> :
+      T extends ServerFunction.Ping ? ReturnType<typeof Ping> :
       never;
 
-   export function getServerParameter(type: ServerFunction | ServerMethod): new () => Message {
+   export function getServerParameter(type: ServerFunction): new () => Message {
       switch (type) {
-         case ServerMethod.Ping:
+         case ServerFunction.Ping:
             return Bool;
 
          case ServerFunction.Cool:
@@ -60,7 +57,7 @@ namespace ServerFunctions {
       }
    }
 
-   export function getServerReturns(type: ServerFunction): new () => Message {
+   export function getServerReturns(type: ServerFunction): (new () => Message) | void {
       switch (type) {
 
          case ServerFunction.Click:
@@ -72,6 +69,9 @@ namespace ServerFunctions {
          case ServerFunction.Init:
             return Text;
 
+         case ServerFunction.Ping:
+            return;
+
          default:
             return assertAllHandled(type);
       }
@@ -79,11 +79,8 @@ namespace ServerFunctions {
 }
 
 export enum ClientFunction {
-   GetVersion = 1
-}
-
-export enum ClientMethod {
-   Hello = 100,
+   GetVersion = 1,
+   Hello,
    ClickFromClient
 }
 
@@ -94,25 +91,25 @@ namespace ClientFunctions {
 
    export type Parameter<T> =
       T extends ClientFunction.GetVersion ? Unpack<Parameters<typeof GetVersion>> :
-      T extends ClientMethod.Hello ? Unpack<Parameters<typeof Hello>> :
-      T extends ClientMethod.ClickFromClient ? Unpack<Parameters<typeof ClickFromClient>> :
+      T extends ClientFunction.Hello ? Unpack<Parameters<typeof Hello>> :
+      T extends ClientFunction.ClickFromClient ? Unpack<Parameters<typeof ClickFromClient>> :
       never;
 
    export type Return<T> =
       T extends ClientFunction.GetVersion ? ReturnType<typeof GetVersion> :
-      T extends ClientMethod.Hello ? ReturnType<typeof Hello> :
-      T extends ClientMethod.ClickFromClient ? ReturnType<typeof ClickFromClient> :
+      T extends ClientFunction.Hello ? ReturnType<typeof Hello> :
+      T extends ClientFunction.ClickFromClient ? ReturnType<typeof ClickFromClient> :
       never;
 
-   export function getClientParameter(type: ClientFunction | ClientMethod): new () => Message {
+   export function getClientParameter(type: ClientFunction): new () => Message {
       switch (type) {
          case ClientFunction.GetVersion:
             return Bool;
 
-         case ClientMethod.Hello:
+         case ClientFunction.Hello:
             return Text;
 
-         case ClientMethod.ClickFromClient:
+         case ClientFunction.ClickFromClient:
             return Time;
 
          default:
@@ -120,11 +117,15 @@ namespace ClientFunctions {
       }
    }
 
-   export function getClientReturns(type: ClientFunction): new () => Message {
+   export function getClientReturns(type: ClientFunction): (new () => Message) | void {
       switch (type) {
 
          case ClientFunction.GetVersion:
             return Text;
+
+         case ClientFunction.ClickFromClient:
+         case ClientFunction.Hello:
+            return;
 
          default:
             return assertAllHandled(type);
@@ -140,48 +141,15 @@ type Returns<T> =
    ServerFunctions.Return<T> |
    ClientFunctions.Return<T>;
 
-export function isServerFunction(value: ServerMethod | ServerFunction): value is ServerFunction {
-   // eslint-disable-next-line default-case
-   switch (value) {
-      case ServerMethod.Ping:
-         return false;
-
-      case ServerFunction.Init:
-      case ServerFunction.Click:
-      case ServerFunction.Cool:
-         return true;
-   }
-   assertAllHandled(value);
-}
-
-export function isClientFunction(value: ClientMethod | ClientFunction): value is ClientFunction {
-   // eslint-disable-next-line default-case
-   switch (value) {
-      case ClientMethod.Hello:
-      case ClientMethod.ClickFromClient:
-         return false;
-
-      case ClientFunction.GetVersion:
-         return true;
-   }
-   assertAllHandled(value);
-}
-
 export interface IServerHandler<T> {
-   onMethod: (
-      type: ServerMethod,
-      ctor: new () => Message,
-      handler: (msg: Message, client: T) => void
-   ) => void;
-
    onFunction: (
       type: ServerFunction,
       ctor: new () => Message,
-      handler: (msg: Message, client: T) => Promise<Message>
+      handler: (msg: Message, client: T) => Promise<Message> | void
    ) => void;
 
    broadcastMethod: (
-      type: ClientMethod,
+      type: ClientFunction,
       msg: Message
    ) => void;
 }
@@ -203,7 +171,7 @@ export function ImplementsServer<T>() {
    return function <TBase extends ServerConstructor>(Base: TBase) {
       return class extends Base {
          // METHODS
-         on(...args: OnArgs<ServerMethod.Ping>): void;
+         on(...args: OnArgs<ServerFunction.Ping>): void;
 
          // FUNCTIONS
          on(...args: OnArgs<ServerFunction.Init>): void;
@@ -211,19 +179,15 @@ export function ImplementsServer<T>() {
          on(...args: OnArgs<ServerFunction.Cool>): void;
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         on(type: ServerMethod | ServerFunction, handler: any) {
+         on(type: ServerFunction, handler: any) {
             let ctorParameter = ServerFunctions.getServerParameter(type);
-            if (isServerFunction(type)) {
-               this.onFunction(type, ctorParameter, handler);
-            } else {
-               this.onMethod(type, ctorParameter, handler);
-            }
+            this.onFunction(type, ctorParameter, handler);
          }
 
-         broadcast(...args: BroadcastArgs<ClientMethod.Hello>): void;
-         broadcast(...args: BroadcastArgs<ClientMethod.ClickFromClient>): void;
+         broadcast(...args: BroadcastArgs<ClientFunction.Hello>): void;
+         broadcast(...args: BroadcastArgs<ClientFunction.ClickFromClient>): void;
 
-         broadcast(type: ClientMethod, msg: Message) {
+         broadcast(type: ClientFunction, msg: Message) {
             this.broadcastMethod(type, msg);
          }
       };
@@ -244,7 +208,8 @@ interface ISenderHandler<TMethod, TFunction> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ServerClientConstructor<T = {}> = new (...args: any[]) => T & ISenderHandler<ClientMethod, ClientFunction>;
+type ServerClientConstructor<T = {}> = new (...args: any[]) =>
+   T & ISenderHandler<ClientFunction, ClientFunction>;
 
 export function ImplementsServerClient<TBase extends ServerClientConstructor>(Base: TBase) {
 
@@ -254,15 +219,15 @@ export function ImplementsServerClient<TBase extends ServerClientConstructor>(Ba
    return class extends Base {
 
       // METHODS
-      call(...args: CallArgs<ClientMethod.Hello>): ReturnArg<ClientMethod.Hello>;
-      call(...args: CallArgs<ClientMethod.ClickFromClient>): ReturnArg<ClientMethod.ClickFromClient>;
+      call(...args: CallArgs<ClientFunction.Hello>): ReturnArg<ClientFunction.Hello>;
+      call(...args: CallArgs<ClientFunction.ClickFromClient>): ReturnArg<ClientFunction.ClickFromClient>;
 
       // FUNCTIONS
       call(...args: CallArgs<ClientFunction.GetVersion>): ReturnArg<ClientFunction.GetVersion>;
 
-      call(type: ClientFunction | ClientMethod, msg: Message): Promise<Message> | void {
-         if (isClientFunction(type)) {
-            let ctorReturnType = ClientFunctions.getClientReturns(type);
+      call(type: ClientFunction, msg: Message): Promise<Message> | void {
+         let ctorReturnType = ClientFunctions.getClientReturns(type);
+         if (ctorReturnType) {
             return this.sendFunction(ctorReturnType, type, msg);
          } else {
             return this.pushMethod(type, msg);
@@ -271,20 +236,14 @@ export function ImplementsServerClient<TBase extends ServerClientConstructor>(Ba
    };
 }
 
-export interface IClientHandler extends ISenderHandler<ServerMethod, ServerFunction> {
+export interface IClientHandler extends ISenderHandler<ServerFunction, ServerFunction> {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    initServer: (url: string, msgInit: Message) => any;
-
-   onMethod: (
-      type: ClientMethod,
-      ctor: new () => Message,
-      handler: (msg: Message) => void
-   ) => void;
 
    onFunction: (
       type: ClientFunction,
       ctor: new () => Message,
-      handler: (msg: Message) => Promise<Message>
+      handler: (msg: Message) => Promise<Message> | void
    ) => void;
 }
 
@@ -310,33 +269,29 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       }
 
       // METHODS
-      on(...args: OnArgs<ClientMethod.Hello>): void;
-      on(...args: OnArgs<ClientMethod.ClickFromClient>): void;
+      on(...args: OnArgs<ClientFunction.Hello>): void;
+      on(...args: OnArgs<ClientFunction.ClickFromClient>): void;
 
       // FUNCTIONS
       on(...args: OnArgs<ClientFunction.GetVersion>): void;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      on(type: ClientMethod | ClientFunction, handler: any) {
+      on(type: ClientFunction, handler: any) {
          let ctorParameter = ClientFunctions.getClientParameter(type);
-         if (isClientFunction(type)) {
-            this.onFunction(type, ctorParameter, handler);
-         } else {
-            this.onMethod(type, ctorParameter, handler);
-         }
+         this.onFunction(type, ctorParameter, handler);
       }
 
       // METHODS
-      call(...args: CallArgs<ServerMethod.Ping>): ReturnArg<ServerMethod.Ping>;
+      call(...args: CallArgs<ServerFunction.Ping>): ReturnArg<ServerFunction.Ping>;
 
       // FUNCTIONS
       call(...args: CallArgs<ServerFunction.Init>): ReturnArg<ServerFunction.Init>;
       call(...args: CallArgs<ServerFunction.Click>): ReturnArg<ServerFunction.Click>;
       call(...args: CallArgs<ServerFunction.Cool>): ReturnArg<ServerFunction.Cool>;
 
-      call(type: ServerFunction | ServerMethod, msg: Message): Promise<Message> | void {
-         if (isServerFunction(type)) {
-            let ctorReturnType = ServerFunctions.getServerReturns(type);
+      call(type: ServerFunction, msg: Message): Promise<Message> | void {
+         let ctorReturnType = ServerFunctions.getServerReturns(type);
+         if (ctorReturnType) {
             return this.sendFunction(ctorReturnType, type, msg);
          } else {
             return this.pushMethod(type, msg);

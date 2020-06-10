@@ -2,7 +2,7 @@
 
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
-import { ServerFunction, ClientMethod } from '../shared/Functions.js';
+import { ServerFunction, ClientFunction } from '../shared/Functions.js';
 import { Time, Text } from '../shared/Message.js';
 import MsgInit from '../shared/Messages/MsgInit';
 
@@ -33,13 +33,13 @@ if (app) {
       Server.call(ServerFunction.Click, new Time(new Date()));
    };
 
-   Server.on(ClientMethod.ClickFromClient, (msg) => {
+   Server.on(ClientFunction.ClickFromClient, (msg) => {
       console.log('Click', msg.data);
    });
-   Server.on(ClientMethod.Hello, (msg) => {
+   Server.on(ClientFunction.Hello, (msg) => {
       console.log('Hello', msg.data);
    });
-   Server.on(ClientMethod.ClickFromClient, async (msg) => {
+   Server.on(ClientFunction.ClickFromClient, async (msg) => {
       console.log('Click2', msg.data);
       try {
          console.log('length = ' + (await Server.call(ServerFunction.Cool, new Text('Mein Name'))).data);
