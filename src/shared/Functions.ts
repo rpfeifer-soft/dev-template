@@ -38,43 +38,31 @@ namespace ServerFunctions {
       T extends ServerFunction.Ping ? ReturnType<typeof Ping> :
       never;
 
-   export function getServerParameter(type: ServerFunction): new () => Message {
+   function getApi(type: ServerFunction): [new () => Message, (new () => Message) | undefined] {
       switch (type) {
-         case ServerFunction.Ping:
-            return Bool;
-
-         case ServerFunction.Cool:
-            return Text;
+         case ServerFunction.Init:
+            return [MsgInit, Text];
 
          case ServerFunction.Click:
-            return Time;
+            return [Time, Bool];
 
-         case ServerFunction.Init:
-            return MsgInit;
+         case ServerFunction.Cool:
+            return [Text, Double];
+
+         case ServerFunction.Ping:
+            return [Bool, undefined];
 
          default:
             return assertAllHandled(type);
       }
    }
 
-   export function getServerReturns(type: ServerFunction): (new () => Message) | void {
-      switch (type) {
+   export function getServerParameter(type: ServerFunction) {
+      return getApi(type)[0];
+   }
 
-         case ServerFunction.Click:
-            return Bool;
-
-         case ServerFunction.Cool:
-            return Double;
-
-         case ServerFunction.Init:
-            return Text;
-
-         case ServerFunction.Ping:
-            return;
-
-         default:
-            return assertAllHandled(type);
-      }
+   export function getServerReturns(type: ServerFunction) {
+      return getApi(type)[1];
    }
 }
 
@@ -101,35 +89,28 @@ namespace ClientFunctions {
       T extends ClientFunction.ClickFromClient ? ReturnType<typeof ClickFromClient> :
       never;
 
-   export function getClientParameter(type: ClientFunction): new () => Message {
+   function getApi(type: ClientFunction): [new () => Message, (new () => Message) | undefined] {
       switch (type) {
          case ClientFunction.GetVersion:
-            return Bool;
+            return [Bool, Text];
 
          case ClientFunction.Hello:
-            return Text;
+            return [Text, undefined];
 
          case ClientFunction.ClickFromClient:
-            return Time;
+            return [Time, undefined];
 
          default:
             return assertAllHandled(type);
       }
    }
 
-   export function getClientReturns(type: ClientFunction): (new () => Message) | void {
-      switch (type) {
+   export function getClientParameter(type: ClientFunction) {
+      return getApi(type)[0];
+   }
 
-         case ClientFunction.GetVersion:
-            return Text;
-
-         case ClientFunction.ClickFromClient:
-         case ClientFunction.Hello:
-            return;
-
-         default:
-            return assertAllHandled(type);
-      }
+   export function getClientReturns(type: ClientFunction) {
+      return getApi(type)[1];
    }
 }
 
