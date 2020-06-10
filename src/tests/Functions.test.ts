@@ -12,6 +12,10 @@ function testServerEnums() {
       if (!ServerFunctions.getApi(p)) {
          throw new Error(`Missing api-definition for ServerFunction.${ServerFunction[p]}`);
       }
+      // eslint-disable-next-line no-bitwise
+      if (p >= (1 << 16)) {
+         throw new Error(`Exceeding upper limit by ServerFunction.${ServerFunction[p]} (${p})`);
+      }
    });
 }
 
@@ -20,6 +24,10 @@ function testClientEnums() {
    functions.forEach(p => {
       if (!ClientFunctions.getApi(p)) {
          throw new Error(`Missing api-definition for ServerFunction.${ServerFunction[p]}`);
+      }
+      // eslint-disable-next-line no-bitwise
+      if (p >= (1 << 16)) {
+         throw new Error(`Exceeding upper limit by ServerFunction.${ServerFunction[p]} (${p})`);
       }
    });
 }
