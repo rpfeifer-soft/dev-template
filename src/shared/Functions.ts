@@ -4,6 +4,9 @@
 import Message, { Text, Time, Bool, Double } from './Message.js';
 import MsgInit from './Messages/MsgInit.js';
 
+type Unpack<T> =
+   T extends (infer U)[] ? U : T;
+
 function assertAllHandled(x: never): never {
    return x;
 };
@@ -13,40 +16,73 @@ export enum ServerFunction {
    Click,
    Cool
 }
+
+namespace ServerFunctions {
+   declare function Init(msg: MsgInit): Text;
+   declare function Click(msg: Time): Bool;
+   declare function Cool(msg: Text): Double;
+
+   export type Parameter<T> =
+      T extends ServerFunction.Init ? Unpack<Parameters<typeof Init>> :
+      T extends ServerFunction.Click ? Unpack<Parameters<typeof Click>> :
+      T extends ServerFunction.Cool ? Unpack<Parameters<typeof Cool>> :
+      never;
+
+   export type Return<T> =
+      T extends ServerFunction.Init ? ReturnType<typeof Init> :
+      T extends ServerFunction.Click ? ReturnType<typeof Click> :
+      T extends ServerFunction.Cool ? ReturnType<typeof Cool> :
+      never;
+}
+
 export enum ServerMethod {
    Ping = 100
+}
+
+namespace ServerMethods {
+   declare function Ping(msg: Text): void;
+
+   export type Parameter<T> =
+      T extends ServerMethod.Ping ? Unpack<Parameters<typeof Ping>> :
+      never;
 }
 
 export enum ClientFunction {
    GetVersion = 1
 }
+
+namespace ClientFunctions {
+   declare function GetVersion(msg: Bool): Text;
+
+   export type Parameter<T> =
+      T extends ClientFunction.GetVersion ? Unpack<Parameters<typeof GetVersion>> :
+      never;
+
+   export type Return<T> =
+      T extends ClientFunction.GetVersion ? ReturnType<typeof GetVersion> :
+      never;
+}
+
 export enum ClientMethod {
    Hello = 100,
    ClickFromClient
 }
 
-type BooleanParams =
-   ServerMethod.Ping |
-   ClientFunction.GetVersion;
+namespace ClientMethods {
+   declare function Hello(msg: Text): void;
+   declare function ClickFromClient(msg: Time): void;
 
-type DoubleParams =
-   never;
-
-type TextParams =
-   ServerFunction.Cool |
-   ClientMethod.Hello;
-
-type TimeParams =
-   ServerFunction.Click |
-   ClientMethod.ClickFromClient;
+   export type Parameter<T> =
+      T extends ClientMethod.Hello ? Unpack<Parameters<typeof Hello>> :
+      T extends ClientMethod.ClickFromClient ? Unpack<Parameters<typeof ClickFromClient>> :
+      never;
+}
 
 type Parameter<T> =
-   T extends BooleanParams ? Bool :
-   T extends DoubleParams ? Double :
-   T extends TextParams ? Text :
-   T extends TimeParams ? Time :
-   T extends ServerFunction.Init ? MsgInit :
-   never;
+   ServerFunctions.Parameter<T> |
+   ServerMethods.Parameter<T> |
+   ClientFunctions.Parameter<T> |
+   ClientMethods.Parameter<T>;
 
 function getServerParameter(type: ServerFunction | ServerMethod): new () => Message {
    switch (type) {
@@ -83,25 +119,9 @@ function getClientParameter(type: ClientFunction | ClientMethod): new () => Mess
    }
 }
 
-type BooleanReturns =
-   ServerFunction.Click;
-
-type DoubleReturns =
-   ServerFunction.Cool;
-
-type TextReturns =
-   ServerFunction.Init |
-   ClientFunction.GetVersion;
-
-type TimeReturns =
-   never;
-
 type Returns<T> =
-   T extends BooleanReturns ? Bool :
-   T extends DoubleReturns ? Double :
-   T extends TextReturns ? Text :
-   T extends TimeReturns ? Time :
-   never;
+   ServerFunctions.Return<T> |
+   ClientFunctions.Return<T>;
 
 function getServerReturns(type: ServerFunction): new () => Message {
    switch (type) {
@@ -318,7 +338,7 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       }
 
       // METHODS
-      call(...args: CallArgs<ServerMethod.Ping>): void;
+      call(...args: CallArgs<ServerMethod.Ping>): ReturnArg<ServerMethod.Ping>;
 
       // FUNCTIONS
       call(...args: CallArgs<ServerFunction.Init>): ReturnArg<ServerFunction.Init>;

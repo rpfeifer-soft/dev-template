@@ -139,7 +139,7 @@ test('Serialize date data message', (assert) => {
    assert.end();
 });
 
-test.only('Serialize JSON data', (assert) => {
+test('Serialize JSON data', (assert) => {
    let msgOrig = new MsgInit();
    msgOrig.browser = 'Browser';
    msgOrig.url = 'url';

@@ -33,6 +33,25 @@ namespace Message {
    }
 }
 
+export class Void extends Message {
+   constructor() {
+      super();
+   }
+
+   static parse(data: string | ArrayBuffer) {
+      return Message.parseMessage(Void, data);
+   }
+
+   parse(data: ArrayBuffer) {
+      return this;
+   }
+
+   stringify() {
+      let bytes = new ByteArray();
+      return bytes.getArrayBuffer();
+   }
+}
+
 export class Bool extends Message {
    constructor(public data?: boolean) {
       super();
