@@ -8,18 +8,18 @@ interface IInit {
    time: Date;
    test?: string;
 }
+export const fInit: IMessageFactory<Init> = {
+   pack: (value) => new Json({
+      url: true,
+      browser: true,
+      time: Json.dateSerializer,
+      test: true
+   }, value),
+   unpack: (msg: Json<Init>) => msg.data
+};
 
 interface Init extends IInit { };
 class Init {
-   static Msg: IMessageFactory<Init> = {
-      pack: (value) => new Json({
-         url: true,
-         browser: true,
-         time: Json.dateSerializer,
-         test: true
-      }, value),
-      unpack: (msg: Json<Init>) => msg.data
-   };
 };
 
 export default Init;

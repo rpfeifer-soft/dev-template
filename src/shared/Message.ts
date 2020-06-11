@@ -66,7 +66,7 @@ class VoidClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-export const Void = VoidClass.Msg;
+export const fVoid = VoidClass.Msg;
 
 class BoolClass extends Message {
    static Msg: IMessageFactory<boolean> = {
@@ -90,12 +90,12 @@ class BoolClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-export const Bool = BoolClass.Msg;
+export const fBool = BoolClass.Msg;
 
-class DoubleClass extends Message {
+class NumberClass extends Message {
    static Msg: IMessageFactory<number> = {
-      pack: (value) => new DoubleClass(value),
-      unpack: (msg: DoubleClass) => msg.data
+      pack: (value) => new NumberClass(value),
+      unpack: (msg: NumberClass) => msg.data
    };
 
    constructor(public data?: number) {
@@ -103,7 +103,7 @@ class DoubleClass extends Message {
    }
 
    static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(DoubleClass, data);
+      return Message.parseMessage(NumberClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -118,12 +118,12 @@ class DoubleClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-export const Double = DoubleClass.Msg;
+export const fNumber = NumberClass.Msg;
 
-class TextClass extends Message {
+class StringClass extends Message {
    static Msg: IMessageFactory<string> = {
-      pack: (value) => new TextClass(value),
-      unpack: (msg: TextClass) => msg.data
+      pack: (value) => new StringClass(value),
+      unpack: (msg: StringClass) => msg.data
    };
 
    constructor(public data?: string) {
@@ -131,7 +131,7 @@ class TextClass extends Message {
    }
 
    static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(TextClass, data);
+      return Message.parseMessage(StringClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -146,7 +146,7 @@ class TextClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-export const Text = TextClass.Msg;
+export const fString = StringClass.Msg;
 
 class TimeClass extends Message {
    static Msg: IMessageFactory<Date> = {
@@ -180,7 +180,7 @@ class TimeClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-export const Time = TimeClass.Msg;
+export const fDate = TimeClass.Msg;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Schema<U> = Record<keyof U, boolean | ((write: boolean, value: any) => any)>;

@@ -1,8 +1,8 @@
 /* eslint-disable id-blacklist */
 /** @format */
 
-import Message, { Text, Time, Bool, Double, IMessageFactory } from './Message.js';
-import InitData from './Messages/Init.js';
+import Message, { fString, fDate, fBool, fNumber, IMessageFactory } from './Message.js';
+import Init, { fInit } from './Messages/Init.js';
 
 // Helper types
 type Unpack<T> =
@@ -26,6 +26,7 @@ interface IApiDefs {
 
 // Server functions
 export enum ServerFunction {
+   // eslint-disable-next-line no-shadow
    Init = 1,
    Click,
    Cool,
@@ -36,23 +37,23 @@ export namespace ServerFunctions {
    const apiDefs: IApiDefs = {};
 
    // Declare the functions
-   declare function Init(msg: InitData): string;
-   declare function Click(msg: Date): boolean;
-   declare function Cool(msg: string): number;
-   declare function Ping(msg: boolean): void;
+   declare function dInit(msg: Init): string;
+   declare function dClick(msg: Date): boolean;
+   declare function dCool(msg: string): number;
+   declare function dPing(msg: boolean): void;
 
    // Declare the api
-   apiDefs[ServerFunction.Init] = [InitData.Msg, Text];
-   apiDefs[ServerFunction.Click] = [Time, Bool];
-   apiDefs[ServerFunction.Cool] = [Text, Double];
-   apiDefs[ServerFunction.Ping] = [Bool, undefined];
+   apiDefs[ServerFunction.Init] = [fInit, fString];
+   apiDefs[ServerFunction.Click] = [fDate, fBool];
+   apiDefs[ServerFunction.Cool] = [fString, fNumber];
+   apiDefs[ServerFunction.Ping] = [fBool, undefined];
 
    // Declare the types
    type Packing<T> =
-      T extends ServerFunction.Init ? Analyze<typeof Init> :
-      T extends ServerFunction.Click ? Analyze<typeof Click> :
-      T extends ServerFunction.Cool ? Analyze<typeof Cool> :
-      T extends ServerFunction.Ping ? Analyze<typeof Ping> :
+      T extends ServerFunction.Init ? Analyze<typeof dInit> :
+      T extends ServerFunction.Click ? Analyze<typeof dClick> :
+      T extends ServerFunction.Cool ? Analyze<typeof dCool> :
+      T extends ServerFunction.Ping ? Analyze<typeof dPing> :
       never;
 
    export type Parameter<T> = First<Packing<T>>;
@@ -83,20 +84,20 @@ export namespace ClientFunctions {
    const apiDefs: IApiDefs = {};
 
    // Declare the functions
-   declare function GetVersion(msg: boolean): string;
-   declare function Hello(msg: string): void;
-   declare function ClickFromClient(msg: Date): void;
+   declare function dGetVersion(msg: boolean): string;
+   declare function dHello(msg: string): void;
+   declare function dClickFromClient(msg: Date): void;
 
    // Declare the api
-   apiDefs[ClientFunction.GetVersion] = [Bool, Text];
-   apiDefs[ClientFunction.Hello] = [Text, undefined];
-   apiDefs[ClientFunction.ClickFromClient] = [Time, undefined];
+   apiDefs[ClientFunction.GetVersion] = [fBool, fString];
+   apiDefs[ClientFunction.Hello] = [fString, undefined];
+   apiDefs[ClientFunction.ClickFromClient] = [fDate, undefined];
 
    // Declare the types
    type Packing<T> =
-      T extends ClientFunction.GetVersion ? Analyze<typeof GetVersion> :
-      T extends ClientFunction.Hello ? Analyze<typeof Hello> :
-      T extends ClientFunction.ClickFromClient ? Analyze<typeof ClickFromClient> :
+      T extends ClientFunction.GetVersion ? Analyze<typeof dGetVersion> :
+      T extends ClientFunction.Hello ? Analyze<typeof dHello> :
+      T extends ClientFunction.ClickFromClient ? Analyze<typeof dClickFromClient> :
       never;
 
    export type Parameter<T> = First<Packing<T>>;
