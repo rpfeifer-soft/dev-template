@@ -1,7 +1,7 @@
 /** @format */
 
 import WSTool from '../shared/WSTool.js';
-import Message, { Bool } from '../shared/Message.js';
+import Message from '../shared/Message.js';
 import Sender from '../shared/Sender.js';
 import {
    ServerFunction, ClientFunction,
@@ -13,7 +13,7 @@ interface IFunctionHandler<T extends Message, U extends Message> {
 }
 
 interface IHandlerData<T> {
-   ctor: new () => Message;
+   ctor: () => Message;
    handler: T;
 }
 
@@ -22,7 +22,7 @@ class Handlers {
 
    addFunction<T extends Message, U extends Message>(
       type: ClientFunction,
-      ctor: new () => Message,
+      ctor: () => Message,
       handler: IFunctionHandler<T, U>
    ) {
       let handlers = this.functionHandlers[type];
@@ -48,7 +48,7 @@ class Handlers {
    }
 }
 
-class ServerBase extends Sender<ServerFunction, ServerFunction> implements IClientHandler {
+class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClientHandler {
    // The server to use
    socket: WebSocket;
 
@@ -56,13 +56,13 @@ class ServerBase extends Sender<ServerFunction, ServerFunction> implements IClie
    handlers = new Handlers();
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   async callInit(msgInit: any): Promise<Message> {
-      return new Bool(false);;
+   async callInit(ctor: () => Message, msgInit: Message): Promise<Message> {
+      return ctor();
    }
 
    // Init the instance
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   initServer(url: string, msgInit: any) {
+   initServer(url: string, ctor: () => Message, msgInit: Message) {
       // Register the correct handler
       let server = this;
       server.socket = new WebSocket(url);
@@ -70,7 +70,7 @@ class ServerBase extends Sender<ServerFunction, ServerFunction> implements IClie
 
       return new Promise<Message>((resolve, reject) => {
          server.socket.onopen = function () {
-            server.callInit(msgInit)
+            server.callInit(ctor, msgInit)
                .then(msg => resolve(msg))
                .catch(error => reject(error));
          };
@@ -108,17 +108,12 @@ class ServerBase extends Sender<ServerFunction, ServerFunction> implements IClie
       let functionHandlers = this.handlers.getFunctions(serverMessage.type);
       if (functionHandlers) {
          functionHandlers.forEach(handlerData => {
-            let handlerMsg = new handlerData.ctor();
-            handlerMsg.parse(serverMessage.data);
-            let promise = handlerData.handler(handlerMsg);
-            if (promise) {
-               if (serverMessage.requestId) {
-                  let requestId = serverMessage.requestId;
-                  promise
-                     .then(answerMsg => this.answer(requestId, answerMsg))
-                     .catch(reason => this.error(requestId, reason));
-               }
-            }
+            this.handleMessage(
+               serverMessage.type,
+               handlerData.ctor,
+               handlerData.handler,
+               serverMessage
+            );
          });
       }
    }
@@ -133,7 +128,7 @@ class ServerBase extends Sender<ServerFunction, ServerFunction> implements IClie
 
    onFunction<T extends Message, U extends Message>(
       type: ClientFunction,
-      ctor: new () => T,
+      ctor: () => T,
       handler: IFunctionHandler<T, U>
    ) {
       this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
@@ -145,8 +140,8 @@ class Server extends ImplementsClient(ServerBase) {
    public static readonly instance: Server = new Server();
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   callInit(msgInit: any): Promise<Message> {
-      return this.call(ServerFunction.Init, msgInit);
+   callInit(ctor: () => Message, msgInit: Message): Promise<Message> {
+      return this.sendFunction(ctor, ServerFunction.Init, msgInit);
    }
 }
 

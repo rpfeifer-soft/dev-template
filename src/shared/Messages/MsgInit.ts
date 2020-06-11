@@ -1,24 +1,25 @@
 /** @format */
 
-import { Json } from '../Message.js';
+import { Json, IMessageFactory } from '../Message.js';
 
-interface IMsgInit {
+interface IInit {
    url: string;
    browser: string;
    time: Date;
+   test?: string;
 }
 
-interface MsgInit extends IMsgInit { };
-class MsgInit extends Json<IMsgInit> {
-   schema = {
-      url: true,
-      browser: true,
-      time: MsgInit.dateSerializer
+interface Init extends IInit { };
+class Init {
+   static Msg: IMessageFactory<Init> = {
+      pack: (value) => new Json({
+         url: true,
+         browser: true,
+         time: Json.dateSerializer,
+         test: true
+      }, value),
+      unpack: (msg: Json<Init>) => msg.data
    };
-
-   static parse(data: string | ArrayBuffer) {
-      return MsgInit.parseMessage(MsgInit, data);
-   }
 };
 
-export default MsgInit;
+export default Init;

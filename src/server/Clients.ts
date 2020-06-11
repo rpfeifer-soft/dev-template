@@ -14,7 +14,7 @@ interface IFunctionHandler<T extends Message, U extends Message> {
 }
 
 interface IHandlerData<T> {
-   ctor: new () => Message;
+   ctor: () => Message;
    handler: T;
 }
 
@@ -23,7 +23,7 @@ class Handlers {
 
    addFunction<T extends Message, U extends Message>(
       type: ServerFunction,
-      ctor: new () => Message,
+      ctor: () => Message,
       handler: IFunctionHandler<T, U>
    ) {
       let handlers = this.functionHandlers[type];
@@ -116,17 +116,12 @@ class ClientsBase implements IServerHandler<Client> {
       let functionHandlers = this.handlers.getFunctions(clientMessage.type);
       if (functionHandlers) {
          functionHandlers.forEach(handlerData => {
-            let handlerMsg = new handlerData.ctor();
-            handlerMsg.parse(clientMessage.data);
-            let promise = handlerData.handler(handlerMsg, client);
-            if (promise) {
-               if (clientMessage.requestId) {
-                  let requestId = clientMessage.requestId;
-                  promise
-                     .then(answerMsg => client.answer(requestId, answerMsg))
-                     .catch(reason => client.error(requestId, reason));
-               }
-            }
+
+            client.handleMessage(
+               clientMessage.type,
+               handlerData.ctor,
+               (msg) => handlerData.handler(msg, client),
+               clientMessage);
          });
       }
    }
@@ -144,7 +139,7 @@ class ClientsBase implements IServerHandler<Client> {
 
    onFunction<T extends Message, U extends Message>(
       type: ServerFunction,
-      ctor: new () => T,
+      ctor: () => T,
       handler: IFunctionHandler<T, U>
    ) {
       this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);

@@ -1,8 +1,8 @@
 /* eslint-disable id-blacklist */
 /** @format */
 
-import Message, { Text, Time, Bool, Double } from './Message.js';
-import MsgInit from './Messages/MsgInit.js';
+import Message, { Text, Time, Bool, Double, IMessageFactory } from './Message.js';
+import InitData from './Messages/MsgInit.js';
 
 // Helper types
 type Unpack<T> =
@@ -14,12 +14,14 @@ type First<T> =
 type Second<T> =
    T extends [(infer U), (infer V)] ? V : T;
 
-type Analyze<T extends ((msg: Message) => Message | void)>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Analyze<T extends ((msg: any) => any | void)>
    = [Unpack<Parameters<T>>, ReturnType<T>];
 
 // Api map
 interface IApiDefs {
-   [key: number]: [new () => Message, (new () => Message) | undefined];
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   [key: number]: [IMessageFactory<any>, IMessageFactory<any> | undefined];
 };
 
 // Server functions
@@ -34,16 +36,16 @@ export namespace ServerFunctions {
    const apiDefs: IApiDefs = {};
 
    // Declare the functions
-   declare function Init(msg: MsgInit): Text;
-   declare function Click(msg: Time): Bool;
-   declare function Cool(msg: Text): Double;
-   declare function Ping(msg: Bool): void;
+   declare function Init(msg: InitData): string;
+   declare function Click(msg: Date): boolean;
+   declare function Cool(msg: string): number;
+   declare function Ping(msg: boolean): void;
 
    // Declare the api
-   apiDefs[ServerFunction.Init] = [MsgInit, Text];
-   apiDefs[ServerFunction.Click] = [Time, Bool];
-   apiDefs[ServerFunction.Cool] = [Text, Double];
-   apiDefs[ServerFunction.Ping] = [Bool, undefined];
+   apiDefs[ServerFunction.Init] = [InitData.Msg, Text.Msg];
+   apiDefs[ServerFunction.Click] = [Time.Msg, Bool.Msg];
+   apiDefs[ServerFunction.Cool] = [Text.Msg, Double.Msg];
+   apiDefs[ServerFunction.Ping] = [Bool.Msg, undefined];
 
    // Declare the types
    type Packing<T> =
@@ -56,7 +58,8 @@ export namespace ServerFunctions {
    export type Parameter<T> = First<Packing<T>>;
    export type Returns<T> = Second<Packing<T>>;
 
-   export function getApi(type: ServerFunction): [new () => Message, (new () => Message) | undefined] {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   export function getApi(type: ServerFunction): [IMessageFactory<any>, IMessageFactory<any> | undefined] {
       return apiDefs[type];
    }
 
@@ -80,14 +83,14 @@ export namespace ClientFunctions {
    const apiDefs: IApiDefs = {};
 
    // Declare the functions
-   declare function GetVersion(msg: Bool): Text;
-   declare function Hello(msg: Text): void;
-   declare function ClickFromClient(msg: Time): void;
+   declare function GetVersion(msg: boolean): string;
+   declare function Hello(msg: string): void;
+   declare function ClickFromClient(msg: Date): void;
 
    // Declare the api
-   apiDefs[ClientFunction.GetVersion] = [Bool, Text];
-   apiDefs[ClientFunction.Hello] = [Text, undefined];
-   apiDefs[ClientFunction.ClickFromClient] = [Time, undefined];
+   apiDefs[ClientFunction.GetVersion] = [Bool.Msg, Text.Msg];
+   apiDefs[ClientFunction.Hello] = [Text.Msg, undefined];
+   apiDefs[ClientFunction.ClickFromClient] = [Time.Msg, undefined];
 
    // Declare the types
    type Packing<T> =
@@ -99,7 +102,8 @@ export namespace ClientFunctions {
    export type Parameter<T> = First<Packing<T>>;
    export type Returns<T> = Second<Packing<T>>;
 
-   export function getApi(type: ClientFunction): [new () => Message, (new () => Message) | undefined] {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   export function getApi(type: ClientFunction): [IMessageFactory<any>, IMessageFactory<any> | undefined] {
       return apiDefs[type];
    }
 
@@ -115,7 +119,7 @@ export namespace ClientFunctions {
 export interface IServerHandler<T> {
    onFunction: (
       type: ServerFunction,
-      ctor: new () => Message,
+      ctor: () => Message,
       handler: (msg: Message, client: T) => Promise<Message> | void
    ) => void;
 
@@ -148,17 +152,29 @@ export function ImplementsServer<T>() {
          on(...args: OnArgs<ServerFunction.Cool>): void;
          on(...args: OnArgs<ServerFunction.Ping>): void;
 
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         on(type: ServerFunction, handler: any) {
-            let ctorParameter = ServerFunctions.getParameter(type);
-            this.onFunction(type, ctorParameter, handler);
+         on(type: ServerFunction, handler: Func<unknown, unknown> | Action<unknown>) {
+            let factoryParam = ServerFunctions.getParameter(type);
+            let factoryReturn = ServerFunctions.getReturns(type);
+
+            let ctorParameter = () => factoryParam.pack();
+
+            this.onFunction(type, ctorParameter, (data: Message, client: T) => {
+               let promise = handler(factoryParam.unpack(data), client);
+               if (!promise || !factoryReturn) {
+                  return;
+               }
+               let pack = factoryReturn.pack;
+               return promise.then(msg => pack(msg));
+            });
          }
 
          broadcast(...args: BroadcastArgs<ClientFunction.GetVersion>): void;
          broadcast(...args: BroadcastArgs<ClientFunction.Hello>): void;
          broadcast(...args: BroadcastArgs<ClientFunction.ClickFromClient>): void;
 
-         broadcast(type: ClientFunction, msg: Message) {
+         broadcast(type: ClientFunction, data: unknown) {
+            let factoryParam = ClientFunctions.getParameter(type);
+            let msg = factoryParam.pack(data);
             this.broadcastMethod(type, msg);
          }
       };
@@ -172,7 +188,7 @@ interface ISenderHandler<TMethod, TFunction> {
    ) => void;
 
    sendFunction: (
-      ctor: new () => Message,
+      ctor: () => Message,
       type: TFunction,
       msg: Message
    ) => Promise<Message>;
@@ -194,10 +210,18 @@ export function ImplementsServerClient<TBase extends ServerClientConstructor>(Ba
       call(...args: CallArgs<ClientFunction.Hello>): ReturnArg<ClientFunction.Hello>;
       call(...args: CallArgs<ClientFunction.ClickFromClient>): ReturnArg<ClientFunction.ClickFromClient>;
 
-      call(type: ClientFunction, msg: Message): Promise<Message> | void {
-         let ctorReturnType = ClientFunctions.getReturns(type);
-         if (ctorReturnType) {
-            return this.sendFunction(ctorReturnType, type, msg);
+      call(type: ClientFunction, data: unknown): Promise<unknown> | void {
+         let factoryParam = ClientFunctions.getParameter(type);
+         let factoryReturn = ClientFunctions.getReturns(type);
+
+         let msg = factoryParam.pack(data);
+
+         if (factoryReturn) {
+            let pack = factoryReturn.pack;
+            let unpack = factoryReturn.unpack;
+            let ctorReturnType = () => pack();
+            return this.sendFunction(ctorReturnType, type, msg)
+               .then(resultMsg => unpack(resultMsg));
          } else {
             return this.pushMethod(type, msg);
          }
@@ -205,13 +229,17 @@ export function ImplementsServerClient<TBase extends ServerClientConstructor>(Ba
    };
 }
 
+type InitReturn = ServerFunctions.Returns<ServerFunction.Init> extends undefined
+   ? void
+   : Promise<Message>;
+
 export interface IClientHandler extends ISenderHandler<ServerFunction, ServerFunction> {
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   initServer: (url: string, msgInit: Message) => any;
+
+   initServer: (url: string, ctor: () => Message, msgInit: Message) => InitReturn;
 
    onFunction: (
       type: ClientFunction,
-      ctor: new () => Message,
+      ctor: () => Message,
       handler: (msg: Message) => Promise<Message> | void
    ) => void;
 }
@@ -234,11 +262,21 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
 
    return class extends Base {
 
-      init(
-         url: string,
-         msg: ServerFunctions.Parameter<ServerFunction.Init>
-      ): Promise<ServerFunctions.Returns<ServerFunction.Init>> {
-         return this.initServer(url, msg);
+      init(url: string, data: ServerFunctions.Parameter<ServerFunction.Init>): ReturnArg<ServerFunction.Init>;
+      init(url: string, data: unknown) {
+         let factoryParam = ServerFunctions.getParameter(ServerFunction.Init);
+         let factoryReturn = ServerFunctions.getReturns(ServerFunction.Init);
+
+         let msg = factoryParam.pack(data);
+
+         if (!factoryReturn) {
+            return;
+         }
+         let pack = factoryReturn.pack;
+         let ctor = () => pack();
+
+         return this.initServer(url, ctor, msg)
+            .then(resultMsg => factoryReturn ? factoryReturn.unpack(resultMsg) : resultMsg);
       }
 
       // FUNCTIONS
@@ -247,9 +285,20 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       on(...args: OnArgs<ClientFunction.ClickFromClient>): void;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      on(type: ClientFunction, handler: any) {
-         let ctorParameter = ClientFunctions.getParameter(type);
-         this.onFunction(type, ctorParameter, handler);
+      on(type: ClientFunction, handler: Func<unknown, unknown> | Action<unknown>) {
+         let factoryParam = ClientFunctions.getParameter(type);
+         let factoryReturn = ClientFunctions.getReturns(type);
+
+         let ctorParameter = () => factoryParam.pack();
+
+         this.onFunction(type, ctorParameter, (data: Message) => {
+            let promise = handler(factoryParam.unpack(data));
+            if (!promise || !factoryReturn) {
+               return;
+            }
+            let pack = factoryReturn.pack;
+            return promise.then(msg => pack(msg));
+         });
       }
 
       // FUNCTIONS
@@ -258,10 +307,18 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       call(...args: CallArgs<ServerFunction.Cool>): ReturnArg<ServerFunction.Cool>;
       call(...args: CallArgs<ServerFunction.Ping>): ReturnArg<ServerFunction.Ping>;
 
-      call(type: ServerFunction, msg: Message): Promise<Message> | void {
-         let ctorReturnType = ServerFunctions.getReturns(type);
-         if (ctorReturnType) {
-            return this.sendFunction(ctorReturnType, type, msg);
+      call(type: ServerFunction, data: unknown): Promise<unknown> | void {
+         let factoryParam = ServerFunctions.getParameter(type);
+         let factoryReturn = ServerFunctions.getReturns(type);
+
+         let msg = factoryParam.pack(data);
+
+         if (factoryReturn) {
+            let pack = factoryReturn.pack;
+            let unpack = factoryReturn.unpack;
+            let ctorReturnType = () => pack();
+            return this.sendFunction(ctorReturnType, type, msg)
+               .then(resultMsg => unpack(resultMsg));
          } else {
             return this.pushMethod(type, msg);
          }

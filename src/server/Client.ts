@@ -3,9 +3,9 @@
 import ws from 'ws';
 import WSTool from '../shared/WSTool.js';
 import Sender from '../shared/Sender.js';
-import { ClientFunction, ImplementsServerClient } from '../shared/Functions.js';
+import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/Functions.js';
 
-class ClientBase extends Sender<ClientFunction, ClientFunction> {
+class ClientBase extends Sender<ClientFunction, ServerFunction> {
    // The id of the client
    public readonly id: number;
 

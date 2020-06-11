@@ -14,16 +14,17 @@ interface IRequestResult {
 
 type IRequest = IRequestError | IRequestResult;
 
-interface IClientMessage {
-   type: ServerFunction;
+export interface IBaseMessage {
    data: string | ArrayBuffer;
    requestId?: number;
 }
 
-interface IServerMessage {
+interface IClientMessage extends IBaseMessage {
+   type: ServerFunction;
+}
+
+interface IServerMessage extends IBaseMessage {
    type: ClientFunction;
-   data: string | ArrayBuffer;
-   requestId?: number;
 }
 
 enum PacketType {

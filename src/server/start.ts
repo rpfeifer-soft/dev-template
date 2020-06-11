@@ -6,7 +6,6 @@ import express from 'express';
 import Clients from './Clients.js';
 import getIndexHtml from './Index.js';
 import { ServerFunction, ClientFunction } from '../shared/Functions.js';
-import { Text, Bool, Double } from '../shared/Message.js';
 
 const server = express();
 
@@ -23,18 +22,18 @@ server.listen(options.getPort(), () => {
    console.log(`Listening on port ${options.getPort()}`);
 
    Clients.on(ServerFunction.Init, async (msg, client) => {
-      client.call(ClientFunction.Hello, new Text('Yes'));
-      return new Text(msg.browser ? msg.browser + ' ' + client.id : 'No data!');
+      client.call(ClientFunction.Hello, 'Yes');
+      return msg.browser ? msg.browser + ' ' + client.id : 'No data!';
    });
-   Clients.on(ServerFunction.Click, async (msg) => {
-      Clients.broadcast(ClientFunction.ClickFromClient, msg);
-      return new Bool(true);
+   Clients.on(ServerFunction.Click, async (date) => {
+      Clients.broadcast(ClientFunction.ClickFromClient, date);
+      return true;
    });
-   Clients.on(ServerFunction.Cool, async (msg) => {
+   Clients.on(ServerFunction.Cool, async (text) => {
       if (1 + 1 === 2) {
          throw new Error('Ein Fehler!');
       }
-      return new Double(msg.data === undefined ? -1 : msg.data.length);
+      return text === undefined ? -1 : text.length;
    });
 });
 

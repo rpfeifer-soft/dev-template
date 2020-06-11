@@ -2,6 +2,11 @@
 
 import ByteArray from './ByteArray.js';
 
+export interface IMessageFactory<T> {
+   pack: (data?: T) => Message;
+   unpack: (msg: Message) => T | undefined;
+}
+
 abstract class Message {
 
    abstract parse(data: string | ArrayBuffer): this;
@@ -31,9 +36,19 @@ namespace Message {
       let msg = new ctor();
       return msg.parse(data);
    }
+
+   export function parseFactory<T>(factory: IMessageFactory<T>, data: string | ArrayBuffer) {
+      let msg = factory.pack();
+      return msg.parse(data);
+   }
 }
 
 export class Void extends Message {
+   static Msg: IMessageFactory<void> = {
+      pack: () => new Void(),
+      unpack: () => undefined
+   };
+
    constructor() {
       super();
    }
@@ -53,12 +68,13 @@ export class Void extends Message {
 }
 
 export class Bool extends Message {
+   static Msg: IMessageFactory<boolean> = {
+      pack: (value) => new Bool(value),
+      unpack: (msg: Bool) => msg.data
+   };
+
    constructor(public data?: boolean) {
       super();
-   }
-
-   static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(Bool, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -75,6 +91,11 @@ export class Bool extends Message {
 }
 
 export class Double extends Message {
+   static Msg: IMessageFactory<number> = {
+      pack: (value) => new Double(value),
+      unpack: (msg: Double) => msg.data
+   };
+
    constructor(public data?: number) {
       super();
    }
@@ -97,6 +118,11 @@ export class Double extends Message {
 }
 
 export class Text extends Message {
+   static Msg: IMessageFactory<string> = {
+      pack: (value) => new Text(value),
+      unpack: (msg: Text) => msg.data
+   };
+
    constructor(public data?: string) {
       super();
    }
@@ -119,6 +145,11 @@ export class Text extends Message {
 }
 
 export class Time extends Message {
+   static Msg: IMessageFactory<Date> = {
+      pack: (value) => new Time(value),
+      unpack: (msg: Time) => msg.data
+   };
+
    data?: Date;
 
    constructor(data?: Date) {
@@ -146,10 +177,22 @@ export class Time extends Message {
    }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Schema<U> = Record<keyof U, boolean | ((write: boolean, value: any) => any)>;
+
 // Special data implementation
 export class Json<U> extends Message {
+   data?: U;
+
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   protected schema: Record<keyof U, boolean | ((write: boolean, value: any) => any)>;
+   schema: Schema<U>;
+
+   constructor(schema: Schema<U>, data?: U) {
+      super();
+      // Set the values (no copy)
+      this.data = data;
+      this.schema = schema;
+   }
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    static dateSerializer(write: boolean, value: any) {
@@ -165,32 +208,53 @@ export class Json<U> extends Message {
          throw new Error('ArrayBuffer not support for generic data!');
       }
       let json = Message.fromJSON(data);
-      let entries = Object.entries(this.schema);
-      entries.forEach(([key, value]) => {
-         if (value === true) {
-            // Copy as is
-            this[key] = json[key];
+      if (json === undefined) {
+         this.data = undefined;
+      } else {
+         let entries = Object.entries(this.schema);
+         if (!this.data) {
+            this.data = {} as U;
          }
-         if (typeof value === 'function') {
-            this[key] = value(false, json[key]);
-         }
-      });
+         let object = this.data;
+         let assign = (key: string, value: unknown) => {
+            if (value !== undefined) {
+               object[key] = value;
+            }
+         };
+         entries.forEach(([key, value]) => {
+            if (value === true) {
+               // Copy as is
+               assign(key, json[key]);
+            }
+            if (typeof value === 'function') {
+               assign(key, value(false, json[key]));
+            }
+         });
+      }
       return this;
    }
 
    stringify(): string | ArrayBuffer {
       let json = {};
       let entries = Object.entries(this.schema);
-      entries.forEach(([key, value]) => {
-         if (value === true) {
-            // Copy as is
-            json[key] = this[key];
-         }
-         if (typeof value === 'function') {
-            json[key] = value(true, this[key]);
-         }
-      });
-      return Message.toJSON(json);
+      if (this.data) {
+         let object = this.data;
+         let assign = (key: string, value: unknown) => {
+            if (value !== undefined) {
+               json[key] = value;
+            }
+         };
+         entries.forEach(([key, value]) => {
+            if (value === true) {
+               // Copy as is
+               assign(key, object[key]);
+            }
+            if (typeof value === 'function') {
+               assign(key, value(true, object[key]));
+            }
+         });
+      }
+      return Message.toJSON(this.data === undefined ? undefined : json);
    }
 }
 

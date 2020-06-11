@@ -1,11 +1,23 @@
 /** @format */
 
 import test from 'tape';
-import { Bool, Double, Text, Time } from '../shared/Message.js';
+import { Bool, Double, Text, Time, IMessageFactory } from '../shared/Message.js';
 import MsgInit from '../shared/Messages/MsgInit.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
+
+function serialize<T>(factory: IMessageFactory<T>, data: T) {
+   return factory.unpack(factory.pack().parse(factory.pack(data).stringify()));
+}
+
+function assertEqual<T>(assert: test.Test, factory: IMessageFactory<T>, value: T, expected?: T) {
+   assert.equal(serialize(factory, value), expected || value);
+}
+
+function assertDeepEqual<T>(assert: test.Test, factory: IMessageFactory<T>, value: T, expected?: T) {
+   assert.deepEqual(serialize(factory, value), expected || value);
+}
 
 test('Check default classes', (assert) => {
    assert.ok(Bool);
@@ -24,13 +36,10 @@ test('Create boolean data message', (assert) => {
 });
 
 test('Serialize boolean data message', (assert) => {
-   let msgOrig = new Bool(true);
-   let msg = Bool.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
-
-   msgOrig = new Bool(false);
-   msg = Bool.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
+   let ensure = (value?: boolean) => assertEqual(assert, Bool.Msg, value);
+   ensure(undefined);
+   ensure(true);
+   ensure(false);
    assert.end();
 });
 
@@ -45,17 +54,10 @@ test('Create string data message', (assert) => {
 });
 
 test('Serialize string data message', (assert) => {
-   let msgOrig = new Text('text');
-   let msg = Text.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
-
-   msgOrig = new Text();
-   msg = Text.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
-
-   msgOrig = new Text('');
-   msg = Text.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
+   let ensure = (value?: string, expected?: string) => assertEqual(assert, Text.Msg, value, expected);
+   ensure(undefined);
+   ensure('');
+   ensure('text');
    assert.end();
 });
 
@@ -72,21 +74,11 @@ test('Create number data message', (assert) => {
 });
 
 test('Serialize number data message', (assert) => {
-   let msgOrig = new Double(21);
-   let msg = Double.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
-
-   msgOrig = new Double();
-   msg = Double.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
-
-   msgOrig = new Double(-19.78);
-   msg = Double.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
-
-   msgOrig = new Double(0);
-   msg = Double.parse(msgOrig.stringify());
-   assert.equal(msg.data, msgOrig.data);
+   let ensure = (value?: number, expected?: number) => assertEqual(assert, Double.Msg, value, expected);
+   ensure(undefined);
+   ensure(21);
+   ensure(-19.78);
+   ensure(0);
    assert.end();
 });
 
@@ -116,43 +108,30 @@ test('Create date data message', (assert) => {
 });
 
 test('Serialize date data message', (assert) => {
-   let msgOrig = new Time(new Date());
-   let msg = Time.parse(msgOrig.stringify());
-   assert.ok(msg.data);
-   assert.ok(msgOrig.data);
-   if (msg.data && msgOrig.data) {
-      assert.equal(msg.data.valueOf(), msgOrig.data.valueOf());
-   }
-
-   msgOrig = new Time();
-   msg = Time.parse(msgOrig.stringify());
-   assert.notok(msg.data);
-   assert.equal(msg.data, msgOrig.data);
-
-   msgOrig = new Time(new Date(1978, 9, 21, 19, 7, 8, 21));
-   msg = Time.parse(msgOrig.stringify());
-   assert.ok(msg.data);
-   assert.ok(msgOrig.data);
-   if (msg.data && msgOrig.data) {
-      assert.equal(msg.data.valueOf(), msgOrig.data.valueOf());
-   }
+   let cmpDate = (date?: Date) => date ? date.valueOf() : undefined;
+   let now = new Date();
+   let then = new Date(1978, 9, 21, 19, 7, 8, 21);
+   assert.equal(cmpDate(serialize(Time.Msg, undefined)), cmpDate(undefined));
+   assert.equal(cmpDate(serialize(Time.Msg, now)), cmpDate(now));
+   assert.equal(cmpDate(serialize(Time.Msg, then)), cmpDate(then));
    assert.end();
 });
 
 test('Serialize JSON data', (assert) => {
-   let msgOrig = new MsgInit();
-   msgOrig.browser = 'Browser';
-   msgOrig.url = 'url';
-   msgOrig.time = new Date(Date.now());
-
-   let msg = MsgInit.parse(msgOrig.stringify());
-   assert.equals(msg.browser, msgOrig.browser);
-   assert.equals(msg.url, msgOrig.url);
-   if (msg.time && msgOrig.time) {
-      assert.equals(msg.time.valueOf(), msgOrig.time.valueOf());
-   } else {
-      assert.notok(msg.time);
-      assert.notok(msgOrig.time);
-   }
+   let ensure = (value?: MsgInit, expected?: MsgInit) => assertDeepEqual(assert, MsgInit.Msg, value, expected);
+   let now = new Date(Date.now());
+   let init = {
+      browser: 'Browser',
+      url: 'url',
+      time: now
+   };
+   ensure(undefined);
+   ensure(init);
+   ensure({
+      browser: 'Browser',
+      url: 'url',
+      time: now,
+      test: undefined
+   }, init);
    assert.end();
 });

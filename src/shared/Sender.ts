@@ -1,6 +1,6 @@
 /** @format */
 
-import WSTool from './WSTool.js';
+import WSTool, { IBaseMessage } from './WSTool.js';
 import Message from './Message.js';
 
 interface IRequests {
@@ -13,16 +13,35 @@ interface IRequests {
    };
 }
 
-abstract class Sender<TMethod, TFunction> {
+abstract class Sender<TFunction, HFunction> {
    // The pending requests
    protected requests: IRequests = {};
    protected nextRequestId = 1;
 
    // Push a message (result does not matter)
-   pushMethod(type: TMethod, msg: Message) {
+   pushMethod(type: TFunction, msg: Message) {
       // No requestId necessary
       let data = this.prepare(type, msg.stringify(), false);
       this.sendRequest(data);
+   }
+
+   handleMessage(
+      type: HFunction,
+      ctor: () => Message,
+      handler: (msg: Message) => Promise<Message> | void,
+      message: IBaseMessage
+   ) {
+      let handlerMsg = ctor();
+      handlerMsg.parse(message.data);
+      let promise = handler(handlerMsg);
+      if (promise) {
+         if (message.requestId) {
+            let requestId = message.requestId;
+            promise
+               .then(answerMsg => this.answer(requestId, answerMsg))
+               .catch(reason => this.error(requestId, reason));
+         }
+      }
    }
 
    answer(requestId: number, msg: Message) {
@@ -38,14 +57,14 @@ abstract class Sender<TMethod, TFunction> {
       this.sendRequest(data, requestId);
    }
 
-   async sendFunction<U extends Message>(ctor: (new () => U), type: TFunction, msg: Message) {
+   async sendFunction<U extends Message>(ctor: () => U, type: TFunction, msg: Message) {
       let promise = new Promise<string>((resolve, reject) => {
          let requestId = this.getNextRequestId();
          let data = this.prepare(type, msg.stringify(), requestId);
          this.sendRequest(data, requestId, resolve, reject);
       });
       const result = await promise;
-      let msgResult = new ctor();
+      let msgResult = ctor();
       return msgResult.parse(result);
    }
 
@@ -116,7 +135,7 @@ abstract class Sender<TMethod, TFunction> {
    }
 
    protected abstract prepare(
-      type: TFunction | TMethod,
+      type: TFunction,
       data: string | ArrayBuffer,
       requestId: number | false
    ): string | ArrayBuffer;

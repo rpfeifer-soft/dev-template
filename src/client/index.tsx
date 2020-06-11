@@ -3,7 +3,6 @@
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
 import { ServerFunction, ClientFunction } from '../shared/Functions.js';
-import { Time, Text } from '../shared/Message.js';
 import MsgInit from '../shared/Messages/MsgInit';
 
 let app = document.getElementById('app');
@@ -24,25 +23,25 @@ if (app) {
    msgInit.time = new Date();
 
    Server.init(baseURI + 'ws', msgInit)
-      .then(p => console.log('Init-Result: :' + p.data + ':'));
+      .then(p => console.log('Init-Result: :' + p + ':'));
 
    let button = document.createElement('button');
    app.appendChild(button);
    button.innerText = 'Click';
    button.onclick = async () => {
-      Server.call(ServerFunction.Click, new Time(new Date()));
+      Server.call(ServerFunction.Click, new Date());
    };
 
-   Server.on(ClientFunction.ClickFromClient, (msg) => {
-      console.log('Click', msg.data);
+   Server.on(ClientFunction.ClickFromClient, (date) => {
+      console.log('Click', date);
    });
-   Server.on(ClientFunction.Hello, (msg) => {
-      console.log('Hello', msg.data);
+   Server.on(ClientFunction.Hello, (text) => {
+      console.log('Hello', text);
    });
-   Server.on(ClientFunction.ClickFromClient, async (msg) => {
-      console.log('Click2', msg.data);
+   Server.on(ClientFunction.ClickFromClient, async (date) => {
+      console.log('Click2', date);
       try {
-         console.log('length = ' + (await Server.call(ServerFunction.Cool, new Text('Mein Name'))).data);
+         console.log('length = ' + (await Server.call(ServerFunction.Cool, 'Mein Name')));
       } catch (reason) {
          console.error(reason);
       }
