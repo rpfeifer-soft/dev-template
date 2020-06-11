@@ -87,6 +87,17 @@ class ByteArray {
       return isNaN(value) ? undefined : value;
    }
 
+   public addDate(value: Date | undefined) {
+      let time = value ? value.valueOf() : undefined;
+      this.addNumber(time);
+      return this;
+   }
+
+   public getDate(): Date | undefined {
+      let time = this.getNumber();
+      return time === undefined ? undefined : new Date(time);
+   }
+
    public addString(value: string | undefined) {
       let encoder = new TextEncoder();
       if (value === undefined) {

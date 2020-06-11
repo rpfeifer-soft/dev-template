@@ -168,15 +168,13 @@ class TimeClass extends Message {
 
    parse(data: ArrayBuffer) {
       let bytes = new ByteArray(data);
-      let time = bytes.getNumber();
-      this.data = time ? new Date(time) : undefined;
+      this.data = bytes.getDate();
       return this;
    }
 
    stringify() {
       let bytes = new ByteArray();
-      let time = this.data ? this.data.getTime() : undefined;
-      bytes.addNumber(time);
+      bytes.addDate(this.data);
       return bytes.getArrayBuffer();
    }
 }

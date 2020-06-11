@@ -111,6 +111,26 @@ testNumber(Number.MIN_VALUE);
 testNumber(Number.MAX_SAFE_INTEGER);
 testNumber(Number.MIN_SAFE_INTEGER);
 
+function testDate(value: Date | undefined, expected?: Date) {
+   test('Test date (' + value + ')', (assert) => {
+      let bytes = new ByteArray();
+      let src = value;
+      bytes.addDate(src);
+      let buffer = bytes.getArrayBuffer();
+      assert.equals(buffer.byteLength, 8);
+
+      let other = new ByteArray(buffer);
+      let dest = other.getDate();
+      if (dest && src) {
+         assert.equals(dest.valueOf(), expected === undefined ? src.valueOf() : expected.valueOf());
+      }
+      assert.end();
+   });
+}
+testDate(undefined);
+testDate(new Date());
+testDate(new Date(1978, 11, 21, 19, 21, 10));
+
 function testString(value: string | undefined, len: number, expected?: string) {
    test('Test string (' + (value === undefined ? 'undefined' : value.substr(0, 35)) + ')', (assert) => {
       let bytes = new ByteArray();
