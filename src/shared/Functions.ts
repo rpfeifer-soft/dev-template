@@ -1,4 +1,3 @@
-/* eslint-disable id-blacklist */
 /** @format */
 
 import Message, { fString, fDate, fBool, fNumber, IMessageFactory } from './Message.js';
@@ -14,14 +13,12 @@ type First<T> =
 type Second<T> =
    T extends [(infer U), (infer V)] ? V : T;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Analyze<T extends ((msg: any) => any | void)>
+type Analyze<T extends ((msg: unknown) => unknown | void)>
    = [Unpack<Parameters<T>>, ReturnType<T>];
 
 // Api map
 interface IApiDefs {
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   [key: number]: [IMessageFactory<any>, IMessageFactory<any> | undefined];
+   [key: number]: [IMessageFactory<unknown>, IMessageFactory<unknown> | undefined];
 };
 
 // Server functions
@@ -59,8 +56,7 @@ export namespace ServerFunctions {
    export type Parameter<T> = First<Packing<T>>;
    export type Returns<T> = Second<Packing<T>>;
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   export function getApi(type: ServerFunction): [IMessageFactory<any>, IMessageFactory<any> | undefined] {
+   export function getApi(type: ServerFunction): [IMessageFactory<unknown>, IMessageFactory<unknown> | undefined] {
       return apiDefs[type];
    }
 
@@ -103,8 +99,7 @@ export namespace ClientFunctions {
    export type Parameter<T> = First<Packing<T>>;
    export type Returns<T> = Second<Packing<T>>;
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   export function getApi(type: ClientFunction): [IMessageFactory<any>, IMessageFactory<any> | undefined] {
+   export function getApi(type: ClientFunction): [IMessageFactory<unknown>, IMessageFactory<unknown> | undefined] {
       return apiDefs[type];
    }
 
@@ -285,7 +280,6 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       on(...args: OnArgs<ClientFunction.Hello>): void;
       on(...args: OnArgs<ClientFunction.ClickFromClient>): void;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       on(type: ClientFunction, handler: Func<unknown, unknown> | Action<unknown>) {
          let factoryParam = ClientFunctions.getParameter(type);
          let factoryReturn = ClientFunctions.getReturns(type);
