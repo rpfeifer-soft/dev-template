@@ -21,9 +21,10 @@ server.listen(options.getPort(), () => {
    // eslint-disable-next-line no-console
    console.log(`Listening on port ${options.getPort()}`);
 
-   Clients.on(ServerFunction.Init, async (msg, client) => {
+   Clients.on(ServerFunction.Init, async (init, client) => {
       client.call(ClientFunction.Hello, 'Yes');
-      return msg.browser ? msg.browser + ' ' + client.id : 'No data!';
+      init.dump();
+      return init.browser ? init.browser + ' ' + client.id : 'No data!';
    });
    Clients.on(ServerFunction.Click, async (date) => {
       Clients.broadcast(ClientFunction.ClickFromClient, date);

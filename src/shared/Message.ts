@@ -182,17 +182,20 @@ class TimeClass extends Message {
 }
 export const fDate = TimeClass.Msg;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Schema<U> = Record<keyof U, boolean | ((write: boolean, value: any) => any)>;
+type Schema<TClass, TInterface> = [
+   (new () => TClass),
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
+];
 
 // Special data implementation
-export class Json<U> extends Message {
-   data?: U;
+export class Json<TClass, TInterface> extends Message {
+   data?: TClass;
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   schema: Schema<U>;
+   schema: Schema<TClass, TInterface>;
 
-   constructor(schema: Schema<U>, data?: U) {
+   constructor(schema: Schema<TClass, TInterface>, data?: TClass) {
       super();
       // Set the values (no copy)
       this.data = data;
@@ -216,9 +219,9 @@ export class Json<U> extends Message {
       if (json === undefined) {
          this.data = undefined;
       } else {
-         let entries = Object.entries(this.schema);
+         let entries = Object.entries(this.schema[1]);
          if (!this.data) {
-            this.data = {} as U;
+            this.data = new this.schema[0];
          }
          let object = this.data;
          let assign = (key: string, value: unknown) => {
@@ -241,7 +244,7 @@ export class Json<U> extends Message {
 
    stringify(): string | ArrayBuffer {
       let json = {};
-      let entries = Object.entries(this.schema);
+      let entries = Object.entries(this.schema[1]);
       if (this.data) {
          let object = this.data;
          let assign = (key: string, value: unknown) => {

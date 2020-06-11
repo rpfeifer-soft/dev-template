@@ -3,7 +3,7 @@
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
 import { ServerFunction, ClientFunction } from '../shared/Functions.js';
-import MsgInit from '../shared/Messages/Init';
+import Init from '../shared/Messages/Init';
 
 let app = document.getElementById('app');
 if (app) {
@@ -17,12 +17,7 @@ if (app) {
       baseURI = 'wss:' + baseURI;
    }
 
-   let msgInit = new MsgInit();
-   msgInit.url = location.href;
-   msgInit.browser = navigator.userAgent;
-   msgInit.time = new Date();
-
-   Server.init(baseURI + 'ws', msgInit)
+   Server.init(baseURI + 'ws', new Init(location.href, navigator.userAgent, new Date()))
       .then(p => console.log('Init-Result: :' + p + ':'));
 
    let button = document.createElement('button');

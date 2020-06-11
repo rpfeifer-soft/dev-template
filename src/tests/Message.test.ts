@@ -107,18 +107,17 @@ test('Serialize date data message', (assert) => {
 test('Serialize JSON data', (assert) => {
    let ensure = (value?: Init, expected?: Init) => assertDeepEqual(assert, fInit, value, expected);
    let now = new Date(Date.now());
-   let init = {
-      browser: 'Browser',
-      url: 'url',
-      time: now
-   };
+   let init = new Init('url', 'Browser', now);
+   let extended = new Init('url', 'Browser', now);
+   extended.test = undefined;
    ensure(undefined);
    ensure(init);
-   ensure({
-      browser: 'Browser',
-      url: 'url',
-      time: now,
-      test: undefined
-   }, init);
+   ensure(extended, init);
+   let out = serialize(fInit, init);
+   if (out) {
+      assert.notEqual(out, init);
+      assert.equals(typeof (out.dump), 'function');
+      assert.equal(out.dump, init.dump);
+   };
    assert.end();
 });
