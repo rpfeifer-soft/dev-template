@@ -2,7 +2,7 @@
 /** @format */
 
 import Message, { Text, Time, Bool, Double, IMessageFactory } from './Message.js';
-import InitData from './Messages/MsgInit.js';
+import InitData from './Messages/Init.js';
 
 // Helper types
 type Unpack<T> =
@@ -42,10 +42,10 @@ export namespace ServerFunctions {
    declare function Ping(msg: boolean): void;
 
    // Declare the api
-   apiDefs[ServerFunction.Init] = [InitData.Msg, Text.Msg];
-   apiDefs[ServerFunction.Click] = [Time.Msg, Bool.Msg];
-   apiDefs[ServerFunction.Cool] = [Text.Msg, Double.Msg];
-   apiDefs[ServerFunction.Ping] = [Bool.Msg, undefined];
+   apiDefs[ServerFunction.Init] = [InitData.Msg, Text];
+   apiDefs[ServerFunction.Click] = [Time, Bool];
+   apiDefs[ServerFunction.Cool] = [Text, Double];
+   apiDefs[ServerFunction.Ping] = [Bool, undefined];
 
    // Declare the types
    type Packing<T> =
@@ -88,9 +88,9 @@ export namespace ClientFunctions {
    declare function ClickFromClient(msg: Date): void;
 
    // Declare the api
-   apiDefs[ClientFunction.GetVersion] = [Bool.Msg, Text.Msg];
-   apiDefs[ClientFunction.Hello] = [Text.Msg, undefined];
-   apiDefs[ClientFunction.ClickFromClient] = [Time.Msg, undefined];
+   apiDefs[ClientFunction.GetVersion] = [Bool, Text];
+   apiDefs[ClientFunction.Hello] = [Text, undefined];
+   apiDefs[ClientFunction.ClickFromClient] = [Time, undefined];
 
    // Declare the types
    type Packing<T> =

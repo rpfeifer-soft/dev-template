@@ -43,9 +43,9 @@ namespace Message {
    }
 }
 
-export class Void extends Message {
+class VoidClass extends Message {
    static Msg: IMessageFactory<void> = {
-      pack: () => new Void(),
+      pack: () => new VoidClass(),
       unpack: () => undefined
    };
 
@@ -54,7 +54,7 @@ export class Void extends Message {
    }
 
    static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(Void, data);
+      return Message.parseMessage(VoidClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -66,11 +66,12 @@ export class Void extends Message {
       return bytes.getArrayBuffer();
    }
 }
+export const Void = VoidClass.Msg;
 
-export class Bool extends Message {
+class BoolClass extends Message {
    static Msg: IMessageFactory<boolean> = {
-      pack: (value) => new Bool(value),
-      unpack: (msg: Bool) => msg.data
+      pack: (value) => new BoolClass(value),
+      unpack: (msg: BoolClass) => msg.data
    };
 
    constructor(public data?: boolean) {
@@ -89,11 +90,12 @@ export class Bool extends Message {
       return bytes.getArrayBuffer();
    }
 }
+export const Bool = BoolClass.Msg;
 
-export class Double extends Message {
+class DoubleClass extends Message {
    static Msg: IMessageFactory<number> = {
-      pack: (value) => new Double(value),
-      unpack: (msg: Double) => msg.data
+      pack: (value) => new DoubleClass(value),
+      unpack: (msg: DoubleClass) => msg.data
    };
 
    constructor(public data?: number) {
@@ -101,7 +103,7 @@ export class Double extends Message {
    }
 
    static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(Double, data);
+      return Message.parseMessage(DoubleClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -116,11 +118,12 @@ export class Double extends Message {
       return bytes.getArrayBuffer();
    }
 }
+export const Double = DoubleClass.Msg;
 
-export class Text extends Message {
+class TextClass extends Message {
    static Msg: IMessageFactory<string> = {
-      pack: (value) => new Text(value),
-      unpack: (msg: Text) => msg.data
+      pack: (value) => new TextClass(value),
+      unpack: (msg: TextClass) => msg.data
    };
 
    constructor(public data?: string) {
@@ -128,7 +131,7 @@ export class Text extends Message {
    }
 
    static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(Text, data);
+      return Message.parseMessage(TextClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -143,11 +146,12 @@ export class Text extends Message {
       return bytes.getArrayBuffer();
    }
 }
+export const Text = TextClass.Msg;
 
-export class Time extends Message {
+class TimeClass extends Message {
    static Msg: IMessageFactory<Date> = {
-      pack: (value) => new Time(value),
-      unpack: (msg: Time) => msg.data
+      pack: (value) => new TimeClass(value),
+      unpack: (msg: TimeClass) => msg.data
    };
 
    data?: Date;
@@ -159,7 +163,7 @@ export class Time extends Message {
    }
 
    static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(Time, data);
+      return Message.parseMessage(TimeClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -176,6 +180,7 @@ export class Time extends Message {
       return bytes.getArrayBuffer();
    }
 }
+export const Time = TimeClass.Msg;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Schema<U> = Record<keyof U, boolean | ((write: boolean, value: any) => any)>;
