@@ -7,7 +7,9 @@ import fBool from '../shared/Msg/Bool.js';
 import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
 import fDate from '../shared/Msg/Date.js';
-import Init, { fInit } from '../shared/Data/Init.js';
+import Json from '../shared/Msg/Json.js';
+import Binary from '../shared/Msg/Binary.js';
+import ByteArray from '../shared/ByteArray.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
@@ -109,8 +111,62 @@ test('Serialize date data message', (assert) => {
    assert.end();
 });
 
-test('Serialize JSON data', (assert) => {
-   let ensure = (value?: Init, expected?: Init) => assertDeepEqual(assert, fInit, value, expected);
+
+/* Test Json object with and without binary serialization */
+interface IInit {
+   url: string;
+   browser?: string;
+   time?: Date;
+   test?: string;
+}
+
+interface Init extends IInit { };
+class Init {
+   constructor(url: string = '', browser?: string, time?: Date) {
+      this.url = url;
+      this.browser = browser || '';
+      this.time = time;
+   }
+
+   dump() {
+      // eslint-disable-next-line no-console
+      console.log(this.time, this.browser);
+   }
+};
+export default Init;
+
+class JsonInit extends Json<Init, IInit> { };
+const jInit: Message.IMessageFactory<Init> = {
+   pack: (value) => new JsonInit([Init, {
+      url: true,
+      browser: true,
+      time: Json.dateSerializer,
+      test: true
+   }], value),
+   unpack: (msg: JsonInit) => msg.data
+};
+
+class BinaryInit extends Binary<Init> {
+   readFrom(bytes: ByteArray, data: Init): void {
+      data.url = bytes.getString() || '';
+      data.browser = bytes.getString(); this.dClean('browser');
+      data.time = bytes.getDate();
+      data.test = bytes.getString(); this.dClean('test');
+   }
+   writeTo(data: Init, bytes: ByteArray): void {
+      bytes.addString(data.url);
+      bytes.addString(data.browser);
+      bytes.addDate(data.time);
+      bytes.addString(data.test);
+   }
+}
+const fInit: Message.IMessageFactory<Init> = {
+   pack: (value) => new BinaryInit(Init, value),
+   unpack: (msg: BinaryInit) => msg.data
+};
+
+function testObject(assert: test.Test, factory: Message.IMessageFactory<Init>) {
+   let ensure = (value?: Init, expected?: Init) => assertDeepEqual(assert, factory, value, expected);
    let now = new Date(Date.now());
    let init = new Init('url', 'Browser', now);
    let extended = new Init('url', 'Browser', now);
@@ -125,4 +181,12 @@ test('Serialize JSON data', (assert) => {
       assert.equal(out.dump, init.dump);
    };
    assert.end();
+}
+
+test('Serialize object data (JSON)', (assert) => {
+   testObject(assert, jInit);
+});
+
+test('Serialize object data (JSON)', (assert) => {
+   testObject(assert, fInit);
 });

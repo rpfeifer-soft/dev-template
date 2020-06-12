@@ -2,13 +2,11 @@
 
 import Message from '../Msg/Message.js';
 import Json from '../Msg/Json.js';
-import ByteArray from '../ByteArray.js';
 
 interface IInit {
    url: string;
    browser?: string;
    time?: Date;
-   test?: string;
 }
 
 interface Init extends IInit { };
@@ -27,48 +25,11 @@ class Init {
 export default Init;
 
 class JsonInit extends Json<Init, IInit> { };
-export const jInit: Message.IMessageFactory<Init> = {
+export const fInit: Message.IMessageFactory<Init> = {
    pack: (value) => new JsonInit([Init, {
       url: true,
       browser: true,
-      time: Json.dateSerializer,
-      test: true
+      time: Json.dateSerializer
    }], value),
    unpack: (msg: JsonInit) => msg.data
-};
-
-class InitBinary extends Message {
-   constructor(public data?: Init) {
-      super();
-   }
-   parse(data: ArrayBuffer): this {
-      let bytes = new ByteArray(data);
-      let empty = bytes.getBoolean();
-      let dClean = (key: string) => this.data && this.data[key] === undefined ? delete (this.data[key]) : undefined;
-      if (empty) {
-         this.data = undefined;
-      } else {
-         this.data = new Init();
-         this.data.url = bytes.getString() || '';
-         this.data.browser = bytes.getString(); dClean('browser');
-         this.data.time = bytes.getDate();
-         this.data.test = bytes.getString(); dClean('test');
-      }
-      return this;
-   }
-   stringify() {
-      let bytes = new ByteArray();
-      bytes.addBoolean(this.data ? false : true);
-      if (this.data) {
-         bytes.addString(this.data.url);
-         bytes.addString(this.data.browser);
-         bytes.addDate(this.data.time);
-         bytes.addString(this.data.test);
-      }
-      return bytes.getArrayBuffer();
-   }
-}
-export const fInit: Message.IMessageFactory<Init> = {
-   pack: (value) => new InitBinary(value),
-   unpack: (msg: InitBinary) => msg.data
 };
