@@ -1,7 +1,12 @@
 /** @format */
 
 import test from 'tape';
-import { fVoid, fBool, fNumber, fString, fDate, IMessageFactory } from '../shared/Msg/Message.js';
+import { IMessageFactory } from '../shared/Msg/Message.js';
+import fVoid from '../shared/Msg/Void.js';
+import fBool from '../shared/Msg/Bool.js';
+import fString from '../shared/Msg/String.js';
+import fNumber from '../shared/Msg/Number.js';
+import fDate from '../shared/Msg/Date.js';
 import Init, { fInit } from '../shared/Data/Init.js';
 
 // eslint-disable-next-line no-console

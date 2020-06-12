@@ -1,6 +1,7 @@
 /** @format */
 
-import Message, { Json, IMessageFactory } from '../Msg/Message.js';
+import Message, { IMessageFactory } from '../Msg/Message.js';
+import Json from '../Msg/Json.js';
 import ByteArray from '../ByteArray.js';
 
 interface IInit {

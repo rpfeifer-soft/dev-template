@@ -1,6 +1,10 @@
 /** @format */
 
-import Message, { fString, fDate, fBool, fNumber, IMessageFactory } from './Msg/Message.js';
+import Message, { IMessageFactory } from './Msg/Message.js';
+import fBool from '../shared/Msg/Bool.js';
+import fString from '../shared/Msg/String.js';
+import fNumber from '../shared/Msg/Number.js';
+import fDate from '../shared/Msg/Date.js';
 import Init, { fInit } from './Data/Init.js';
 
 // Helper types
