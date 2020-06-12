@@ -2,7 +2,7 @@
 
 import ws from 'ws';
 import Client from './Client.js';
-import Message from '../shared/Message.js';
+import Message from '../shared/Msg/Message.js';
 import {
    ServerFunction, ClientFunction,
    IServerHandler, ImplementsServer

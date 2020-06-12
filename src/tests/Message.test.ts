@@ -1,8 +1,8 @@
 /** @format */
 
 import test from 'tape';
-import { fVoid, fBool, fNumber, fString, fDate, IMessageFactory } from '../shared/Message.js';
-import Init, { fInit } from '../shared/Messages/Init.js';
+import { fVoid, fBool, fNumber, fString, fDate, IMessageFactory } from '../shared/Msg/Message.js';
+import Init, { fInit } from '../shared/Data/Init.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
