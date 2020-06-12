@@ -1,10 +1,5 @@
 /** @format */
 
-export interface IMessageFactory<T> {
-   pack: (data?: T) => Message;
-   unpack: (msg: Message) => T | undefined;
-}
-
 abstract class Message {
 
    abstract parse(data: string | ArrayBuffer): this;
@@ -14,6 +9,11 @@ abstract class Message {
 
 // eslint-disable-next-line no-redeclare
 namespace Message {
+   export interface IMessageFactory<T> {
+      pack: (data?: T) => Message;
+      unpack: (msg: Message) => T | undefined;
+   }
+
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    export function toJSON(value: any): string {
       if (value === undefined) {

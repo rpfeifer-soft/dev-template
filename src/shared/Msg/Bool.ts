@@ -1,10 +1,10 @@
 /** @format */
 
 import ByteArray from '../ByteArray.js';
-import Message, { IMessageFactory } from './Message.js';
+import Message from './Message.js';
 
 class BoolClass extends Message {
-   static Msg: IMessageFactory<boolean> = {
+   static Msg: Message.IMessageFactory<boolean> = {
       pack: (value) => new BoolClass(value),
       unpack: (msg: BoolClass) => msg.data
    };

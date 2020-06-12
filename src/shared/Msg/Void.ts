@@ -1,10 +1,10 @@
 /** @format */
 
 import ByteArray from '../ByteArray.js';
-import Message, { IMessageFactory } from './Message.js';
+import Message from './Message.js';
 
 class VoidClass extends Message {
-   static Msg: IMessageFactory<void> = {
+   static Msg: Message.IMessageFactory<void> = {
       pack: () => new VoidClass(),
       unpack: () => undefined
    };

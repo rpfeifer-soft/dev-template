@@ -1,10 +1,10 @@
 /** @format */
 
 import ByteArray from '../ByteArray.js';
-import Message, { IMessageFactory } from './Message.js';
+import Message from './Message.js';
 
 class DateClass extends Message {
-   static Msg: IMessageFactory<Date> = {
+   static Msg: Message.IMessageFactory<Date> = {
       pack: (value) => new DateClass(value),
       unpack: (msg: DateClass) => msg.data
    };

@@ -1,6 +1,6 @@
 /** @format */
 
-import Message, { IMessageFactory } from '../Msg/Message.js';
+import Message from '../Msg/Message.js';
 import Json from '../Msg/Json.js';
 import ByteArray from '../ByteArray.js';
 
@@ -27,7 +27,7 @@ class Init {
 export default Init;
 
 class JsonInit extends Json<Init, IInit> { };
-export const jInit: IMessageFactory<Init> = {
+export const jInit: Message.IMessageFactory<Init> = {
    pack: (value) => new JsonInit([Init, {
       url: true,
       browser: true,
@@ -68,7 +68,7 @@ class InitBinary extends Message {
       return bytes.getArrayBuffer();
    }
 }
-export const fInit: IMessageFactory<Init> = {
+export const fInit: Message.IMessageFactory<Init> = {
    pack: (value) => new InitBinary(value),
    unpack: (msg: InitBinary) => msg.data
 };

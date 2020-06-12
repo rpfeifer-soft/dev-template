@@ -1,7 +1,7 @@
 /** @format */
 
 import test from 'tape';
-import { IMessageFactory } from '../shared/Msg/Message.js';
+import Message from '../shared/Msg/Message.js';
 import fVoid from '../shared/Msg/Void.js';
 import fBool from '../shared/Msg/Bool.js';
 import fString from '../shared/Msg/String.js';
@@ -12,15 +12,15 @@ import Init, { fInit } from '../shared/Data/Init.js';
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
 
-function serialize<T>(factory: IMessageFactory<T>, data: T) {
+function serialize<T>(factory: Message.IMessageFactory<T>, data: T) {
    return factory.unpack(factory.pack().parse(factory.pack(data).stringify()));
 }
 
-function assertEqual<T>(assert: test.Test, factory: IMessageFactory<T>, value: T, expected?: T) {
+function assertEqual<T>(assert: test.Test, factory: Message.IMessageFactory<T>, value: T, expected?: T) {
    assert.equal(serialize(factory, value), expected || value);
 }
 
-function assertDeepEqual<T>(assert: test.Test, factory: IMessageFactory<T>, value: T, expected?: T) {
+function assertDeepEqual<T>(assert: test.Test, factory: Message.IMessageFactory<T>, value: T, expected?: T) {
    assert.deepEqual(serialize(factory, value), expected || value);
 }
 

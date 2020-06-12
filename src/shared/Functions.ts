@@ -1,6 +1,6 @@
 /** @format */
 
-import Message, { IMessageFactory } from './Msg/Message.js';
+import Message from './Msg/Message.js';
 import fBool from '../shared/Msg/Bool.js';
 import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
@@ -20,9 +20,14 @@ type Second<T> =
 type Analyze<T extends ((msg: unknown) => unknown | void)>
    = [Unpack<Parameters<T>>, ReturnType<T>];
 
+type ApiTuple = [
+   Message.IMessageFactory<unknown>,
+   Message.IMessageFactory<unknown> | undefined
+];
+
 // Api map
 interface IApiDefs {
-   [key: number]: [IMessageFactory<unknown>, IMessageFactory<unknown> | undefined];
+   [key: number]: ApiTuple;
 };
 
 // Server functions
@@ -60,7 +65,7 @@ export namespace ServerFunctions {
    export type Parameter<T> = First<Packing<T>>;
    export type Returns<T> = Second<Packing<T>>;
 
-   export function getApi(type: ServerFunction): [IMessageFactory<unknown>, IMessageFactory<unknown> | undefined] {
+   export function getApi(type: ServerFunction): ApiTuple {
       return apiDefs[type];
    }
 
@@ -103,7 +108,7 @@ export namespace ClientFunctions {
    export type Parameter<T> = First<Packing<T>>;
    export type Returns<T> = Second<Packing<T>>;
 
-   export function getApi(type: ClientFunction): [IMessageFactory<unknown>, IMessageFactory<unknown> | undefined] {
+   export function getApi(type: ClientFunction): ApiTuple {
       return apiDefs[type];
    }
 
