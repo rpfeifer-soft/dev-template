@@ -3,7 +3,7 @@
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
 import { ServerFunction, ClientFunction } from '../shared/Functions.js';
-import Init from '../shared/Messages/Init';
+import Init from '../shared/Data/Init';
 
 let app = document.getElementById('app');
 if (app) {
