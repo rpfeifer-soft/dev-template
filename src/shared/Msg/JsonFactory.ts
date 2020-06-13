@@ -77,14 +77,72 @@ class Json<TClass, TInterface> extends Message {
    }
 }
 
+// Support array
+class JsonArrayClass<TClass> extends Message {
+   data?: TClass[];
+
+   factory: Message.IMessageFactory<TClass>;
+
+   constructor(
+      factory: Message.IMessageFactory<TClass>,
+      data?: TClass[]
+   ) {
+      super();
+
+      this.factory = factory;
+      this.data = data;
+   }
+
+   parse(data: string | ArrayBuffer) {
+      if (typeof (data) !== 'string') {
+         throw new Error('ArrayBuffer not support for generic data!');
+      }
+      let jsonArray = Message.fromJSON(data) as string[];
+      if (jsonArray === undefined) {
+         this.data = undefined;
+      } else {
+         this.data = [];
+         let items = this.data;
+         jsonArray.forEach((json) => {
+            let msg = this.factory.pack();
+            msg.parse(json);
+            let item = this.factory.unpack(msg);
+            if (item !== undefined) {
+               items.push(item);
+            }
+         });
+      }
+      return this;
+   }
+
+   stringify() {
+      if (this.data === undefined) {
+         return Message.toJSON(this.data);
+      }
+      let jsonArray = this.data.map((item) => {
+         let msg = this.factory.pack(item);
+         let json = msg.stringify();
+         if (typeof (json) !== 'string') {
+            throw new Error('Unsupported serialization type: Json expected!');
+         }
+         return json;
+      });
+      return Message.toJSON(jsonArray);
+   }
+}
+
 function createJsonFactory<TClass, TInterface>(
    ctor: (new () => TClass),
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
 ) {
-   let factory: Message.IMessageFactory<TClass> = {
+   let factory: Message.IMessagesFactory<TClass> = {
       pack: (value) => new Json<TClass, TInterface>([ctor, schema], value),
-      unpack: (msg: Json<TClass, TInterface>) => msg.data
+      unpack: (msg: Json<TClass, TInterface>) => msg.data,
+      array: {
+         pack: (value) => new JsonArrayClass<TClass>(factory, value),
+         unpack: (msg: JsonArrayClass<TClass>) => msg.data
+      }
    };
    return factory;
 };

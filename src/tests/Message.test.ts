@@ -199,6 +199,10 @@ function testObjects(assert: test.Test, factory: Message.IMessageFactory<Init[]>
    assert.end();
 }
 
+test('Serialize objects data (Json)', (assert) => {
+   testObjects(assert, jInit.array);
+});
+
 test('Serialize objects data (Binary)', (assert) => {
    testObjects(assert, fInit.array);
 });
