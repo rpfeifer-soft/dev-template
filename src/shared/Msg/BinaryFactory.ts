@@ -4,15 +4,25 @@ import Message from './Message.js';
 import ByteArray from '../ByteArray.js';
 
 // Special data implementation
-abstract class Binary<TClass> extends Message {
+class Binary<TClass> extends Message {
    data?: TClass;
 
    ctor: new () => TClass;
 
-   constructor(ctor: new () => TClass, data?: TClass) {
+   readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void;
+   writeTo: (data: TClass, bytes: ByteArray) => void;
+
+   constructor(
+      ctor: new () => TClass,
+      readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
+      writeTo: (data: TClass, bytes: ByteArray) => void,
+      data?: TClass
+   ) {
       super();
       // Set the values (no copy)
       this.ctor = ctor;
+      this.readFrom = readFrom;
+      this.writeTo = writeTo;
       this.data = data;
    }
 
@@ -32,7 +42,7 @@ abstract class Binary<TClass> extends Message {
          this.data = undefined;
       } else {
          this.data = new this.ctor;
-         this.readFrom(bytes, this.data);
+         this.readFrom(bytes, this.data, (key) => this.dClean(key));
       }
       return this;
    }
@@ -45,9 +55,18 @@ abstract class Binary<TClass> extends Message {
       }
       return bytes.getArrayBuffer();
    }
-
-   abstract readFrom(bytes: ByteArray, data: TClass): void;
-   abstract writeTo(data: TClass, bytes: ByteArray): void;
 }
 
-export default Binary;
+function createBinaryFactory<TClass>(
+   ctor: (new () => TClass),
+   readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
+   writeTo: (data: TClass, bytes: ByteArray) => void
+) {
+   let factory: Message.IMessageFactory<TClass> = {
+      pack: (value) => new Binary<TClass>(ctor, readFrom, writeTo, value),
+      unpack: (msg: Binary<TClass>) => msg.data
+   };
+   return factory;
+};
+
+export default createBinaryFactory;

@@ -7,9 +7,9 @@ import fBool from '../shared/Msg/Bool.js';
 import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
 import fDate from '../shared/Msg/Date.js';
-import createJsonFactory, { jsonDateSerializer } from '../shared/Msg/JsonFactory.js';
-import Binary from '../shared/Msg/BinaryFactory.js';
 import ByteArray from '../shared/ByteArray.js';
+import createJsonFactory, { jsonDateSerializer } from '../shared/Msg/JsonFactory.js';
+import createBinaryFactory from '../shared/Msg/BinaryFactory.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
@@ -133,7 +133,6 @@ class Init {
       console.log(this.time, this.browser);
    }
 };
-export default Init;
 
 const jInit = createJsonFactory<Init, IInit>(Init, {
    url: true,
@@ -142,24 +141,19 @@ const jInit = createJsonFactory<Init, IInit>(Init, {
    test: true
 });
 
-class BinaryInit extends Binary<Init> {
-   readFrom(bytes: ByteArray, data: Init): void {
+const fInit = createBinaryFactory<Init>(Init,
+   (bytes, data, opt) => {
       data.url = bytes.getString() || '';
-      data.browser = bytes.getString(); this.dClean('browser');
+      data.browser = bytes.getString(); opt('browser');
       data.time = bytes.getDate();
-      data.test = bytes.getString(); this.dClean('test');
-   }
-   writeTo(data: Init, bytes: ByteArray): void {
+      data.test = bytes.getString(); opt('test');
+   },
+   (data: Init, bytes: ByteArray) => {
       bytes.addString(data.url);
       bytes.addString(data.browser);
       bytes.addDate(data.time);
       bytes.addString(data.test);
-   }
-}
-const fInit: Message.IMessageFactory<Init> = {
-   pack: (value) => new BinaryInit(Init, value),
-   unpack: (msg: BinaryInit) => msg.data
-};
+   });
 
 function testObject(assert: test.Test, factory: Message.IMessageFactory<Init>) {
    let ensure = (value?: Init, expected?: Init) => assertDeepEqual(assert, factory, value, expected);
