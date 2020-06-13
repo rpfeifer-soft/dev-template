@@ -8,7 +8,7 @@ import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
 import fDate from '../shared/Msg/Date.js';
 import createJsonFactory, { jsonDateSerializer } from '../shared/Msg/JsonFactory.js';
-import Binary from '../shared/Msg/Binary.js';
+import Binary from '../shared/Msg/BinaryFactory.js';
 import ByteArray from '../shared/ByteArray.js';
 
 // eslint-disable-next-line no-console
