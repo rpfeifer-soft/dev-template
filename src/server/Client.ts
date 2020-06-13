@@ -4,10 +4,12 @@ import ws from 'ws';
 import WSTool from '../shared/WSTool.js';
 import Sender from '../shared/Sender.js';
 import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/Functions.js';
+import ClientInfo from '../shared/Data/ClientInfo.js';
 
+interface ClientBase extends ClientInfo { }
 class ClientBase extends Sender<ClientFunction, ServerFunction> {
    // The id of the client
-   public readonly id: number;
+   public id: number;
 
    // Is the connection alive
    private isAlive = false;
@@ -16,9 +18,8 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    private server: ws;
 
    // Constructor of the client object
-   constructor(id: number, server: ws) {
+   constructor(server: ws) {
       super();
-      this.id = id;
       this.server = server;
    }
 
@@ -58,6 +59,16 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    close() {
       this.server.terminate();
       this.isAlive = false;
+   }
+
+   getClientInfo() {
+      let info = new ClientInfo();
+      info.id = this.id;
+      info.startTime = this.startTime;
+      info.userName = this.userName;
+      info.userRole = this.userRole;
+      info.version = this.version;
+      return info;
    }
 
    protected prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {

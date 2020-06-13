@@ -141,7 +141,7 @@ class Server extends ImplementsClient(ServerBase) {
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    callInit(ctor: () => Message, msgInit: Message): Promise<Message> {
-      return this.sendFunction(ctor, ServerFunction.Init, msgInit);
+      return this.sendFunction(ctor, ServerFunction.Connect, msgInit);
    }
 }
 

@@ -3,7 +3,7 @@
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
 import { ServerFunction, ClientFunction } from '../shared/Functions.js';
-import Init from '../shared/Data/Init';
+import ConnectInfo from '../shared/Data/ConnectInfo';
 
 let app = document.getElementById('app');
 if (app) {
@@ -17,21 +17,25 @@ if (app) {
       baseURI = 'wss:' + baseURI;
    }
 
-   Server.init(baseURI + 'ws', new Init(location.href, navigator.userAgent, new Date()))
-      .then(p => console.log('Init-Result: :' + p + ':'));
+   let connectInfo = new ConnectInfo();
+   connectInfo.browser = navigator.userAgent;
+   connectInfo.time = new Date();
+
+   Server.init(baseURI + 'ws', connectInfo)
+      .then(p => console.log('Init-Result', p));
 
    let button = document.createElement('button');
    app.appendChild(button);
    button.innerText = 'Click';
    button.onclick = async () => {
-      Server.call(ServerFunction.Click, new Date());
    };
 
    Server.on(ClientFunction.ClickFromClient, (date) => {
       console.log('Click', date);
    });
-   Server.on(ClientFunction.Hello, (text) => {
-      console.log('Hello', text);
+   Server.on(ClientFunction.ClientsChanged, async () => {
+      let infos = await Server.call(ServerFunction.GetClientInfos);
+      console.log(infos);
    });
    Server.on(ClientFunction.ClickFromClient, async (date) => {
       console.log('Click2', date);

@@ -8,6 +8,9 @@ import {
    IServerHandler, ImplementsServer
 } from '../shared/Functions.js';
 import WSTool from '../shared/WSTool.js';
+import ConnectInfo from '../shared/Data/ConnectInfo.js';
+import ClientInfo from '../shared/Data/ClientInfo.js';
+import { UserRole } from '../shared/Msg/Types.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T, client: Client): Promise<U> | void;
@@ -50,15 +53,15 @@ class Handlers {
 }
 
 class ClientsBase implements IServerHandler<Client> {
+   // Save the clients
+   protected clients: Client[] = [];
+
    // The server to use
    private server: ws.Server;
 
    // Interval for connection test
    private interval: NodeJS.Timeout;
    private readonly intervalLength = 5000;
-
-   // Save the clients
-   private clients: Client[] = [];
 
    // The message handlers
    private handlers = new Handlers();
@@ -90,6 +93,8 @@ class ClientsBase implements IServerHandler<Client> {
          if (closedIds.length > 0) {
             clients.clients = clients.clients
                .filter(client => closedIds.indexOf(client.id) === -1);
+            // Notify the clients
+            clients.onClientsChanged(-1);
          }
       }, clients.intervalLength);
 
@@ -127,13 +132,15 @@ class ClientsBase implements IServerHandler<Client> {
    }
 
    // broadcast a message
-   broadcastMethod(type: ClientFunction, msg: Message) {
+   broadcastMethod(exceptId: number, type: ClientFunction, msg: Message) {
       if (!this.ready) {
          throw new Error('Server not ready. Call init first!');
       }
       // Send to all clients
       this.clients.forEach(client => {
-         client.pushMethod(type, msg);
+         if (client.id !== exceptId) {
+            client.pushMethod(type, msg);
+         }
       });
    }
 
@@ -145,11 +152,31 @@ class ClientsBase implements IServerHandler<Client> {
       this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
    }
 
+   onConnect(client: Client, info: ConnectInfo): ClientInfo | false {
+      // Analyze the connection info
+      let nextId = this.nextId();
+      client.id = nextId;
+      client.version = info.version;
+      client.startTime = new Date();
+      client.userName = '';
+      client.userRole = UserRole.Guest;
+      // Add to the list of clients
+      this.clients.push(client);
+      // Send the change
+      this.onClientsChanged(client.id);
+      // Return the client info to the client
+      return client.getClientInfo();
+   }
+
+   onClientsChanged(exceptId: number) {
+      // overload
+   }
+
    // Add a new client
    private addClient(socket: ws) {
-      let client = new Client(this.nextId(), socket);
+      let client = new Client(socket);
       // Push to the list, after initializing it
-      this.clients.push(client.init(this.handleClientMessage.bind(this)));
+      client.init(this.handleClientMessage.bind(this));
    }
 
    // get the next available id for the client
@@ -165,9 +192,19 @@ class ClientsBase implements IServerHandler<Client> {
 class Clients extends ImplementsServer<Client>()(ClientsBase) {
    // One singleton
    public static readonly instance: Clients = new Clients();
+
+   onClientsChanged(exceptId: number) {
+      // Send the changed info to the clients
+      this.broadcast(exceptId, ClientFunction.ClientsChanged);
+   }
+
+   getClientInfos(): ClientInfo[] {
+      return this.clients.map(client => client.getClientInfo());
+   }
 }
 
 export default Clients.instance as Pick<
    Clients,
-   'init' | 'ready' | 'on' | 'off' | 'broadcast'
+   'init' | 'ready' | 'on' | 'off' | 'broadcast' |
+   'onConnect' | 'getClientInfos'
 >;

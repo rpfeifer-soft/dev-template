@@ -1,15 +1,10 @@
 /** @format */
 
 import createJsonFactory, { jsonDateSerializer } from '../Msg/JsonFactory.js';
-
-enum UserRole {
-   Guest = 1,
-   User = 2,
-   Admin = 4
-}
+import { UserRole } from '../Msg/Types.js';
 
 interface IClientInfo {
-   id: string;
+   id: number;
    userName: string;
    userRole: UserRole;
    startTime: Date;
