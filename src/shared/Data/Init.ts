@@ -1,7 +1,6 @@
 /** @format */
 
-import Message from '../Msg/Message.js';
-import Json from '../Msg/Json.js';
+import createJsonFactory, { jsonDateSerializer } from '../Msg/Json.js';
 
 interface IInit {
    url: string;
@@ -24,12 +23,8 @@ class Init {
 };
 export default Init;
 
-class JsonInit extends Json<Init, IInit> { };
-export const fInit: Message.IMessageFactory<Init> = {
-   pack: (value) => new JsonInit([Init, {
-      url: true,
-      browser: true,
-      time: Json.dateSerializer
-   }], value),
-   unpack: (msg: JsonInit) => msg.data
-};
+export const fInit = createJsonFactory<Init, IInit>(Init, {
+   url: true,
+   browser: true,
+   time: jsonDateSerializer
+});

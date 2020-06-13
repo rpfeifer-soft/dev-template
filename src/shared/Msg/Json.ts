@@ -22,15 +22,6 @@ class Json<TClass, TInterface> extends Message {
       this.schema = schema;
    }
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   static dateSerializer(write: boolean, value: any) {
-      if (write) {
-         return value !== undefined ? value.getTime() : undefined;
-      } else {
-         return value !== undefined ? new Date(value) : undefined;
-      }
-   }
-
    parse(data: string | ArrayBuffer) {
       if (typeof (data) !== 'string') {
          throw new Error('ArrayBuffer not support for generic data!');
@@ -86,4 +77,27 @@ class Json<TClass, TInterface> extends Message {
    }
 }
 
-export default Json;
+function createJsonFactory<TClass, TInterface>(
+   ctor: (new () => TClass),
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
+) {
+   let factory: Message.IMessageFactory<TClass> = {
+      pack: (value) => new Json<TClass, TInterface>([ctor, schema], value),
+      unpack: (msg: Json<TClass, TInterface>) => msg.data
+   };
+   return factory;
+};
+
+export default createJsonFactory;
+
+// Toolfunctions
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function jsonDateSerializer(write: boolean, value: any) {
+   if (write) {
+      return value !== undefined ? value.getTime() : undefined;
+   } else {
+      return value !== undefined ? new Date(value) : undefined;
+   }
+}

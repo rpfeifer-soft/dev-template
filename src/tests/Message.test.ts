@@ -7,7 +7,7 @@ import fBool from '../shared/Msg/Bool.js';
 import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
 import fDate from '../shared/Msg/Date.js';
-import Json from '../shared/Msg/Json.js';
+import createJsonFactory, { jsonDateSerializer } from '../shared/Msg/Json.js';
 import Binary from '../shared/Msg/Binary.js';
 import ByteArray from '../shared/ByteArray.js';
 
@@ -135,16 +135,12 @@ class Init {
 };
 export default Init;
 
-class JsonInit extends Json<Init, IInit> { };
-const jInit: Message.IMessageFactory<Init> = {
-   pack: (value) => new JsonInit([Init, {
-      url: true,
-      browser: true,
-      time: Json.dateSerializer,
-      test: true
-   }], value),
-   unpack: (msg: JsonInit) => msg.data
-};
+const jInit = createJsonFactory<Init, IInit>(Init, {
+   url: true,
+   browser: true,
+   time: jsonDateSerializer,
+   test: true
+});
 
 class BinaryInit extends Binary<Init> {
    readFrom(bytes: ByteArray, data: Init): void {
