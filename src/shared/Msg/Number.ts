@@ -4,17 +4,8 @@ import ByteArray from '../ByteArray.js';
 import Message from './Message.js';
 
 class NumberClass extends Message {
-   static Msg: Message.IMessageFactory<number> = {
-      pack: (value) => new NumberClass(value),
-      unpack: (msg: NumberClass) => msg.data
-   };
-
    constructor(public data?: number) {
       super();
-   }
-
-   static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(NumberClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -29,6 +20,32 @@ class NumberClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-const fNumber = NumberClass.Msg;
+
+class NumberArrayClass extends Message {
+   constructor(public data?: number[]) {
+      super();
+   }
+
+   parse(data: ArrayBuffer) {
+      let bytes = new ByteArray(data);
+      this.data = bytes.getArray(() => bytes.getNumber());
+      return this;
+   }
+
+   stringify() {
+      let bytes = new ByteArray();
+      bytes.addArray(this.data, (item) => bytes.addNumber(item));
+      return bytes.getArrayBuffer();
+   }
+}
+
+const fNumber: Message.IMessagesFactory<number> = {
+   pack: (value) => new NumberClass(value),
+   unpack: (msg: NumberClass) => msg.data,
+   array: {
+      pack: (value) => new NumberArrayClass(value),
+      unpack: (msg: NumberArrayClass) => msg.data,
+   }
+};
 
 export default fNumber;

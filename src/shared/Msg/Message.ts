@@ -1,8 +1,10 @@
 /** @format */
 
+import ByteArray from '../ByteArray.js';
+
 abstract class Message {
 
-   abstract parse(data: string | ArrayBuffer): this;
+   abstract parse(data: string | ArrayBuffer | ByteArray): this;
 
    abstract stringify(): string | ArrayBuffer;
 }
@@ -12,6 +14,9 @@ namespace Message {
    export interface IMessageFactory<T> {
       pack: (data?: T) => Message;
       unpack: (msg: Message) => T | undefined;
+   }
+   export interface IMessagesFactory<T> extends IMessageFactory<T> {
+      array: IMessageFactory<T[]>;
    }
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,16 +33,6 @@ namespace Message {
          return undefined;
       }
       return JSON.parse(text);
-   }
-
-   export function parseMessage<T extends Message>(ctor: (new () => T), data: string | ArrayBuffer) {
-      let msg = new ctor();
-      return msg.parse(data);
-   }
-
-   export function parseFactory<T>(factory: IMessageFactory<T>, data: string | ArrayBuffer) {
-      let msg = factory.pack();
-      return msg.parse(data);
    }
 }
 

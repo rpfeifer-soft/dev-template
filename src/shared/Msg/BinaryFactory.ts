@@ -32,11 +32,11 @@ class Binary<TClass> extends Message {
       }
    }
 
-   parse(data: string | ArrayBuffer) {
+   parse(data: string | ArrayBuffer | ByteArray) {
       if (typeof (data) === 'string') {
          throw new Error('String not support for generic data!');
       }
-      let bytes = new ByteArray(data);
+      let bytes = data instanceof ByteArray ? data : new ByteArray(data);
       let empty = bytes.getBoolean();
       if (empty) {
          this.data = undefined;
@@ -47,7 +47,7 @@ class Binary<TClass> extends Message {
       return this;
    }
 
-   stringify(): string | ArrayBuffer {
+   stringify() {
       let bytes = new ByteArray();
       bytes.addBoolean(this.data ? false : true);
       if (this.data) {
@@ -57,14 +57,58 @@ class Binary<TClass> extends Message {
    }
 }
 
+// Support array
+class BinaryArrayClass<TClass> extends Message {
+   data?: TClass[];
+
+   factory: Message.IMessageFactory<TClass>;
+
+   constructor(
+      factory: Message.IMessageFactory<TClass>,
+      data?: TClass[]
+   ) {
+      super();
+
+      this.factory = factory;
+      this.data = data;
+   }
+
+   parse(data: ArrayBuffer) {
+      let bytes = new ByteArray(data);
+      this.data = bytes.getArray(() => {
+         let msg = this.factory.pack();
+         msg.parse(bytes);
+         return this.factory.unpack(msg);
+      });
+      return this;
+   }
+
+   stringify() {
+      let bytes = new ByteArray();
+      bytes.addArray(this.data, (item) => {
+         let msg = this.factory.pack(item);
+         let buffer = msg.stringify();
+         if (typeof (buffer) === 'string') {
+            throw new Error('Unsupported serialization type: Binary expected!');
+         }
+         bytes.addBuffer(buffer);
+      });
+      return bytes.getArrayBuffer();
+   }
+}
+
 function createBinaryFactory<TClass>(
    ctor: (new () => TClass),
    readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
    writeTo: (data: TClass, bytes: ByteArray) => void
 ) {
-   let factory: Message.IMessageFactory<TClass> = {
+   let factory: Message.IMessagesFactory<TClass> = {
       pack: (value) => new Binary<TClass>(ctor, readFrom, writeTo, value),
-      unpack: (msg: Binary<TClass>) => msg.data
+      unpack: (msg: Binary<TClass>) => msg.data,
+      array: {
+         pack: (value) => new BinaryArrayClass<TClass>(factory, value),
+         unpack: (msg: BinaryArrayClass<TClass>) => msg.data
+      }
    };
    return factory;
 };

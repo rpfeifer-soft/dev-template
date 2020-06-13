@@ -164,7 +164,7 @@ function testObject(assert: test.Test, factory: Message.IMessageFactory<Init>) {
    ensure(undefined);
    ensure(init);
    ensure(extended, init);
-   let out = serialize(fInit, init);
+   let out = serialize(factory, init);
    if (out) {
       assert.notEqual(out, init);
       assert.equals(typeof (out.dump), 'function');
@@ -177,6 +177,28 @@ test('Serialize object data (JSON)', (assert) => {
    testObject(assert, jInit);
 });
 
-test('Serialize object data (JSON)', (assert) => {
+test('Serialize object data (Binary)', (assert) => {
    testObject(assert, fInit);
+});
+
+function testObjects(assert: test.Test, factory: Message.IMessageFactory<Init[]>) {
+   let ensure = (value?: Init[], expected?: Init[]) => assertDeepEqual(assert, factory, value, expected);
+   let now = new Date(Date.now());
+   let init = [
+      new Init('url', 'Browser', now),
+      new Init('2.', 'anything', undefined),
+   ];
+   ensure(undefined);
+   ensure([]);
+   ensure(init);
+   let out = serialize(factory, init);
+   if (out) {
+      assert.notEqual(out, init);
+      assert.equals(out.length, init.length);
+   };
+   assert.end();
+}
+
+test('Serialize objects data (Binary)', (assert) => {
+   testObjects(assert, fInit.array);
 });

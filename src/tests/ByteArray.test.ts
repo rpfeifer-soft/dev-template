@@ -184,3 +184,40 @@ function testObject(values: (number | string | boolean)[]) {
 testObject([5, 'Test', false]);
 testObject([5, new Array(128 + 1).join('.'), false]);
 testObject(['', 5.5, true]);
+
+function testArray<T>(values: T[] | undefined,
+   add: (item: T, bytes: ByteArray) => void,
+   get: (bytes: ByteArray) => T
+) {
+   test('Test array ' + values, (assert) => {
+      let bytes = new ByteArray();
+      bytes.addArray(values, (item) => add(item, bytes));
+      let buffer = bytes.getArrayBuffer();
+
+      let other = new ByteArray(buffer);
+      let others = other.getArray(() => get(other));
+      assert.deepEqual(values, others);
+      assert.end();
+   });
+}
+
+let addNumber = (item: number, bytes: ByteArray) => bytes.addNumber(item);
+let getNumber = (bytes: ByteArray) => bytes.getNumber();
+
+testArray(undefined, addNumber, getNumber);
+testArray([], addNumber, getNumber);
+testArray([1, 5, 9, -21], addNumber, getNumber);
+
+let addBoolean = (item: boolean, bytes: ByteArray) => bytes.addBoolean(item);
+let getBoolean = (bytes: ByteArray) => bytes.getBoolean();
+
+testArray(undefined, addBoolean, getBoolean);
+testArray([], addBoolean, getBoolean);
+testArray([false, true, true, false], addBoolean, getBoolean);
+
+let addDate = (item: Date, bytes: ByteArray) => bytes.addDate(item);
+let getDate = (bytes: ByteArray) => bytes.getDate();
+
+testArray(undefined, addDate, getDate);
+testArray([], addDate, getDate);
+testArray([new Date(), new Date(2020, 1, 1)], addDate, getDate);

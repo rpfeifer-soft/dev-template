@@ -4,21 +4,12 @@ import ByteArray from '../ByteArray.js';
 import Message from './Message.js';
 
 class DateClass extends Message {
-   static Msg: Message.IMessageFactory<Date> = {
-      pack: (value) => new DateClass(value),
-      unpack: (msg: DateClass) => msg.data
-   };
-
    data?: Date;
 
    constructor(data?: Date) {
       super();
       // Make a copy
       this.data = data ? new Date(data.getTime()) : undefined;
-   }
-
-   static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(DateClass, data);
    }
 
    parse(data: ArrayBuffer) {
@@ -33,6 +24,32 @@ class DateClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-const fDate = DateClass.Msg;
+
+class DateArrayClass extends Message {
+   constructor(public data?: Date[]) {
+      super();
+   }
+
+   parse(data: ArrayBuffer) {
+      let bytes = new ByteArray(data);
+      this.data = bytes.getArray(() => bytes.getDate());
+      return this;
+   }
+
+   stringify() {
+      let bytes = new ByteArray();
+      bytes.addArray(this.data, (item) => bytes.addDate(item));
+      return bytes.getArrayBuffer();
+   }
+}
+
+const fDate: Message.IMessagesFactory<Date> = {
+   pack: (value) => new DateClass(value),
+   unpack: (msg: DateClass) => msg.data,
+   array: {
+      pack: (value) => new DateArrayClass(value),
+      unpack: (msg: DateArrayClass) => msg.data,
+   }
+};
 
 export default fDate;

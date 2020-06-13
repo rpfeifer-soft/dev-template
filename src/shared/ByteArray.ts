@@ -33,6 +33,13 @@ class ByteArray {
       return buffer.buffer;
    }
 
+   public addBuffer(buffer: ArrayBuffer) {
+      let array = new Uint8Array(buffer);
+      this.arrays.push(array);
+      this.size += array.length;
+      return this;
+   }
+
    public addUint8(byte: number) {
       this.arrays.push(new Uint8Array([byte]));
       this.size++;
@@ -142,6 +149,39 @@ class ByteArray {
    public getBoolean(): boolean | undefined {
       let value = this.getUint8();
       return value === 2 ? undefined : (value ? true : false);
+   }
+
+   public addArray<T>(
+      array: T[] | undefined,
+      add: (item: T) => void
+   ) {
+      if (array === undefined) {
+         this.addNumber(undefined);
+      } else {
+         let count = array.length;
+         this.addNumber(count);
+         for (let i = 0; i < count; i++) {
+            add(array[i]);
+         }
+      }
+      return this;
+   }
+
+   public getArray<T>(
+      get: () => T | undefined
+   ): T[] | undefined {
+      let count = this.getNumber();
+      if (count === undefined) {
+         return undefined;
+      }
+      let array: T[] = [];
+      for (let i = 0; i < count; i++) {
+         let item = get();
+         if (item !== undefined) {
+            array.push(item);
+         }
+      }
+      return array;
    }
 }
 

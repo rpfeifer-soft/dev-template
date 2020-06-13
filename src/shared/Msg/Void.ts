@@ -4,19 +4,6 @@ import ByteArray from '../ByteArray.js';
 import Message from './Message.js';
 
 class VoidClass extends Message {
-   static Msg: Message.IMessageFactory<void> = {
-      pack: () => new VoidClass(),
-      unpack: () => undefined
-   };
-
-   constructor() {
-      super();
-   }
-
-   static parse(data: string | ArrayBuffer) {
-      return Message.parseMessage(VoidClass, data);
-   }
-
    parse(data: ArrayBuffer) {
       return this;
    }
@@ -26,6 +13,10 @@ class VoidClass extends Message {
       return bytes.getArrayBuffer();
    }
 }
-const fVoid = VoidClass.Msg;
+
+const fVoid: Message.IMessageFactory<void> = {
+   pack: () => new VoidClass(),
+   unpack: () => undefined
+};
 
 export default fVoid;
