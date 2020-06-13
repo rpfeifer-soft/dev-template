@@ -7,7 +7,7 @@ import fBool from '../shared/Msg/Bool.js';
 import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
 import fDate from '../shared/Msg/Date.js';
-import createJsonFactory, { jsonDateSerializer } from '../shared/Msg/Json.js';
+import createJsonFactory, { jsonDateSerializer } from '../shared/Msg/JsonFactory.js';
 import Binary from '../shared/Msg/Binary.js';
 import ByteArray from '../shared/ByteArray.js';
 

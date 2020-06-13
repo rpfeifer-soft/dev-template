@@ -1,6 +1,6 @@
 /** @format */
 
-import createJsonFactory, { jsonDateSerializer } from '../Msg/Json.js';
+import createJsonFactory, { jsonDateSerializer } from '../Msg/JsonFactory.js';
 
 interface IInit {
    url: string;
