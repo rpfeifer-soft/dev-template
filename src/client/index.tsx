@@ -2,8 +2,9 @@
 
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
-import ConnectInfo from '../shared/Data/ConnectInfo';
-import initApp from './App/App.js';
+import ConnectInfo from '../shared/Data/ConnectInfo.js';
+import connectionState from './App/ConnectionState.js';
+import userLogin from './App/UserLogin.js';
 
 function uuidv4() {
    return (String([1e7]) + String(-1e3) + String(-4e3) + String(-8e3) + String(-1e11))
@@ -41,7 +42,10 @@ if (app) {
    connectInfo.time = new Date();
 
    Server.init(baseURI + 'ws', connectInfo)
-      .then(clientInfo => initApp(clientInfo))
+      .then(clientInfo => {
+         connectionState(clientInfo);
+         userLogin();
+      })
       .catch(error => console.error(error));
 }
 // tslint:disable-next-line: no-string-literal

@@ -7,6 +7,7 @@ import {
    ServerFunction, ClientFunction,
    IClientHandler, ImplementsClient
 } from '../shared/Functions.js';
+import ClientInfo from '../shared/Data/ClientInfo.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T): Promise<U> | void;
@@ -48,12 +49,19 @@ class Handlers {
    }
 }
 
+type DOnChangeMe = () => void;
+
 class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClientHandler {
+   public dOnChangeMe: DOnChangeMe;
+
    // The server to use
    socket: WebSocket;
 
    // The message handlers
    handlers = new Handlers();
+
+   // Infos about the current client
+   me?: ClientInfo;
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    async callInit(ctor: () => Message, msgInit: Message): Promise<Message> {
@@ -126,6 +134,26 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
       this.socket.send(data);
    }
 
+   setMe(me: ClientInfo) {
+      this.me = me;
+      if (this.dOnChangeMe) {
+         this.dOnChangeMe();
+      }
+   }
+
+   onChangeMe(handler: DOnChangeMe) {
+      if (!this.dOnChangeMe) {
+         this.dOnChangeMe = handler;
+      } else {
+         this.dOnChangeMe = ((prevHandler: DOnChangeMe) => {
+            return () => {
+               prevHandler();
+               handler();
+            };
+         })(this.dOnChangeMe);
+      }
+   }
+
    onFunction<T extends Message, U extends Message>(
       type: ClientFunction,
       ctor: () => T,
@@ -147,5 +175,6 @@ class Server extends ImplementsClient(ServerBase) {
 
 export default Server.instance as Pick<
    Server,
-   'init' | 'on' | 'off' | 'call'
+   'init' | 'on' | 'off' | 'call' |
+   'me' | 'setMe' | 'onChangeMe'
 >;
