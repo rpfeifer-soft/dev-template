@@ -62,13 +62,7 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    }
 
    getClientInfo() {
-      let info = new ClientInfo();
-      info.id = this.id;
-      info.startTime = this.startTime;
-      info.userName = this.userName;
-      info.userRole = this.userRole;
-      info.version = this.version;
-      return info;
+      return new ClientInfo(this);
    }
 
    protected prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {

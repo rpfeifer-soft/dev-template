@@ -3,14 +3,8 @@
 import ws from 'ws';
 import Client from './Client.js';
 import Message from '../shared/Msg/Message.js';
-import {
-   ServerFunction, ClientFunction,
-   IServerHandler, ImplementsServer
-} from '../shared/Functions.js';
+import { ServerFunction, IServerHandler, ImplementsServer } from '../shared/Functions.js';
 import WSTool from '../shared/WSTool.js';
-import ConnectInfo from '../shared/Data/ConnectInfo.js';
-import ClientInfo from '../shared/Data/ClientInfo.js';
-import { UserRole } from '../shared/Msg/Types.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T, client: Client): Promise<U> | void;
@@ -52,9 +46,15 @@ class Handlers {
    }
 }
 
+type DOnChangedClient = (client: Client) => void;
+type DOnRemovedClients = (ids: number[]) => void;
+
 class ClientsBase implements IServerHandler<Client> {
+   public dOnChangedClient: DOnChangedClient;
+   public dOnRemovedClients: DOnRemovedClients;
+
    // Save the clients
-   protected clients: Client[] = [];
+   private clients: Client[] = [];
 
    // The server to use
    private server: ws.Server;
@@ -94,7 +94,7 @@ class ClientsBase implements IServerHandler<Client> {
             clients.clients = clients.clients
                .filter(client => closedIds.indexOf(client.id) === -1);
             // Notify the clients
-            clients.onClientsChanged(-1);
+            clients.removedClients(closedIds);
          }
       }, clients.intervalLength);
 
@@ -131,19 +131,6 @@ class ClientsBase implements IServerHandler<Client> {
       }
    }
 
-   // broadcast a message
-   broadcastMethod(exceptId: number, type: ClientFunction, msg: Message) {
-      if (!this.ready) {
-         throw new Error('Server not ready. Call init first!');
-      }
-      // Send to all clients
-      this.clients.forEach(client => {
-         if (client.id !== exceptId) {
-            client.pushMethod(type, msg);
-         }
-      });
-   }
-
    onFunction<T extends Message, U extends Message>(
       type: ServerFunction,
       ctor: () => T,
@@ -152,24 +139,64 @@ class ClientsBase implements IServerHandler<Client> {
       this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
    }
 
-   onConnect(client: Client, info: ConnectInfo): ClientInfo | false {
+   onChangedClient(handler: DOnChangedClient) {
+      if (!this.dOnChangedClient) {
+         this.dOnChangedClient = handler;
+      } else {
+         this.dOnChangedClient = ((prevHandler: DOnChangedClient) => {
+            return (client: Client) => {
+               prevHandler(client);
+               handler(client);
+            };
+         })(this.dOnChangedClient);
+      }
+   }
+
+   onRemovedClients(handler: DOnRemovedClients) {
+      if (!this.dOnRemovedClients) {
+         this.dOnRemovedClients = handler;
+      } else {
+         this.dOnRemovedClients = ((prevHandler: DOnRemovedClients) => {
+            return (ids: number[]) => {
+               prevHandler(ids);
+               handler(ids);
+            };
+         })(this.dOnRemovedClients);
+      }
+   }
+
+   changedClient(client: Client) {
+      if (this.dOnChangedClient) {
+         this.dOnChangedClient(client);
+      }
+   }
+
+   removedClients(ids: number[]) {
+      if (this.dOnRemovedClients) {
+         this.dOnRemovedClients(ids);
+      }
+   }
+
+   add(client: Client) {
       // Analyze the connection info
       let nextId = this.nextId();
       client.id = nextId;
-      client.version = info.version;
-      client.startTime = new Date();
-      client.userName = '';
-      client.userRole = UserRole.Guest;
       // Add to the list of clients
       this.clients.push(client);
-      // Send the change
-      this.onClientsChanged(client.id);
-      // Return the client info to the client
-      return client.getClientInfo();
+      // Trigger the change
+      this.changedClient(client);
    }
 
-   onClientsChanged(exceptId: number) {
-      // overload
+   map<T>(map: (client: Client, index: number) => T): T[] {
+      return this.clients.map(map);
+   }
+
+   filter<T>(filter: (client: Client, index: number) => boolean): Client[] {
+      return this.clients.filter(filter);
+   }
+
+   forEach(handler: (client: Client, index: number) => void) {
+      this.clients.forEach(handler);
    }
 
    // Add a new client
@@ -192,19 +219,11 @@ class ClientsBase implements IServerHandler<Client> {
 class Clients extends ImplementsServer<Client>()(ClientsBase) {
    // One singleton
    public static readonly instance: Clients = new Clients();
-
-   onClientsChanged(exceptId: number) {
-      // Send the changed info to the clients
-      this.broadcast(exceptId, ClientFunction.ClientsChanged);
-   }
-
-   getClientInfos(): ClientInfo[] {
-      return this.clients.map(client => client.getClientInfo());
-   }
 }
 
 export default Clients.instance as Pick<
    Clients,
-   'init' | 'ready' | 'on' | 'off' | 'broadcast' |
-   'onConnect' | 'getClientInfos'
+   'init' | 'ready' | 'on' | 'off' | 'add' |
+   'map' | 'filter' | 'forEach' |
+   'onChangedClient' | 'onRemovedClients' | 'changedClient'
 >;

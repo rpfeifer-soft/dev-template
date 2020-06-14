@@ -2,10 +2,8 @@
 
 import Message from './Msg/Message.js';
 import fVoid from './Msg/Void.js';
-import fBool from '../shared/Msg/Bool.js';
 import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
-import fDate from '../shared/Msg/Date.js';
 import ConnectInfo, { fConnectInfo } from './Data/ConnectInfo.js';
 import ClientInfo, { fClientInfo } from './Data/ClientInfo.js';
 
@@ -36,8 +34,6 @@ interface IApiDefs {
 export enum ServerFunction {
    Connect = 1,
    GetClientInfos,
-   Cool,
-   Ping
 }
 
 export namespace ServerFunctions {
@@ -52,15 +48,11 @@ export namespace ServerFunctions {
    // Declare the api
    apiDefs[ServerFunction.Connect] = [fConnectInfo, fClientInfo];
    apiDefs[ServerFunction.GetClientInfos] = [fVoid, fClientInfo.array];
-   apiDefs[ServerFunction.Cool] = [fString, fNumber];
-   apiDefs[ServerFunction.Ping] = [fBool, undefined];
 
    // Declare the types
    type Packing<T> =
       T extends ServerFunction.Connect ? Analyze<typeof dConnect> :
       T extends ServerFunction.GetClientInfos ? Analyze<typeof dGetClientInfos> :
-      T extends ServerFunction.Cool ? Analyze<typeof dCool> :
-      T extends ServerFunction.Ping ? Analyze<typeof dPing> :
       never;
 
    export type Parameter<T> = First<Packing<T>>;
@@ -82,28 +74,28 @@ export namespace ServerFunctions {
 // Client functions
 export enum ClientFunction {
    GetVersion = 1,
-   ClientsChanged,
-   ClickFromClient
+   ClientChanged,
+   ClientsRemoved
 }
 
 export namespace ClientFunctions {
    const apiDefs: IApiDefs = {};
 
    // Declare the functions
-   declare function dGetVersion(msg: boolean): string;
-   declare function dClientsChanged(): void;
-   declare function dClickFromClient(msg: Date): void;
+   declare function dGetVersion(): string;
+   declare function dClientsChanged(info: ClientInfo): void;
+   declare function dClientsRemoved(ids: number[]): void;
 
    // Declare the api
-   apiDefs[ClientFunction.GetVersion] = [fBool, fString];
-   apiDefs[ClientFunction.ClientsChanged] = [fVoid, undefined];
-   apiDefs[ClientFunction.ClickFromClient] = [fDate, undefined];
+   apiDefs[ClientFunction.GetVersion] = [fVoid, fString];
+   apiDefs[ClientFunction.ClientChanged] = [fClientInfo, undefined];
+   apiDefs[ClientFunction.ClientsRemoved] = [fNumber.array, undefined];
 
    // Declare the types
    type Packing<T> =
       T extends ClientFunction.GetVersion ? Analyze<typeof dGetVersion> :
-      T extends ClientFunction.ClientsChanged ? Analyze<typeof dClientsChanged> :
-      T extends ClientFunction.ClickFromClient ? Analyze<typeof dClickFromClient> :
+      T extends ClientFunction.ClientChanged ? Analyze<typeof dClientsChanged> :
+      T extends ClientFunction.ClientsRemoved ? Analyze<typeof dClientsRemoved> :
       never;
 
    export type Parameter<T> = First<Packing<T>>;
@@ -128,12 +120,6 @@ export interface IServerHandler<T> {
       ctor: () => Message,
       handler: (msg: Message, client: T) => Promise<Message> | void
    ) => void;
-
-   broadcastMethod: (
-      exceptId: number,
-      type: ClientFunction,
-      msg: Message
-   ) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -148,19 +134,11 @@ export function ImplementsServer<T>() {
       : Func<ServerFunctions.Parameter<T>, ServerFunctions.Returns<T>>
    ];
 
-   type BroadcastArgs<T> = ClientFunctions.Returns<T> extends void
-      ? (ClientFunctions.Parameter<T> extends void
-         ? [number, T]
-         : [number, T, ClientFunctions.Parameter<T>])
-      : never;
-
    return function <TBase extends ServerConstructor>(Base: TBase) {
       return class extends Base {
          // FUNCTIONS
          on(...args: OnArgs<ServerFunction.Connect>): void;
          on(...args: OnArgs<ServerFunction.GetClientInfos>): void;
-         on(...args: OnArgs<ServerFunction.Cool>): void;
-         on(...args: OnArgs<ServerFunction.Ping>): void;
 
          on(type: ServerFunction, handler: Func<unknown, unknown> | Action<unknown>) {
             let factoryParam = ServerFunctions.getParameter(type);
@@ -176,16 +154,6 @@ export function ImplementsServer<T>() {
                let pack = factoryReturn.pack;
                return promise.then(msg => pack(msg));
             });
-         }
-
-         broadcast(...args: BroadcastArgs<ClientFunction.GetVersion>): void;
-         broadcast(...args: BroadcastArgs<ClientFunction.ClientsChanged>): void;
-         broadcast(...args: BroadcastArgs<ClientFunction.ClickFromClient>): void;
-
-         broadcast(exceptId: number, type: ClientFunction, data?: unknown) {
-            let factoryParam = ClientFunctions.getParameter(type);
-            let msg = factoryParam.pack(data);
-            this.broadcastMethod(exceptId, type, msg);
          }
       };
    };
@@ -218,8 +186,8 @@ export function ImplementsServerClient<TBase extends ServerClientConstructor>(Ba
    return class extends Base {
       // FUNCTIONS
       call(...args: CallArgs<ClientFunction.GetVersion>): ReturnArg<ClientFunction.GetVersion>;
-      call(...args: CallArgs<ClientFunction.ClientsChanged>): ReturnArg<ClientFunction.ClientsChanged>;
-      call(...args: CallArgs<ClientFunction.ClickFromClient>): ReturnArg<ClientFunction.ClickFromClient>;
+      call(...args: CallArgs<ClientFunction.ClientChanged>): ReturnArg<ClientFunction.ClientChanged>;
+      call(...args: CallArgs<ClientFunction.ClientsRemoved>): ReturnArg<ClientFunction.ClientsRemoved>;
 
       call(type: ClientFunction, data?: unknown): Promise<unknown> | void {
          let factoryParam = ClientFunctions.getParameter(type);
@@ -293,8 +261,8 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
 
       // FUNCTIONS
       on(...args: OnArgs<ClientFunction.GetVersion>): void;
-      on(...args: OnArgs<ClientFunction.ClientsChanged>): void;
-      on(...args: OnArgs<ClientFunction.ClickFromClient>): void;
+      on(...args: OnArgs<ClientFunction.ClientChanged>): void;
+      on(...args: OnArgs<ClientFunction.ClientsRemoved>): void;
 
       on(type: ClientFunction, handler: Func<unknown, unknown> | Action<unknown>) {
          let factoryParam = ClientFunctions.getParameter(type);
@@ -315,8 +283,6 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       // FUNCTIONS
       call(...args: CallArgs<ServerFunction.Connect>): ReturnArg<ServerFunction.Connect>;
       call(...args: CallArgs<ServerFunction.GetClientInfos>): ReturnArg<ServerFunction.GetClientInfos>;
-      call(...args: CallArgs<ServerFunction.Cool>): ReturnArg<ServerFunction.Cool>;
-      call(...args: CallArgs<ServerFunction.Ping>): ReturnArg<ServerFunction.Ping>;
 
       call(type: ServerFunction, data?: unknown): Promise<unknown> | void {
          let factoryParam = ServerFunctions.getParameter(type);

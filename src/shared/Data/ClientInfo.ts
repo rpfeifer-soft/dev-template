@@ -13,6 +13,15 @@ interface IClientInfo {
 
 interface ClientInfo extends IClientInfo { };
 class ClientInfo {
+   constructor(info?: IClientInfo) {
+      if (info) {
+         this.id = info.id;
+         this.userName = info.userName;
+         this.userRole = info.userRole;
+         this.startTime = info.startTime;
+         this.version = info.version;
+      };
+   }
 };
 export default ClientInfo;
 

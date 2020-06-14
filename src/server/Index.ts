@@ -11,6 +11,7 @@ export default function getIndexHtml() {
 <meta name="apple-mobile-web-app-title" content="${options.getTitle()}">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="version" content="${options.getVersion()}">
 
 <base href="${options.getBaseUrl() || '/'}">
 <link rel="manifest" href="content/manifest.json">
