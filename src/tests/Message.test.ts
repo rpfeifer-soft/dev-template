@@ -134,14 +134,14 @@ class Init {
    }
 };
 
-const jInit = createJsonFactory<Init, IInit>(Init, {
+const jInit = createJsonFactory<Init, IInit>(() => new Init(), {
    url: true,
    browser: true,
    time: jsonDateSerializer,
    test: true
 });
 
-const fInit = createBinaryFactory<Init>(Init,
+const fInit = createBinaryFactory<Init>(() => new Init(),
    (bytes, data, opt) => {
       data.url = bytes.getString() || '';
       data.browser = bytes.getString(); opt('browser');

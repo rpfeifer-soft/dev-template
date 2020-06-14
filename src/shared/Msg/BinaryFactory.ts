@@ -7,13 +7,13 @@ import ByteArray from '../ByteArray.js';
 class Binary<TClass> extends Message {
    data?: TClass;
 
-   ctor: new () => TClass;
+   ctor: () => TClass;
 
    readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void;
    writeTo: (data: TClass, bytes: ByteArray) => void;
 
    constructor(
-      ctor: new () => TClass,
+      ctor: () => TClass,
       readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
       writeTo: (data: TClass, bytes: ByteArray) => void,
       data?: TClass
@@ -41,7 +41,7 @@ class Binary<TClass> extends Message {
       if (empty) {
          this.data = undefined;
       } else {
-         this.data = new this.ctor;
+         this.data = this.ctor();
          this.readFrom(bytes, this.data, (key) => this.dClean(key));
       }
       return this;
@@ -98,7 +98,7 @@ class BinaryArrayClass<TClass> extends Message {
 }
 
 function createBinaryFactory<TClass>(
-   ctor: (new () => TClass),
+   ctor: (() => TClass),
    readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
    writeTo: (data: TClass, bytes: ByteArray) => void
 ) {

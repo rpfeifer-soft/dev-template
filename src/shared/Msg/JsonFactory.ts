@@ -3,7 +3,7 @@
 import Message from './Message.js';
 
 type Schema<TClass, TInterface> = [
-   (new () => TClass),
+   () => TClass,
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
 ];
@@ -32,7 +32,7 @@ class Json<TClass, TInterface> extends Message {
       } else {
          let entries = Object.entries(this.schema[1]);
          if (!this.data) {
-            this.data = new this.schema[0];
+            this.data = this.schema[0]();
          }
          let object = this.data;
          let assign = (key: string, value: unknown) => {
@@ -132,7 +132,7 @@ class JsonArrayClass<TClass> extends Message {
 }
 
 function createJsonFactory<TClass, TInterface>(
-   ctor: (new () => TClass),
+   ctor: () => TClass,
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
 ) {

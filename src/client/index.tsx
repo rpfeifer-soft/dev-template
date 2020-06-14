@@ -35,11 +35,10 @@ if (app) {
    }
 
    let versionNode = document.querySelector('meta[name="version"]');
-   let connectInfo = new ConnectInfo();
-   connectInfo.sessionId = getSessionId();
+   let connectInfo = new ConnectInfo(
+      getSessionId(), versionNode ? (versionNode.getAttribute('content') || '') : '');
    connectInfo.browser = navigator.userAgent;
    connectInfo.time = new Date();
-   connectInfo.version = versionNode ? (versionNode.getAttribute('content') || '') : '';
 
    Server.init(baseURI + 'ws', connectInfo)
       .then(clientInfo => initApp(clientInfo))

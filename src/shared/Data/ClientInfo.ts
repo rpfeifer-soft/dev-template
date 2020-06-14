@@ -27,7 +27,8 @@ class ClientInfo {
 };
 export default ClientInfo;
 
-export const fClientInfo = createJsonFactory<ClientInfo, IClientInfo>(ClientInfo, {
+export const fClientInfo = createJsonFactory<ClientInfo, IClientInfo>(
+   () => new ClientInfo(), {
    id: true,
    sessionId: true,
    userName: true,
