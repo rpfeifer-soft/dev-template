@@ -18,11 +18,47 @@ class App {
    }
 
    clientChanged(info: ClientInfo) {
+      if (this.self && this.self.id === info.id) {
+         this.self = info;
+      }
       this.all[info.id] = info;
    }
 
    clientsRemoved(ids: number[]) {
       ids.forEach(id => delete this.all[id]);
+   }
+
+   async setUser(userName: string) {
+      Server.call(ServerFunction.SetUser, userName)
+         .then(p => {
+            this.clientChanged(p);
+            console.log(p);
+         })
+         .catch(error => console.error(error));
+   }
+
+   async sendAuthCode() {
+      Server.call(ServerFunction.SendAuthCode)
+         .then(p => console.log(p))
+         .catch(error => console.error(error));
+   }
+
+   async login(authCode: string) {
+      Server.call(ServerFunction.Login, authCode)
+         .then(p => {
+            this.clientChanged(p);
+            console.log(p);
+         })
+         .catch(error => console.error(error));
+   }
+
+   async logoff() {
+      Server.call(ServerFunction.Logoff)
+         .then(p => {
+            this.clientChanged(p);
+            console.log(p);
+         })
+         .catch(error => console.error(error));
    }
 
    // eslint-disable-next-line no-console

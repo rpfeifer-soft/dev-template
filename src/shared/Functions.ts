@@ -6,6 +6,7 @@ import fString from '../shared/Msg/String.js';
 import fNumber from '../shared/Msg/Number.js';
 import ConnectInfo, { fConnectInfo } from './Data/ConnectInfo.js';
 import ClientInfo, { fClientInfo } from './Data/ClientInfo.js';
+import fBool from './Msg/Bool.js';
 
 // Helper types
 type Unpack<T> =
@@ -34,6 +35,10 @@ interface IApiDefs {
 export enum ServerFunction {
    Connect = 1,
    GetClientInfos,
+   SetUser,
+   SendAuthCode,
+   Login,
+   Logoff
 }
 
 export namespace ServerFunctions {
@@ -42,17 +47,27 @@ export namespace ServerFunctions {
    // Declare the functions
    declare function dConnect(msg: ConnectInfo): ClientInfo;
    declare function dGetClientInfos(): ClientInfo[];
-   declare function dCool(msg: string): number;
-   declare function dPing(msg: boolean): void;
+   declare function dSetUser(userName: string): ClientInfo;
+   declare function dSendAuthCode(): boolean;
+   declare function dLogin(authCode: string): ClientInfo;
+   declare function dLogoff(): ClientInfo;
 
    // Declare the api
    apiDefs[ServerFunction.Connect] = [fConnectInfo, fClientInfo];
    apiDefs[ServerFunction.GetClientInfos] = [fVoid, fClientInfo.array];
+   apiDefs[ServerFunction.SetUser] = [fString, fClientInfo];
+   apiDefs[ServerFunction.SendAuthCode] = [fString, fBool];
+   apiDefs[ServerFunction.Login] = [fString, fClientInfo];
+   apiDefs[ServerFunction.Logoff] = [fVoid, fClientInfo];
 
    // Declare the types
    type Packing<T> =
       T extends ServerFunction.Connect ? Analyze<typeof dConnect> :
       T extends ServerFunction.GetClientInfos ? Analyze<typeof dGetClientInfos> :
+      T extends ServerFunction.SetUser ? Analyze<typeof dSetUser> :
+      T extends ServerFunction.SendAuthCode ? Analyze<typeof dSendAuthCode> :
+      T extends ServerFunction.Login ? Analyze<typeof dLogin> :
+      T extends ServerFunction.Logoff ? Analyze<typeof dLogoff> :
       never;
 
    export type Parameter<T> = First<Packing<T>>;
@@ -139,6 +154,10 @@ export function ImplementsServer<T>() {
          // FUNCTIONS
          on(...args: OnArgs<ServerFunction.Connect>): void;
          on(...args: OnArgs<ServerFunction.GetClientInfos>): void;
+         on(...args: OnArgs<ServerFunction.SetUser>): void;
+         on(...args: OnArgs<ServerFunction.SendAuthCode>): void;
+         on(...args: OnArgs<ServerFunction.Login>): void;
+         on(...args: OnArgs<ServerFunction.Logoff>): void;
 
          on(type: ServerFunction, handler: Func<unknown, unknown> | Action<unknown>) {
             let factoryParam = ServerFunctions.getParameter(type);
@@ -283,6 +302,10 @@ export function ImplementsClient<TBase extends ClientConstructor>(Base: TBase) {
       // FUNCTIONS
       call(...args: CallArgs<ServerFunction.Connect>): ReturnArg<ServerFunction.Connect>;
       call(...args: CallArgs<ServerFunction.GetClientInfos>): ReturnArg<ServerFunction.GetClientInfos>;
+      call(...args: CallArgs<ServerFunction.SetUser>): ReturnArg<ServerFunction.SetUser>;
+      call(...args: CallArgs<ServerFunction.SendAuthCode>): ReturnArg<ServerFunction.SendAuthCode>;
+      call(...args: CallArgs<ServerFunction.Login>): ReturnArg<ServerFunction.Login>;
+      call(...args: CallArgs<ServerFunction.Logoff>): ReturnArg<ServerFunction.Logoff>;
 
       call(type: ServerFunction, data?: unknown): Promise<unknown> | void {
          let factoryParam = ServerFunctions.getParameter(type);

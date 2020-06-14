@@ -6,6 +6,7 @@ import express from 'express';
 import Clients from './Clients.js';
 import getIndexHtml from './Index.js';
 import connectionState from './Modules/ConnectionState.js';
+import userLogin from './Modules/UserLogin.js';
 
 const server = express();
 
@@ -23,6 +24,7 @@ server.listen(options.getPort(), () => {
 
    // Connection state module
    connectionState();
+   userLogin();
 });
 
 Clients.init({ port: options.getPortWebSockets() });
