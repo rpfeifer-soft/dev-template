@@ -6,3 +6,6 @@ export enum UserRole {
    Admin = 4
 }
 
+export enum Language {
+   German = 1
+}

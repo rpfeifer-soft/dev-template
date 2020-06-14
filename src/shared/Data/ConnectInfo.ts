@@ -1,10 +1,7 @@
 /** @format */
 
 import createJsonFactory, { jsonDateSerializer } from '../Msg/JsonFactory.js';
-
-enum Language {
-   German = 1
-}
+import { Language } from '../Msg/Types.js';
 
 interface IConnectInfo {
    sessionId: string;

@@ -19,6 +19,7 @@
       "start": "node dist/server/start.js",
       "list": "ps aux | grep ${npm_package_name}",
       "test": "tsc --project ./src/tsconfig.test.json && rollup -c ./src/rollup.test.js && node ./test/all.js && rimraf ./test",
+      "check": "npm run compile && npm run test",
       "build": "npm run compile && rollup -c",
       "publish": "npm run lint && npm run test && docker build . --file src/Dockerfile --no-cache --tag ${npm_package_dockerAccount}:${npm_package_appid} && docker push ${npm_package_dockerAccount}:${npm_package_appid}",
       "scp": "scp -r install/secrets.json rpfeifer@${npm_package_prodServer}:${npm_package_prodBase}/secrets.json",

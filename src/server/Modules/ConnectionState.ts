@@ -11,14 +11,7 @@ function checkConnection(info: ConnectInfo): ClientInfo | string {
    if (info.version !== options.getVersion()) {
       return `Version mismatch: ${info.version} <> ${options.getVersion()}`;
    }
-
-   let clientInfo = new ClientInfo();
-   clientInfo.sessionId = info.sessionId;
-   clientInfo.version = info.version;
-   clientInfo.startTime = new Date();
-   clientInfo.userName = '';
-   clientInfo.userRole = UserRole.Guest;
-   return clientInfo;
+   return ClientInfo.fromConnectInfo(info, 0, UserRole.Guest, new Date());
 }
 
 export default function connectionState() {
