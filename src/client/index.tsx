@@ -23,30 +23,25 @@ function getSessionId() {
    return sessionId;
 }
 
-let app = document.getElementById('app');
-if (app) {
-   let thisApp = app;
-   thisApp.innerText = 'Hello World!';
-
-   let baseURI = document.baseURI.substr(location.protocol.length);
-   if (location.protocol === 'http:') {
-      baseURI = 'ws:' + baseURI;
-   } else {
-      baseURI = 'wss:' + baseURI;
-   }
-
-   let versionNode = document.querySelector('meta[name="version"]');
-   let connectInfo = new ConnectInfo(
-      getSessionId(), versionNode ? (versionNode.getAttribute('content') || '') : '');
-   connectInfo.browser = navigator.userAgent;
-   connectInfo.time = new Date();
-
-   Server.init(baseURI + 'ws', connectInfo)
-      .then(clientInfo => {
-         connectionState(clientInfo);
-         userLogin();
-      })
-      .catch(error => console.error(error));
+let baseURI = document.baseURI.substr(location.protocol.length);
+if (location.protocol === 'http:') {
+   baseURI = 'ws:' + baseURI;
+} else {
+   baseURI = 'wss:' + baseURI;
 }
+
+let versionNode = document.querySelector('meta[name="version"]');
+let connectInfo = new ConnectInfo(
+   getSessionId(), versionNode ? (versionNode.getAttribute('content') || '') : '');
+connectInfo.browser = navigator.userAgent;
+connectInfo.time = new Date();
+
+Server.init(baseURI + 'ws', connectInfo)
+   .then(clientInfo => {
+      connectionState(clientInfo);
+      userLogin();
+   })
+   .catch(error => console.error(error));
+
 // tslint:disable-next-line: no-string-literal
 registerServiceWorker(window['isProduction'], '');
