@@ -13,6 +13,7 @@ function checkConnection(info: ConnectInfo): ClientInfo | string {
    }
 
    let clientInfo = new ClientInfo();
+   clientInfo.sessionId = info.sessionId;
    clientInfo.version = info.version;
    clientInfo.startTime = new Date();
    clientInfo.userName = '';
@@ -32,6 +33,7 @@ export default function connectionState() {
       }
 
       // Copy the needed values
+      client.sessionId = clientInfo.sessionId;
       client.startTime = clientInfo.startTime;
       client.userName = clientInfo.userName;
       client.userRole = clientInfo.userRole;

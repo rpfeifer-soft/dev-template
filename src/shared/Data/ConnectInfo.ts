@@ -7,6 +7,7 @@ enum Language {
 }
 
 interface IConnectInfo {
+   sessionId: string;
    version: string;
    authKey?: string;
    userName?: string;
@@ -21,6 +22,7 @@ class ConnectInfo {
 export default ConnectInfo;
 
 export const fConnectInfo = createJsonFactory<ConnectInfo, IConnectInfo>(ConnectInfo, {
+   sessionId: true,
    version: true,
    authKey: true,
    userName: true,
