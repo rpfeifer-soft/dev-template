@@ -4,7 +4,7 @@
 import TextEncoder from './TextEncoder.js';
 import TextDecoder from './TextDecoder.js';
 
-class ByteArray {
+export class ByteArray {
    private size = 0;
    private arrays: Uint8Array[] = [];
 
@@ -184,5 +184,3 @@ class ByteArray {
       return array;
    }
 }
-
-export default ByteArray;

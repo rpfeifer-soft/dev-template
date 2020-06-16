@@ -1,7 +1,7 @@
 /** @format */
 
-import { Message } from './Message.js';
-import ByteArray from '../ByteArray.js';
+import { Message, IMessagesFactory, IMessageFactory } from './Message.js';
+import { ByteArray } from '../ByteArray.js';
 
 // Special data implementation
 class Binary<TClass> extends Message {
@@ -61,10 +61,10 @@ class Binary<TClass> extends Message {
 class BinaryArrayClass<TClass> extends Message {
    data?: TClass[];
 
-   factory: Message.IMessageFactory<TClass>;
+   factory: IMessageFactory<TClass>;
 
    constructor(
-      factory: Message.IMessageFactory<TClass>,
+      factory: IMessageFactory<TClass>,
       data?: TClass[]
    ) {
       super();
@@ -102,7 +102,7 @@ export function createBinaryFactory<TClass>(
    readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
    writeTo: (data: TClass, bytes: ByteArray) => void
 ) {
-   let factory: Message.IMessagesFactory<TClass> = {
+   let factory: IMessagesFactory<TClass> = {
       pack: (value) => new Binary<TClass>(ctor, readFrom, writeTo, value),
       unpack: (msg: Binary<TClass>) => msg.data,
       array: {

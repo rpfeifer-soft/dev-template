@@ -1,7 +1,7 @@
 /** @format */
 
-import ByteArray from '../ByteArray.js';
-import { Message } from './Message.js';
+import { ByteArray } from '../ByteArray.js';
+import { Message, IMessagesFactory } from './Message.js';
 
 class StringClass extends Message {
    constructor(public data?: string) {
@@ -39,7 +39,7 @@ class StringArrayClass extends Message {
    }
 }
 
-export const fString: Message.IMessagesFactory<string> = {
+export const fString: IMessagesFactory<string> = {
    pack: (value) => new StringClass(value),
    unpack: (msg: StringClass) => msg.data,
    array: {

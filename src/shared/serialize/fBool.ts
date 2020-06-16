@@ -1,7 +1,7 @@
 /** @format */
 
-import ByteArray from '../ByteArray.js';
-import { Message } from './Message.js';
+import { ByteArray } from '../ByteArray.js';
+import { Message, IMessagesFactory } from './Message.js';
 
 class BoolClass extends Message {
    constructor(public data?: boolean) {
@@ -39,7 +39,7 @@ class BoolArrayClass extends Message {
    }
 }
 
-export const fBool: Message.IMessagesFactory<boolean> = {
+export const fBool: IMessagesFactory<boolean> = {
    pack: (value) => new BoolClass(value),
    unpack: (msg: BoolClass) => msg.data,
    array: {

@@ -1,7 +1,7 @@
 /** @format */
 
-import ByteArray from '../ByteArray.js';
-import { Message } from './Message.js';
+import { ByteArray } from '../ByteArray.js';
+import { Message, IMessagesFactory } from './Message.js';
 
 class DateClass extends Message {
    data?: Date;
@@ -43,7 +43,7 @@ class DateArrayClass extends Message {
    }
 }
 
-export const fDate: Message.IMessagesFactory<Date> = {
+export const fDate: IMessagesFactory<Date> = {
    pack: (value) => new DateClass(value),
    unpack: (msg: DateClass) => msg.data,
    array: {

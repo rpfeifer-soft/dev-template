@@ -1,6 +1,6 @@
 /** @format */
 
-import { Message } from './serialize/Message.js';
+import { Message, IMessageFactory } from './serialize/Message.js';
 import ConnectInfo, { fConnectInfo } from './data/ConnectInfo.js';
 import ClientInfo, { fClientInfo } from './data/ClientInfo.js';
 import { fVoid, fBool, fNumber, fString } from './serialize/serializers.js';
@@ -19,8 +19,8 @@ type Analyze<T extends ((msg: unknown) => unknown | void)>
    = [Unpack<Parameters<T>>, ReturnType<T>];
 
 type ApiTuple = [
-   Message.IMessageFactory<unknown>,
-   Message.IMessageFactory<unknown> | undefined
+   IMessageFactory<unknown>,
+   IMessageFactory<unknown> | undefined
 ];
 
 // Api map

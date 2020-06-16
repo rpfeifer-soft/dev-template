@@ -1,23 +1,23 @@
 /** @format */
 
 import test from 'tape';
-import { Message } from '../shared/serialize/Message.js';
 import { fVoid, fBool, fDate, fNumber, fString } from '../shared/serialize/serializers.js';
-import ByteArray from '../shared/ByteArray.js';
+import { ByteArray } from '../shared/ByteArray.js';
 import { createBinaryFactory, createJsonFactory, jsonDateSerializer } from '../shared/serialize/factories.js';
+import { IMessageFactory } from '../shared/serialize/Message.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
 
-function serialize<T>(factory: Message.IMessageFactory<T>, data: T) {
+function serialize<T>(factory: IMessageFactory<T>, data: T) {
    return factory.unpack(factory.pack().parse(factory.pack(data).stringify()));
 }
 
-function assertEqual<T>(assert: test.Test, factory: Message.IMessageFactory<T>, value: T, expected?: T) {
+function assertEqual<T>(assert: test.Test, factory: IMessageFactory<T>, value: T, expected?: T) {
    assert.equal(serialize(factory, value), expected || value);
 }
 
-function assertDeepEqual<T>(assert: test.Test, factory: Message.IMessageFactory<T>, value: T, expected?: T) {
+function assertDeepEqual<T>(assert: test.Test, factory: IMessageFactory<T>, value: T, expected?: T) {
    assert.deepEqual(serialize(factory, value), expected || value);
 }
 
@@ -150,7 +150,7 @@ const fInit = createBinaryFactory<Init>(() => new Init(),
       bytes.addString(data.test);
    });
 
-function testObject(assert: test.Test, factory: Message.IMessageFactory<Init>) {
+function testObject(assert: test.Test, factory: IMessageFactory<Init>) {
    let ensure = (value?: Init, expected?: Init) => assertDeepEqual(assert, factory, value, expected);
    let now = new Date(Date.now());
    let init = new Init('url', 'Browser', now);
@@ -176,7 +176,7 @@ test('Serialize object data (Binary)', (assert) => {
    testObject(assert, fInit);
 });
 
-function testObjects(assert: test.Test, factory: Message.IMessageFactory<Init[]>) {
+function testObjects(assert: test.Test, factory: IMessageFactory<Init[]>) {
    let ensure = (value?: Init[], expected?: Init[]) => assertDeepEqual(assert, factory, value, expected);
    let now = new Date(Date.now());
    let init = [

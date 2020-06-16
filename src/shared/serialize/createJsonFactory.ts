@@ -1,6 +1,6 @@
 /** @format */
 
-import { Message } from './Message.js';
+import { Message, IMessagesFactory, IMessageFactory, fromJSON, toJSON } from './Message.js';
 
 type Schema<TClass, TInterface> = [
    () => TClass,
@@ -26,7 +26,7 @@ class Json<TClass, TInterface> extends Message {
       if (typeof (data) !== 'string') {
          throw new Error('ArrayBuffer not support for generic data!');
       }
-      let json = Message.fromJSON(data);
+      let json = fromJSON(data);
       if (json === undefined) {
          this.data = undefined;
       } else {
@@ -73,7 +73,7 @@ class Json<TClass, TInterface> extends Message {
             }
          });
       }
-      return Message.toJSON(this.data === undefined ? undefined : json);
+      return toJSON(this.data === undefined ? undefined : json);
    }
 }
 
@@ -81,10 +81,10 @@ class Json<TClass, TInterface> extends Message {
 class JsonArrayClass<TClass> extends Message {
    data?: TClass[];
 
-   factory: Message.IMessageFactory<TClass>;
+   factory: IMessageFactory<TClass>;
 
    constructor(
-      factory: Message.IMessageFactory<TClass>,
+      factory: IMessageFactory<TClass>,
       data?: TClass[]
    ) {
       super();
@@ -97,7 +97,7 @@ class JsonArrayClass<TClass> extends Message {
       if (typeof (data) !== 'string') {
          throw new Error('ArrayBuffer not support for generic data!');
       }
-      let jsonArray = Message.fromJSON(data) as string[];
+      let jsonArray = fromJSON(data) as string[];
       if (jsonArray === undefined) {
          this.data = undefined;
       } else {
@@ -117,7 +117,7 @@ class JsonArrayClass<TClass> extends Message {
 
    stringify() {
       if (this.data === undefined) {
-         return Message.toJSON(this.data);
+         return toJSON(this.data);
       }
       let jsonArray = this.data.map((item) => {
          let msg = this.factory.pack(item);
@@ -127,7 +127,7 @@ class JsonArrayClass<TClass> extends Message {
          }
          return json;
       });
-      return Message.toJSON(jsonArray);
+      return toJSON(jsonArray);
    }
 }
 
@@ -136,7 +136,7 @@ export function createJsonFactory<TClass, TInterface>(
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
 ) {
-   let factory: Message.IMessagesFactory<TClass> = {
+   let factory: IMessagesFactory<TClass> = {
       pack: (value) => new Json<TClass, TInterface>([ctor, schema], value),
       unpack: (msg: Json<TClass, TInterface>) => msg.data,
       array: {

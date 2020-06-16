@@ -1,7 +1,7 @@
 /** @format */
 
-import ByteArray from '../ByteArray.js';
-import { Message } from './Message.js';
+import { ByteArray } from '../ByteArray.js';
+import { Message, IMessageFactory } from './Message.js';
 
 class VoidClass extends Message {
    parse(data: ArrayBuffer) {
@@ -14,7 +14,7 @@ class VoidClass extends Message {
    }
 }
 
-export const fVoid: Message.IMessageFactory<void> = {
+export const fVoid: IMessageFactory<void> = {
    pack: () => new VoidClass(),
    unpack: () => undefined
 };
