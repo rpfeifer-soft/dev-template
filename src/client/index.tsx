@@ -1,7 +1,7 @@
 /** @format */
 
 import registerServiceWorker from './registerServiceWorker';
-import { server } from './Server.js';
+import { server } from './server.js';
 import ConnectInfo from '../shared/data/ConnectInfo.js';
 import connectionState from './app/ConnectionState.js';
 import userLogin from './app/UserLogin.js';

@@ -1,7 +1,7 @@
 /** @format */
 
 import ClientInfo from '../../shared/data/ClientInfo.js';
-import { server } from '../Server.js';
+import { server } from '../server.js';
 import { ClientFunction, ServerFunction } from '../../shared/Functions.js';
 import registerDebug from './Debug.js';
 

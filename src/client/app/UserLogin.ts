@@ -1,6 +1,6 @@
 /** @format */
 
-import { server } from '../Server.js';
+import { server } from '../server.js';
 import { ServerFunction } from '../../shared/Functions.js';
 import registerDebug from './Debug.js';
 
