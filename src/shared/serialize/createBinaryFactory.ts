@@ -1,7 +1,7 @@
 /** @format */
 
 import { Message, IMessagesFactory, IMessageFactory } from './Message.js';
-import { ByteArray } from '../ByteArray.js';
+import { ByteArray } from './ByteArray.js';
 
 // Special data implementation
 class Binary<TClass> extends Message {

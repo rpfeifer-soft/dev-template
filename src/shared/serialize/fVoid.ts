@@ -1,6 +1,6 @@
 /** @format */
 
-import { ByteArray } from '../ByteArray.js';
+import { ByteArray } from './ByteArray.js';
 import { Message, IMessageFactory } from './Message.js';
 
 class VoidClass extends Message {

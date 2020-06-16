@@ -1,6 +1,6 @@
 /** @format */
 
-import { ByteArray } from '../ByteArray.js';
+import { ByteArray } from './ByteArray.js';
 
 export abstract class Message {
 
