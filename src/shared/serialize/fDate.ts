@@ -43,7 +43,7 @@ class DateArrayClass extends Message {
    }
 }
 
-const fDate: Message.IMessagesFactory<Date> = {
+export const fDate: Message.IMessagesFactory<Date> = {
    pack: (value) => new DateClass(value),
    unpack: (msg: DateClass) => msg.data,
    array: {
@@ -51,5 +51,3 @@ const fDate: Message.IMessagesFactory<Date> = {
       unpack: (msg: DateArrayClass) => msg.data,
    }
 };
-
-export default fDate;
