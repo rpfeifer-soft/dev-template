@@ -39,7 +39,7 @@ class NumberArrayClass extends Message {
    }
 }
 
-const fNumber: Message.IMessagesFactory<number> = {
+export const fNumber: Message.IMessagesFactory<number> = {
    pack: (value) => new NumberClass(value),
    unpack: (msg: NumberClass) => msg.data,
    array: {
@@ -47,5 +47,3 @@ const fNumber: Message.IMessagesFactory<number> = {
       unpack: (msg: NumberArrayClass) => msg.data,
    }
 };
-
-export default fNumber;
