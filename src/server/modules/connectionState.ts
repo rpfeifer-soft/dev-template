@@ -1,11 +1,11 @@
 /** @format */
 
-import { clients } from '../Clients.js';
+import { clients } from '../_clients.js';
 import { ServerFunction, ClientFunction } from '../../shared/communication-api.js';
 import { UserRole } from '../../shared/types.js';
 import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
 import { ClientInfo } from '../../shared/data/ClientInfo.js';
-import { options } from '../Options.js';
+import { options } from '../_options.js';
 
 function checkConnection(info: ConnectInfo): ClientInfo | string {
    if (info.version !== options.getVersion()) {

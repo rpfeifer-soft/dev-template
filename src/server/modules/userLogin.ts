@@ -1,6 +1,6 @@
 /** @format */
 
-import { clients } from '../Clients.js';
+import { clients } from '../_clients.js';
 import { ServerFunction } from '../../shared/communication-api.js';
 import { UserRole } from '../../shared/types.js';
 

@@ -2,11 +2,11 @@
 
 // read options
 import express from 'express';
-import { options } from './Options.js';
-import { clients } from './Clients.js';
-import { index } from './Index.js';
-import { connectionState } from './modules/_connectionState.js';
-import { userLogin } from './modules/_userLogin.js';
+import { options } from './_options.js';
+import { clients } from './_clients.js';
+import { index } from './_index.js';
+import { connectionState } from './modules/connectionState.js';
+import { userLogin } from './modules/userLogin.js';
 
 const server = express();
 
