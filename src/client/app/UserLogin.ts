@@ -2,7 +2,7 @@
 
 import { server } from '../server.js';
 import { ServerFunction } from '../../shared/communication-api.js';
-import registerDebug from './Debug.js';
+import { registerDebug } from './Debug.js';
 
 class UserLogin {
    async setUser(userName: string) {
@@ -31,6 +31,6 @@ class UserLogin {
 }
 let data = new UserLogin();
 
-export default async function userLogin() {
+export async function userLogin() {
    registerDebug('login', () => data);
 };

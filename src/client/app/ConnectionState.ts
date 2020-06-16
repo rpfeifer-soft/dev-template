@@ -3,13 +3,13 @@
 import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { server } from '../server.js';
 import { ClientFunction, ServerFunction } from '../../shared/communication-api.js';
-import registerDebug from './Debug.js';
+import { registerDebug } from './Debug.js';
 
 interface IClientMap {
    [id: number]: ClientInfo;
 }
 
-export default async function connectionState(info: ClientInfo) {
+export async function connectionState(info: ClientInfo) {
    // Init with the default values
    let all: IClientMap = {};
 

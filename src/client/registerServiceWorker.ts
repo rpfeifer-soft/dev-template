@@ -76,7 +76,7 @@ function checkValidServiceWorker(swUrl: string) {
       });
 }
 
-export default function register(isProduction: boolean, publicUrl: string) {
+export function register(isProduction: boolean, publicUrl: string) {
    if (isProduction && 'serviceWorker' in navigator) {
       // The URL constructor is available in all browsers that support SW.
       const publicURL = new URL(publicUrl!, window.location.toString());
