@@ -2,9 +2,9 @@
 
 import registerServiceWorker from './registerServiceWorker';
 import Server from './Server.js';
-import ConnectInfo from '../shared/Data/ConnectInfo.js';
-import connectionState from './App/ConnectionState.js';
-import userLogin from './App/UserLogin.js';
+import ConnectInfo from '../shared/data/ConnectInfo.js';
+import connectionState from './app/ConnectionState.js';
+import userLogin from './app/UserLogin.js';
 
 function uuidv4() {
    return (String([1e7]) + String(-1e3) + String(-4e3) + String(-8e3) + String(-1e11))

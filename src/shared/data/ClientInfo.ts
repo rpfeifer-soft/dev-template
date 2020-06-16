@@ -1,7 +1,7 @@
 /** @format */
 
-import createJsonFactory, { jsonDateSerializer } from '../Msg/JsonFactory.js';
-import { UserRole, Language } from '../Msg/Types.js';
+import createJsonFactory, { jsonDateSerializer } from '../msg/JsonFactory.js';
+import { UserRole, Language } from '../msg/Types.js';
 import ConnectInfo from './ConnectInfo.js';
 
 interface IClientInfo extends Omit<Required<ConnectInfo>, 'authKey' | 'time'> {

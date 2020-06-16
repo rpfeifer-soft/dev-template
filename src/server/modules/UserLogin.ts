@@ -2,7 +2,7 @@
 
 import Clients from '../Clients.js';
 import { ServerFunction } from '../../shared/Functions.js';
-import { UserRole } from '../../shared/Msg/Types.js';
+import { UserRole } from '../../shared/msg/Types.js';
 
 function getAuthCode(userName: string) {
    return userName.split('').reverse().join('');

@@ -1,6 +1,6 @@
 /** @format */
 
-import ClientInfo from '../../shared/Data/ClientInfo.js';
+import ClientInfo from '../../shared/data/ClientInfo.js';
 import Server from '../Server.js';
 import { ClientFunction, ServerFunction } from '../../shared/Functions.js';
 import registerDebug from './Debug.js';

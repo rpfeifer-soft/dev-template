@@ -2,9 +2,9 @@
 
 import Clients from '../Clients.js';
 import { ServerFunction, ClientFunction } from '../../shared/Functions.js';
-import { UserRole } from '../../shared/Msg/Types.js';
-import ConnectInfo from '../../shared/Data/ConnectInfo.js';
-import ClientInfo from '../../shared/Data/ClientInfo.js';
+import { UserRole } from '../../shared/msg/Types.js';
+import ConnectInfo from '../../shared/data/ConnectInfo.js';
+import ClientInfo from '../../shared/data/ClientInfo.js';
 import options from '../Options.js';
 
 function checkConnection(info: ConnectInfo): ClientInfo | string {

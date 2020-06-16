@@ -1,12 +1,12 @@
 /** @format */
 
-import Message from './Msg/Message.js';
-import fVoid from './Msg/Void.js';
-import fString from '../shared/Msg/String.js';
-import fNumber from '../shared/Msg/Number.js';
-import ConnectInfo, { fConnectInfo } from './Data/ConnectInfo.js';
-import ClientInfo, { fClientInfo } from './Data/ClientInfo.js';
-import fBool from './Msg/Bool.js';
+import Message from './msg/Message.js';
+import fVoid from './msg/Void.js';
+import fString from '../shared/msg/String.js';
+import fNumber from '../shared/msg/Number.js';
+import ConnectInfo, { fConnectInfo } from './data/ConnectInfo.js';
+import ClientInfo, { fClientInfo } from './data/ClientInfo.js';
+import fBool from './msg/Bool.js';
 
 // Helper types
 type Unpack<T> =

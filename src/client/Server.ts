@@ -1,13 +1,13 @@
 /** @format */
 
 import WSTool from '../shared/WSTool.js';
-import Message from '../shared/Msg/Message.js';
+import Message from '../shared/msg/Message.js';
 import Sender from '../shared/Sender.js';
 import {
    ServerFunction, ClientFunction,
    IClientHandler, ImplementsClient
 } from '../shared/Functions.js';
-import ClientInfo from '../shared/Data/ClientInfo.js';
+import ClientInfo from '../shared/data/ClientInfo.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T): Promise<U> | void;

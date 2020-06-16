@@ -5,8 +5,8 @@ import options from './Options.js';
 import express from 'express';
 import Clients from './Clients.js';
 import getIndexHtml from './Index.js';
-import connectionState from './Modules/ConnectionState.js';
-import userLogin from './Modules/UserLogin.js';
+import connectionState from './modules/ConnectionState.js';
+import userLogin from './modules/UserLogin.js';
 
 const server = express();
 
