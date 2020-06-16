@@ -5,8 +5,8 @@ import express from 'express';
 import { options } from './Options.js';
 import { clients } from './Clients.js';
 import { index } from './Index.js';
-import { connectionState } from './modules/ConnectionState.js';
-import { userLogin } from './modules/UserLogin.js';
+import { connectionState } from './modules/_connectionState.js';
+import { userLogin } from './modules/_userLogin.js';
 
 const server = express();
 

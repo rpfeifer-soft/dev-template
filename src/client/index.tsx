@@ -3,8 +3,8 @@
 import { register as registerServiceWorker } from './registerServiceWorker';
 import { server } from './server.js';
 import { ConnectInfo } from '../shared/data/ConnectInfo.js';
-import { connectionState } from './app/ConnectionState.js';
-import { userLogin } from './app/UserLogin.js';
+import { connectionState } from './app/_connectionState.js';
+import { userLogin } from './app/_userLogin.js';
 
 function uuidv4() {
    return (String([1e7]) + String(-1e3) + String(-4e3) + String(-8e3) + String(-1e11))

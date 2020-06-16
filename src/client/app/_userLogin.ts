@@ -2,7 +2,7 @@
 
 import { server } from '../server.js';
 import { ServerFunction } from '../../shared/communication-api.js';
-import { registerDebug } from './Debug.js';
+import { registerDebug } from './registerDebug.js';
 
 class UserLogin {
    async setUser(userName: string) {
