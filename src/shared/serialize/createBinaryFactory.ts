@@ -97,7 +97,7 @@ class BinaryArrayClass<TClass> extends Message {
    }
 }
 
-function createBinaryFactory<TClass>(
+export function createBinaryFactory<TClass>(
    ctor: (() => TClass),
    readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
    writeTo: (data: TClass, bytes: ByteArray) => void
@@ -112,5 +112,3 @@ function createBinaryFactory<TClass>(
    };
    return factory;
 };
-
-export default createBinaryFactory;

@@ -1,6 +1,6 @@
 /** @format */
 
-import { createJsonFactory, jsonDateSerializer } from '../serialize/createJsonFactory.js';
+import { createJsonFactory, jsonDateSerializer } from '../serialize/factories.js';
 import { Language } from '../serialize/Types.js';
 
 interface IConnectInfo {
