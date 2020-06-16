@@ -5,8 +5,7 @@ import fString from '../shared/serialize/String.js';
 import fNumber from '../shared/serialize/Number.js';
 import ConnectInfo, { fConnectInfo } from './data/ConnectInfo.js';
 import ClientInfo, { fClientInfo } from './data/ClientInfo.js';
-import fBool from './serialize/Bool.js';
-import { fVoid } from './serialize/serialize.js';
+import { fVoid, fBool } from './serialize/serialize.js';
 
 // Helper types
 type Unpack<T> =

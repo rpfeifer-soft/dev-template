@@ -39,7 +39,7 @@ class BoolArrayClass extends Message {
    }
 }
 
-const fBool: Message.IMessagesFactory<boolean> = {
+export const fBool: Message.IMessagesFactory<boolean> = {
    pack: (value) => new BoolClass(value),
    unpack: (msg: BoolClass) => msg.data,
    array: {
@@ -47,5 +47,3 @@ const fBool: Message.IMessagesFactory<boolean> = {
       unpack: (msg: BoolArrayClass) => msg.data,
    }
 };
-
-export default fBool;

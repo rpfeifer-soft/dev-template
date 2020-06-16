@@ -1,3 +1,4 @@
 /** @format */
 
-export { fVoid } from './Void.js';
+export { fVoid } from './fVoid.js';
+export { fBool } from './fBool.js';
