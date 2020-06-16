@@ -1,7 +1,7 @@
 /** @format */
 
 import { createJsonFactory, jsonDateSerializer } from '../serialize/factories.js';
-import { UserRole, Language } from '../serialize/Types.js';
+import { UserRole, Language } from '../types.js';
 import ConnectInfo from './ConnectInfo.js';
 
 interface IClientInfo extends Omit<Required<ConnectInfo>, 'authKey' | 'time'> {

@@ -2,7 +2,7 @@
 
 import Clients from '../Clients.js';
 import { ServerFunction, ClientFunction } from '../../shared/Functions.js';
-import { UserRole } from '../../shared/serialize/Types.js';
+import { UserRole } from '../../shared/types.js';
 import ConnectInfo from '../../shared/data/ConnectInfo.js';
 import ClientInfo from '../../shared/data/ClientInfo.js';
 import options from '../Options.js';

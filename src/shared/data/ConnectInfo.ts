@@ -1,7 +1,7 @@
 /** @format */
 
 import { createJsonFactory, jsonDateSerializer } from '../serialize/factories.js';
-import { Language } from '../serialize/Types.js';
+import { Language } from '../types.js';
 
 interface IConnectInfo {
    sessionId: string;
