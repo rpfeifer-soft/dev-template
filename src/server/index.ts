@@ -1,5 +1,5 @@
 /** @format */
-import { options } from './_options.js';
+import { options } from './options.js';
 
 export function index() {
    return `<!DOCTYPE html>

@@ -2,9 +2,9 @@
 
 // read options
 import express from 'express';
-import { options } from './_options.js';
-import { clients } from './_clients.js';
-import { index } from './_index.js';
+import { options } from './options.js';
+import { clients } from './clients.js';
+import { index } from './index.js';
 import { connectionState } from './modules/connectionState.js';
 import { userLogin } from './modules/userLogin.js';
 
