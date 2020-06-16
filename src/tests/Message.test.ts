@@ -2,7 +2,7 @@
 
 import test from 'tape';
 import Message from '../shared/serialize/Message.js';
-import { fVoid, fBool, fDate, fNumber, fString } from '../shared/serialize/serialize.js';
+import { fVoid, fBool, fDate, fNumber, fString } from '../shared/serialize/serializers.js';
 import ByteArray from '../shared/ByteArray.js';
 import { createBinaryFactory, createJsonFactory, jsonDateSerializer } from '../shared/serialize/factories.js';
 

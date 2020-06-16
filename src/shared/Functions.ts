@@ -3,7 +3,7 @@
 import Message from './serialize/Message.js';
 import ConnectInfo, { fConnectInfo } from './data/ConnectInfo.js';
 import ClientInfo, { fClientInfo } from './data/ClientInfo.js';
-import { fVoid, fBool, fNumber, fString } from './serialize/serialize.js';
+import { fVoid, fBool, fNumber, fString } from './serialize/serializers.js';
 
 // Helper types
 type Unpack<T> =
