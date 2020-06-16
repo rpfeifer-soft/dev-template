@@ -1,7 +1,7 @@
 /** @format */
 
 import WSTool, { IBaseMessage } from './WSTool.js';
-import Message from './msg/Message.js';
+import Message from './serialize/Message.js';
 
 interface IRequests {
    [requestId: number]: {

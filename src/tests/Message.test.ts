@@ -1,15 +1,15 @@
 /** @format */
 
 import test from 'tape';
-import Message from '../shared/msg/Message.js';
-import fVoid from '../shared/msg/Void.js';
-import fBool from '../shared/msg/Bool.js';
-import fString from '../shared/msg/String.js';
-import fNumber from '../shared/msg/Number.js';
-import fDate from '../shared/msg/Date.js';
+import Message from '../shared/serialize/Message.js';
+import { fVoid } from '../shared/serialize/serialize.js';
+import fBool from '../shared/serialize/Bool.js';
+import fString from '../shared/serialize/String.js';
+import fNumber from '../shared/serialize/Number.js';
+import fDate from '../shared/serialize/Date.js';
 import ByteArray from '../shared/ByteArray.js';
-import createJsonFactory, { jsonDateSerializer } from '../shared/msg/JsonFactory.js';
-import createBinaryFactory from '../shared/msg/BinaryFactory.js';
+import createJsonFactory, { jsonDateSerializer } from '../shared/serialize/JsonFactory.js';
+import createBinaryFactory from '../shared/serialize/BinaryFactory.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');

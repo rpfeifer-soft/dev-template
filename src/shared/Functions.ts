@@ -1,12 +1,12 @@
 /** @format */
 
-import Message from './msg/Message.js';
-import fVoid from './msg/Void.js';
-import fString from '../shared/msg/String.js';
-import fNumber from '../shared/msg/Number.js';
+import Message from './serialize/Message.js';
+import fString from '../shared/serialize/String.js';
+import fNumber from '../shared/serialize/Number.js';
 import ConnectInfo, { fConnectInfo } from './data/ConnectInfo.js';
 import ClientInfo, { fClientInfo } from './data/ClientInfo.js';
-import fBool from './msg/Bool.js';
+import fBool from './serialize/Bool.js';
+import { fVoid } from './serialize/serialize.js';
 
 // Helper types
 type Unpack<T> =

@@ -14,9 +14,7 @@ class VoidClass extends Message {
    }
 }
 
-const fVoid: Message.IMessageFactory<void> = {
+export const fVoid: Message.IMessageFactory<void> = {
    pack: () => new VoidClass(),
    unpack: () => undefined
 };
-
-export default fVoid;

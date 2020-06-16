@@ -1,7 +1,7 @@
 /** @format */
 
 import WSTool from '../shared/WSTool.js';
-import Message from '../shared/msg/Message.js';
+import Message from '../shared/serialize/Message.js';
 import Sender from '../shared/Sender.js';
 import {
    ServerFunction, ClientFunction,
