@@ -1,7 +1,7 @@
 /** @format */
 
 import test from 'tape';
-import { ServerFunction, ServerFunctions, ClientFunction, ClientFunctions } from '../shared/Functions.js';
+import { ServerFunction, ServerFunctions, ClientFunction, ClientFunctions } from '../shared/communication-api.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Functions tests\x1b[0m');

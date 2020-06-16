@@ -3,7 +3,7 @@
 import ws from 'ws';
 import Client from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
-import { ServerFunction, IServerHandler, ImplementsServer } from '../shared/Functions.js';
+import { ServerFunction, IServerHandler, ImplementsServer } from '../shared/communication-api.js';
 import { parseClientMessage } from '../shared/websocket-api.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {

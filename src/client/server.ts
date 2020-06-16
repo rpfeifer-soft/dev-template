@@ -5,7 +5,7 @@ import { Sender } from '../shared/Sender.js';
 import {
    ServerFunction, ClientFunction,
    IClientHandler, ImplementsClient
-} from '../shared/Functions.js';
+} from '../shared/communication-api.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { parseServerMessage, prepareClientMessage } from '../shared/websocket-api.js';
 

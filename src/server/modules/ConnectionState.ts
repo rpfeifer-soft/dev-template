@@ -1,7 +1,7 @@
 /** @format */
 
 import Clients from '../Clients.js';
-import { ServerFunction, ClientFunction } from '../../shared/Functions.js';
+import { ServerFunction, ClientFunction } from '../../shared/communication-api.js';
 import { UserRole } from '../../shared/types.js';
 import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
 import { ClientInfo } from '../../shared/data/ClientInfo.js';

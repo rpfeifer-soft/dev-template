@@ -1,6 +1,6 @@
 /** @format */
 
-import { ServerFunction, ClientFunction } from './Functions.js';
+import { ServerFunction, ClientFunction } from './communication-api.js';
 
 interface IRequestError {
    requestId: number;

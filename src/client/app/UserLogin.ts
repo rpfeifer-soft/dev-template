@@ -1,7 +1,7 @@
 /** @format */
 
 import { server } from '../server.js';
-import { ServerFunction } from '../../shared/Functions.js';
+import { ServerFunction } from '../../shared/communication-api.js';
 import registerDebug from './Debug.js';
 
 class UserLogin {

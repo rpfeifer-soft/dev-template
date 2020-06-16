@@ -2,7 +2,7 @@
 
 import ws from 'ws';
 import { Sender } from '../shared/Sender.js';
-import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/Functions.js';
+import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/communication-api.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
 
