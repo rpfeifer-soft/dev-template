@@ -39,7 +39,7 @@ class StringArrayClass extends Message {
    }
 }
 
-const fString: Message.IMessagesFactory<string> = {
+export const fString: Message.IMessagesFactory<string> = {
    pack: (value) => new StringClass(value),
    unpack: (msg: StringClass) => msg.data,
    array: {
@@ -47,5 +47,3 @@ const fString: Message.IMessagesFactory<string> = {
       unpack: (msg: StringArrayClass) => msg.data,
    }
 };
-
-export default fString;
