@@ -131,7 +131,7 @@ class JsonArrayClass<TClass> extends Message {
    }
 }
 
-function createJsonFactory<TClass, TInterface>(
+export function createJsonFactory<TClass, TInterface>(
    ctor: () => TClass,
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
@@ -146,8 +146,6 @@ function createJsonFactory<TClass, TInterface>(
    };
    return factory;
 };
-
-export default createJsonFactory;
 
 // Toolfunctions
 
