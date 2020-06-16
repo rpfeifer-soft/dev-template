@@ -4,7 +4,7 @@ import ws from 'ws';
 import Client from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
 import { ServerFunction, IServerHandler, ImplementsServer } from '../shared/Functions.js';
-import { parseClientMessage } from '../shared/WSTool.js';
+import { parseClientMessage } from '../shared/websocket-api.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T, client: Client): Promise<U> | void;

@@ -4,7 +4,7 @@ import ws from 'ws';
 import { Sender } from '../shared/Sender.js';
 import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/Functions.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
-import { prepareServerMessage } from '../shared/WSTool.js';
+import { prepareServerMessage } from '../shared/websocket-api.js';
 
 interface ClientBase extends ClientInfo { }
 class ClientBase extends Sender<ClientFunction, ServerFunction> {

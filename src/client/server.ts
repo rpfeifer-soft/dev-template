@@ -7,7 +7,7 @@ import {
    IClientHandler, ImplementsClient
 } from '../shared/Functions.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
-import { parseServerMessage, prepareClientMessage } from '../shared/WSTool.js';
+import { parseServerMessage, prepareClientMessage } from '../shared/websocket-api.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T): Promise<U> | void;
