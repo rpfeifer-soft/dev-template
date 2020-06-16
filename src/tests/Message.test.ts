@@ -5,7 +5,7 @@ import Message from '../shared/serialize/Message.js';
 import { fVoid, fBool, fDate, fNumber, fString } from '../shared/serialize/serialize.js';
 import ByteArray from '../shared/ByteArray.js';
 import { createJsonFactory, jsonDateSerializer } from '../shared/serialize/createJsonFactory.js';
-import createBinaryFactory from '../shared/serialize/BinaryFactory.js';
+import createBinaryFactory from '../shared/serialize/createBinaryFactory.js';
 
 // eslint-disable-next-line no-console
 console.log('\x1b[33mStarting tests: Message\x1b[0m');
