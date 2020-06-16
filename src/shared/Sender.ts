@@ -1,6 +1,6 @@
 /** @format */
 
-import WSTool, { IBaseMessage } from './WSTool.js';
+import { IBaseMessage, prepareError, prepareResult, parseRequest } from './WSTool.js';
 import { Message } from './serialize/Message.js';
 
 interface IRequests {
@@ -45,7 +45,7 @@ export abstract class Sender<TFunction, HFunction> {
    }
 
    answer(requestId: number, msg: Message) {
-      let data = WSTool.prepareResult(requestId, msg.stringify());
+      let data = prepareResult(requestId, msg.stringify());
       this.sendRequest(data, requestId);
    }
 
@@ -53,7 +53,7 @@ export abstract class Sender<TFunction, HFunction> {
       if (typeof reason !== 'string') {
          reason = reason.message;
       }
-      let data = WSTool.prepareError(requestId, reason);
+      let data = prepareError(requestId, reason);
       this.sendRequest(data, requestId);
    }
 
@@ -70,7 +70,7 @@ export abstract class Sender<TFunction, HFunction> {
 
    protected handleRequests(data: string | ArrayBuffer) {
       // Call the handler function
-      let request = WSTool.parseRequest(data);
+      let request = parseRequest(data);
       if (request === false) {
          return false;
       }

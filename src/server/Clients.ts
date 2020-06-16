@@ -4,7 +4,7 @@ import ws from 'ws';
 import Client from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
 import { ServerFunction, IServerHandler, ImplementsServer } from '../shared/Functions.js';
-import WSTool from '../shared/WSTool.js';
+import { parseClientMessage } from '../shared/WSTool.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T, client: Client): Promise<U> | void;
@@ -111,7 +111,7 @@ class ClientsBase implements IServerHandler<Client> {
    }
 
    handleClientMessage(client: Client, data: string | ArrayBuffer) {
-      let message = WSTool.Client.parse(data);
+      let message = parseClientMessage(data);
       if (message === false) {
          return;
       }

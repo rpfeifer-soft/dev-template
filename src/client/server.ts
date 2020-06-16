@@ -1,6 +1,5 @@
 /** @format */
 
-import WSTool from '../shared/WSTool.js';
 import { Message } from '../shared/serialize/Message.js';
 import { Sender } from '../shared/Sender.js';
 import {
@@ -8,6 +7,7 @@ import {
    IClientHandler, ImplementsClient
 } from '../shared/Functions.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
+import { parseServerMessage, prepareClientMessage } from '../shared/WSTool.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T): Promise<U> | void;
@@ -106,7 +106,7 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    }
 
    handleClientMessage(data: string | ArrayBuffer) {
-      let message = WSTool.Server.parse(data);
+      let message = parseServerMessage(data);
       if (message === false) {
          return;
       }
@@ -127,7 +127,7 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    }
 
    prepare(type: ServerFunction, data: string | ArrayBuffer, requestId: number | false) {
-      return WSTool.Client.prepare(type, data, requestId);
+      return prepareClientMessage(type, data, requestId);
    }
 
    socketSend(data: string | ArrayBuffer) {

@@ -117,64 +117,56 @@ function parseMessage<T extends IClientMessage | IServerMessage>(
    return false;
 }
 
-namespace WSTool {
-
-   export function parseRequest(data: string | ArrayBuffer): IRequest | false {
-      let json = parseData<IRequest>(data);
-      if ('error' in json) {
-         return json;
-      }
-
-      if ('result' in json) {
-         return json;
-      }
-      return false;
+export function parseRequest(data: string | ArrayBuffer): IRequest | false {
+   let json = parseData<IRequest>(data);
+   if ('error' in json) {
+      return json;
    }
 
-   export function prepareError(requestId: number, error: string) {
-      let json: IRequestError = {
-         requestId,
-         error
-      };
-      return prepareData(json);
+   if ('result' in json) {
+      return json;
    }
-
-   export function prepareResult(requestId: number, result: string | ArrayBuffer) {
-      let json: IRequestResult = {
-         requestId,
-         result
-      };
-      return prepareData(json);
-   }
-
-   export class Client {
-      static parse(data: string | ArrayBuffer) {
-         return parseMessage<IClientMessage>(data);
-      }
-
-      static prepare(type: ServerFunction, data: string | ArrayBuffer, requestId: number | false) {
-         let json: IClientMessage = {
-            type,
-            requestId: requestId ? requestId : undefined,
-            data
-         };
-         return prepareData(json);
-      }
-   }
-
-   export class Server {
-      static parse(data: string | ArrayBuffer) {
-         return parseMessage<IServerMessage>(data);
-      }
-
-      static prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
-         let json: IServerMessage = {
-            type,
-            requestId: requestId ? requestId : undefined,
-            data
-         };
-         return prepareData(json);
-      }
-   }
+   return false;
 }
-export default WSTool;
+
+export function prepareError(requestId: number, error: string) {
+   let json: IRequestError = {
+      requestId,
+      error
+   };
+   return prepareData(json);
+}
+
+export function prepareResult(requestId: number, result: string | ArrayBuffer) {
+   let json: IRequestResult = {
+      requestId,
+      result
+   };
+   return prepareData(json);
+}
+
+export function parseClientMessage(data: string | ArrayBuffer) {
+   return parseMessage<IClientMessage>(data);
+}
+
+export function prepareClientMessage(type: ServerFunction, data: string | ArrayBuffer, requestId: number | false) {
+   let json: IClientMessage = {
+      type,
+      requestId: requestId ? requestId : undefined,
+      data
+   };
+   return prepareData(json);
+}
+
+export function parseServerMessage(data: string | ArrayBuffer) {
+   return parseMessage<IServerMessage>(data);
+}
+
+export function prepareServerMessage(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
+   let json: IServerMessage = {
+      type,
+      requestId: requestId ? requestId : undefined,
+      data
+   };
+   return prepareData(json);
+}

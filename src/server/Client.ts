@@ -1,10 +1,10 @@
 /** @format */
 
 import ws from 'ws';
-import WSTool from '../shared/WSTool.js';
 import { Sender } from '../shared/Sender.js';
 import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/Functions.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
+import { prepareServerMessage } from '../shared/WSTool.js';
 
 interface ClientBase extends ClientInfo { }
 class ClientBase extends Sender<ClientFunction, ServerFunction> {
@@ -66,7 +66,7 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    }
 
    protected prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
-      return WSTool.Server.prepare(type, data, requestId);
+      return prepareServerMessage(type, data, requestId);
    }
 
    protected socketSend(data: string | ArrayBuffer) {
