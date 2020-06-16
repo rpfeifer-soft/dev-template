@@ -3,7 +3,7 @@
 import ws from 'ws';
 import { Client } from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
-import { ServerFunction, IServerHandler, ImplementsServer } from '../shared/communication-api.js';
+import { ServerFunction, IServerHandler, implementsServer } from '../shared/communication-api.js';
 import { parseClientMessage } from '../shared/websocket-api.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
@@ -35,7 +35,7 @@ class Handlers {
       type: ServerFunction,
       handler: IFunctionHandler<T, U>
    ) {
-      let handlers = this.functionHandlers[type];
+      const handlers = this.functionHandlers[type];
       if (handlers) {
          this.functionHandlers[type] = handlers.filter(p => p.handler !== handler);
       }
@@ -74,32 +74,31 @@ class ClientsBase implements IServerHandler<Client> {
    // Init the instance
    init(options: ws.ServerOptions) {
       // Register the correct handler
-      let clientsBase = this;
-      clientsBase.server = new ws.Server(options);
+      this.server = new ws.Server(options);
 
-      clientsBase.server.on('connection', (socket) => {
+      this.server.on('connection', (socket) => {
          // Add the client
-         clientsBase.addClient(socket);
+         this.addClient(socket);
       });
 
-      clientsBase.interval = setInterval(() => {
-         let closedIds: number[] = [];
-         clientsBase.clients.forEach(client => {
+      this.interval = setInterval(() => {
+         const closedIds: number[] = [];
+         this.clients.forEach(client => {
             if (!client.check()) {
                client.close();
                closedIds.push(client.id);
             }
          });
          if (closedIds.length > 0) {
-            clientsBase.clients = clientsBase.clients
+            this.clients = this.clients
                .filter(client => closedIds.indexOf(client.id) === -1);
             // Notify the clients
-            clientsBase.removedClients(closedIds);
+            this.removedClients(closedIds);
          }
-      }, clientsBase.intervalLength);
+      }, this.intervalLength);
 
-      clientsBase.server.on('close', () => {
-         clearInterval(clientsBase.interval);
+      this.server.on('close', () => {
+         clearInterval(this.interval);
       });
    }
 
@@ -111,14 +110,14 @@ class ClientsBase implements IServerHandler<Client> {
    }
 
    handleClientMessage(client: Client, data: string | ArrayBuffer) {
-      let message = parseClientMessage(data);
+      const message = parseClientMessage(data);
       if (message === false) {
          return;
       }
 
-      let clientMessage = message;
+      const clientMessage = message;
 
-      let functionHandlers = this.handlers.getFunctions(clientMessage.type);
+      const functionHandlers = this.handlers.getFunctions(clientMessage.type);
       if (functionHandlers) {
          functionHandlers.forEach(handlerData => {
 
@@ -179,7 +178,7 @@ class ClientsBase implements IServerHandler<Client> {
 
    add(client: Client) {
       // Analyze the connection info
-      let nextId = this.nextId();
+      const nextId = this.nextId();
       client.id = nextId;
       // Add to the list of clients
       this.clients.push(client);
@@ -201,7 +200,7 @@ class ClientsBase implements IServerHandler<Client> {
 
    // Add a new client
    private addClient(socket: ws) {
-      let client = new Client(socket);
+      const client = new Client(socket);
       // Push to the list, after initializing it
       client.init(this.handleClientMessage.bind(this));
    }
@@ -216,7 +215,7 @@ class ClientsBase implements IServerHandler<Client> {
    }
 }
 
-class Clients extends ImplementsServer<Client>()(ClientsBase) {
+class Clients extends implementsServer<Client>()(ClientsBase) {
    // One singleton
    public static readonly instance: Clients = new Clients();
 }

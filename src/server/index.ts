@@ -1,7 +1,7 @@
 /** @format */
 import { options } from './options.js';
 
-export function index() {
+export function index(): string {
    return `<!DOCTYPE html>
 <html lang="en">
 <head>

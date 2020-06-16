@@ -58,6 +58,7 @@ function checkValidServiceWorker(swUrl: string) {
    fetch(swUrl)
       .then(response => {
          // Ensure service worker exists, and that we really are getting a JS file.
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          if (response.status === 404 || response.headers.get('content-type')!.indexOf('javascript') === -1) {
             // No service worker found. Probably a different app. Reload the page.
             navigator.serviceWorker.ready.then(registration => {
@@ -76,9 +77,10 @@ function checkValidServiceWorker(swUrl: string) {
       });
 }
 
-export function register(isProduction: boolean, publicUrl: string) {
+export function register(isProduction: boolean, publicUrl: string): void {
    if (isProduction && 'serviceWorker' in navigator) {
       // The URL constructor is available in all browsers that support SW.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const publicURL = new URL(publicUrl!, window.location.toString());
       if (publicURL.origin !== window.location.origin) {
          // Our service worker won't work if PUBLIC_URL is on a different origin
@@ -101,7 +103,7 @@ export function register(isProduction: boolean, publicUrl: string) {
    }
 }
 
-export function unregister() {
+export function unregister(): void {
    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
          registration.unregister();

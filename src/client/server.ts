@@ -4,7 +4,7 @@ import { Message } from '../shared/serialize/Message.js';
 import { Sender } from '../shared/Sender.js';
 import {
    ServerFunction, ClientFunction,
-   IClientHandler, ImplementsClient
+   IClientHandler, implementsClient
 } from '../shared/communication-api.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { parseServerMessage, prepareClientMessage } from '../shared/websocket-api.js';
@@ -38,7 +38,7 @@ class Handlers {
       type: ClientFunction,
       handler: IFunctionHandler<T, U>
    ) {
-      let handlers = this.functionHandlers[type];
+      const handlers = this.functionHandlers[type];
       if (handlers) {
          this.functionHandlers[type] = handlers.filter(p => p.handler !== handler);
       }
@@ -63,7 +63,7 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    // Infos about the current client
    me?: ClientInfo;
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async callInit(ctor: () => Message, msgInit: Message): Promise<Message> {
       return ctor();
    }
@@ -72,18 +72,17 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    initServer(url: string, ctor: () => Message, msgInit: Message) {
       // Register the correct handler
-      let serverBase = this;
-      serverBase.socket = new WebSocket(url);
-      serverBase.socket.binaryType = 'arraybuffer';
+      this.socket = new WebSocket(url);
+      this.socket.binaryType = 'arraybuffer';
 
       return new Promise<Message>((resolve, reject) => {
-         serverBase.socket.onopen = function () {
-            serverBase.callInit(ctor, msgInit)
+         this.socket.onopen = () => {
+            this.callInit(ctor, msgInit)
                .then(msg => resolve(msg))
                .catch(error => reject(error));
          };
          // tslint:disable-next-line: typedef
-         serverBase.socket.onmessage = async (event) => {
+         this.socket.onmessage = async (event) => {
             let data = event.data;
             if (event.data instanceof Blob) {
                data = await new Response(event.data).arrayBuffer();
@@ -106,14 +105,14 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    }
 
    handleClientMessage(data: string | ArrayBuffer) {
-      let message = parseServerMessage(data);
+      const message = parseServerMessage(data);
       if (message === false) {
          return;
       }
 
-      let serverMessage = message;
+      const serverMessage = message;
 
-      let functionHandlers = this.handlers.getFunctions(serverMessage.type);
+      const functionHandlers = this.handlers.getFunctions(serverMessage.type);
       if (functionHandlers) {
          functionHandlers.forEach(handlerData => {
             this.handleMessage(
@@ -163,7 +162,7 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    }
 }
 
-class ServerClass extends ImplementsClient(ServerBase) {
+class ServerClass extends implementsClient(ServerBase) {
    // One singleton
    public static readonly instance: ServerClass = new ServerClass();
 

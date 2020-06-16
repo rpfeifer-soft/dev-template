@@ -18,6 +18,9 @@ module.exports = {
         "node": true
     },
     "extends": [
+        "google",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
         "prettier"
     ],
     "parser": "@typescript-eslint/parser",
@@ -29,6 +32,7 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+        "require-jsdoc": "off",
         "@typescript-eslint/dot-notation": "error",
         "@typescript-eslint/indent": [
             "off",

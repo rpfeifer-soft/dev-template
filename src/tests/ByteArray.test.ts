@@ -8,14 +8,14 @@ console.log('\x1b[33mStarting tests: ByteArray\x1b[0m');
 
 function testBoolean(value: boolean | undefined) {
    test('Test boolean (' + value + ')', (assert) => {
-      let bytes = new ByteArray();
-      let src = value;
+      const bytes = new ByteArray();
+      const src = value;
       bytes.addBoolean(src);
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, 1);
 
-      let other = new ByteArray(buffer);
-      let dest = other.getBoolean();
+      const other = new ByteArray(buffer);
+      const dest = other.getBoolean();
       assert.equals(dest, src);
       assert.end();
    });
@@ -26,14 +26,14 @@ testBoolean(undefined);
 
 function testUint8(value: number, expected?: number) {
    test('Test uint8 (' + value + ')', (assert) => {
-      let bytes = new ByteArray();
-      let src = value;
+      const bytes = new ByteArray();
+      const src = value;
       bytes.addUint8(src);
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, 1);
 
-      let other = new ByteArray(buffer);
-      let dest = other.getUint8();
+      const other = new ByteArray(buffer);
+      const dest = other.getUint8();
       assert.equals(dest, expected === undefined ? src : expected);
       assert.end();
    });
@@ -48,14 +48,14 @@ testUint8(-3, 253);
 
 function testUint16(value: number, expected?: number) {
    test('Test uint16 (' + value + ')', (assert) => {
-      let bytes = new ByteArray();
-      let src = value;
+      const bytes = new ByteArray();
+      const src = value;
       bytes.addUint16(src);
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, 2);
 
-      let other = new ByteArray(buffer);
-      let dest = other.getUint16();
+      const other = new ByteArray(buffer);
+      const dest = other.getUint16();
       assert.equals(dest, expected === undefined ? src : expected);
       assert.end();
    });
@@ -68,14 +68,14 @@ testUint16(-1, 65535);
 
 function testUint32(value: number, expected?: number) {
    test('Test uint32 (' + value + ')', (assert) => {
-      let bytes = new ByteArray();
-      let src = value;
+      const bytes = new ByteArray();
+      const src = value;
       bytes.addUint32(src);
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, 4);
 
-      let other = new ByteArray(buffer);
-      let dest = other.getUint32();
+      const other = new ByteArray(buffer);
+      const dest = other.getUint32();
       assert.equals(dest, expected === undefined ? src : expected);
       assert.end();
    });
@@ -89,14 +89,14 @@ testUint32(-1, 0xffffffff);
 
 function testNumber(value: number | undefined, expected?: number) {
    test('Test number (' + value + ')', (assert) => {
-      let bytes = new ByteArray();
-      let src = value;
+      const bytes = new ByteArray();
+      const src = value;
       bytes.addNumber(src);
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, 8);
 
-      let other = new ByteArray(buffer);
-      let dest = other.getNumber();
+      const other = new ByteArray(buffer);
+      const dest = other.getNumber();
       assert.equals(dest, expected === undefined ? src : expected);
       assert.end();
    });
@@ -113,14 +113,14 @@ testNumber(Number.MIN_SAFE_INTEGER);
 
 function testDate(value: Date | undefined, expected?: Date) {
    test('Test date (' + value + ')', (assert) => {
-      let bytes = new ByteArray();
-      let src = value;
+      const bytes = new ByteArray();
+      const src = value;
       bytes.addDate(src);
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, 8);
 
-      let other = new ByteArray(buffer);
-      let dest = other.getDate();
+      const other = new ByteArray(buffer);
+      const dest = other.getDate();
       if (dest && src) {
          assert.equals(dest.valueOf(), expected === undefined ? src.valueOf() : expected.valueOf());
       }
@@ -133,14 +133,14 @@ testDate(new Date(1978, 11, 21, 19, 21, 10));
 
 function testString(value: string | undefined, len: number, expected?: string) {
    test('Test string (' + (value === undefined ? 'undefined' : value.substr(0, 35)) + ')', (assert) => {
-      let bytes = new ByteArray();
-      let src = value;
+      const bytes = new ByteArray();
+      const src = value;
       bytes.addString(src);
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, len);
 
-      let other = new ByteArray(buffer);
-      let dest = other.getString();
+      const other = new ByteArray(buffer);
+      const dest = other.getString();
       assert.equals(dest, expected === undefined ? src : expected);
       assert.end();
    });
@@ -156,7 +156,7 @@ testString(new Array(32800 + 1).join('>'), 32804);
 
 function testObject(values: (number | string | boolean)[]) {
    test('Test string (' + values + ')', (assert) => {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       values.forEach(value => {
          if (typeof (value) === 'string') {
             bytes.addString(value);
@@ -166,9 +166,9 @@ function testObject(values: (number | string | boolean)[]) {
             bytes.addBoolean(value);
          }
       });
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
 
-      let other = new ByteArray(buffer);
+      const other = new ByteArray(buffer);
       values.forEach(value => {
          if (typeof (value) === 'string') {
             assert.equals(other.getString(), value);
@@ -190,33 +190,33 @@ function testArray<T>(values: T[] | undefined,
    get: (bytes: ByteArray) => T
 ) {
    test('Test array ' + values, (assert) => {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addArray(values, (item) => add(item, bytes));
-      let buffer = bytes.getArrayBuffer();
+      const buffer = bytes.getArrayBuffer();
 
-      let other = new ByteArray(buffer);
-      let others = other.getArray(() => get(other));
+      const other = new ByteArray(buffer);
+      const others = other.getArray(() => get(other));
       assert.deepEqual(values, others);
       assert.end();
    });
 }
 
-let addNumber = (item: number, bytes: ByteArray) => bytes.addNumber(item);
-let getNumber = (bytes: ByteArray) => bytes.getNumber();
+const addNumber = (item: number, bytes: ByteArray) => bytes.addNumber(item);
+const getNumber = (bytes: ByteArray) => bytes.getNumber();
 
 testArray(undefined, addNumber, getNumber);
 testArray([], addNumber, getNumber);
 testArray([1, 5, 9, -21], addNumber, getNumber);
 
-let addBoolean = (item: boolean, bytes: ByteArray) => bytes.addBoolean(item);
-let getBoolean = (bytes: ByteArray) => bytes.getBoolean();
+const addBoolean = (item: boolean, bytes: ByteArray) => bytes.addBoolean(item);
+const getBoolean = (bytes: ByteArray) => bytes.getBoolean();
 
 testArray(undefined, addBoolean, getBoolean);
 testArray([], addBoolean, getBoolean);
 testArray([false, true, true, false], addBoolean, getBoolean);
 
-let addDate = (item: Date, bytes: ByteArray) => bytes.addDate(item);
-let getDate = (bytes: ByteArray) => bytes.getDate();
+const addDate = (item: Date, bytes: ByteArray) => bytes.addDate(item);
+const getDate = (bytes: ByteArray) => bytes.getDate();
 
 testArray(undefined, addDate, getDate);
 testArray([], addDate, getDate);

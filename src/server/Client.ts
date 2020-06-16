@@ -2,10 +2,11 @@
 
 import ws from 'ws';
 import { Sender } from '../shared/Sender.js';
-import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/communication-api.js';
+import { ClientFunction, implementsServerClient, ServerFunction } from '../shared/communication-api.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ClientBase extends ClientInfo { }
 class ClientBase extends Sender<ClientFunction, ServerFunction> {
    // The id of the client
@@ -74,5 +75,5 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    }
 }
 
-export class Client extends ImplementsServerClient(ClientBase) {
+export class Client extends implementsServerClient(ClientBase) {
 }

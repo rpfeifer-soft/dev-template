@@ -39,7 +39,7 @@ test('Create boolean data message', (assert) => {
 });
 
 test('Serialize boolean data message', (assert) => {
-   let ensure = (value?: boolean) => assertEqual(assert, fBool, value);
+   const ensure = (value?: boolean) => assertEqual(assert, fBool, value);
    ensure(undefined);
    ensure(true);
    ensure(false);
@@ -57,7 +57,7 @@ test('Create string data message', (assert) => {
 });
 
 test('Serialize string data message', (assert) => {
-   let ensure = (value?: string, expected?: string) => assertEqual(assert, fString, value, expected);
+   const ensure = (value?: string, expected?: string) => assertEqual(assert, fString, value, expected);
    ensure(undefined);
    ensure('');
    ensure('text');
@@ -77,7 +77,7 @@ test('Create number data message', (assert) => {
 });
 
 test('Serialize number data message', (assert) => {
-   let ensure = (value?: number, expected?: number) => assertEqual(assert, fNumber, value, expected);
+   const ensure = (value?: number, expected?: number) => assertEqual(assert, fNumber, value, expected);
    ensure(undefined);
    ensure(21);
    ensure(-19.78);
@@ -86,9 +86,9 @@ test('Serialize number data message', (assert) => {
 });
 
 test('Create date data message', (assert) => {
-   let now = new Date();
-   let msg = fDate.pack(now);
-   let msg2 = fDate.unpack(msg);
+   const now = new Date();
+   const msg = fDate.pack(now);
+   const msg2 = fDate.unpack(msg);
    assert.ok(msg2);
    if (msg2) {
       assert.equal(msg2.valueOf(), now.valueOf());
@@ -97,9 +97,9 @@ test('Create date data message', (assert) => {
 });
 
 test('Serialize date data message', (assert) => {
-   let cmpDate = (date?: Date) => date ? date.valueOf() : undefined;
-   let now = new Date();
-   let then = new Date(1978, 9, 21, 19, 7, 8, 21);
+   const cmpDate = (date?: Date) => date ? date.valueOf() : undefined;
+   const now = new Date();
+   const then = new Date(1978, 9, 21, 19, 7, 8, 21);
    assert.equal(cmpDate(serialize(fDate, undefined)), cmpDate(undefined));
    assert.equal(cmpDate(serialize(fDate, now)), cmpDate(now));
    assert.equal(cmpDate(serialize(fDate, then)), cmpDate(then));
@@ -115,9 +115,10 @@ interface IInit {
    test?: string;
 }
 
-interface Init extends IInit { };
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface Init extends IInit { }
 class Init {
-   constructor(url: string = '', browser?: string, time?: Date) {
+   constructor(url = '', browser?: string, time?: Date) {
       this.url = url;
       this.browser = browser || '';
       this.time = time;
@@ -127,7 +128,7 @@ class Init {
       // eslint-disable-next-line no-console
       console.log(this.time, this.browser);
    }
-};
+}
 
 const jInit = createJsonFactory<Init, IInit>(() => new Init(), {
    url: true,
@@ -151,20 +152,20 @@ const fInit = createBinaryFactory<Init>(() => new Init(),
    });
 
 function testObject(assert: test.Test, factory: IMessageFactory<Init>) {
-   let ensure = (value?: Init, expected?: Init) => assertDeepEqual(assert, factory, value, expected);
-   let now = new Date(Date.now());
-   let init = new Init('url', 'Browser', now);
-   let extended = new Init('url', 'Browser', now);
+   const ensure = (value?: Init, expected?: Init) => assertDeepEqual(assert, factory, value, expected);
+   const now = new Date(Date.now());
+   const init = new Init('url', 'Browser', now);
+   const extended = new Init('url', 'Browser', now);
    extended.test = undefined;
    ensure(undefined);
    ensure(init);
    ensure(extended, init);
-   let out = serialize(factory, init);
+   const out = serialize(factory, init);
    if (out) {
       assert.notEqual(out, init);
       assert.equals(typeof (out.dump), 'function');
       assert.equal(out.dump, init.dump);
-   };
+   }
    assert.end();
 }
 
@@ -177,20 +178,20 @@ test('Serialize object data (Binary)', (assert) => {
 });
 
 function testObjects(assert: test.Test, factory: IMessageFactory<Init[]>) {
-   let ensure = (value?: Init[], expected?: Init[]) => assertDeepEqual(assert, factory, value, expected);
-   let now = new Date(Date.now());
-   let init = [
+   const ensure = (value?: Init[], expected?: Init[]) => assertDeepEqual(assert, factory, value, expected);
+   const now = new Date(Date.now());
+   const init = [
       new Init('url', 'Browser', now),
       new Init('2.', 'anything', undefined),
    ];
    ensure(undefined);
    ensure([]);
    ensure(init);
-   let out = serialize(factory, init);
+   const out = serialize(factory, init);
    if (out) {
       assert.notEqual(out, init);
       assert.equals(out.length, init.length);
-   };
+   }
    assert.end();
 }
 

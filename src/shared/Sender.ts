@@ -19,9 +19,9 @@ export abstract class Sender<TFunction, HFunction> {
    protected nextRequestId = 1;
 
    // Push a message (result does not matter)
-   pushMethod(type: TFunction, msg: Message) {
+   pushMethod(type: TFunction, msg: Message): void {
       // No requestId necessary
-      let data = this.prepare(type, msg.stringify(), false);
+      const data = this.prepare(type, msg.stringify(), false);
       this.sendRequest(data);
    }
 
@@ -30,13 +30,13 @@ export abstract class Sender<TFunction, HFunction> {
       ctor: () => Message,
       handler: (msg: Message) => Promise<Message> | void,
       message: IBaseMessage
-   ) {
-      let handlerMsg = ctor();
+   ): void {
+      const handlerMsg = ctor();
       handlerMsg.parse(message.data);
-      let promise = handler(handlerMsg);
+      const promise = handler(handlerMsg);
       if (promise) {
          if (message.requestId) {
-            let requestId = message.requestId;
+            const requestId = message.requestId;
             promise
                .then(answerMsg => this.answer(requestId, answerMsg))
                .catch(reason => this.error(requestId, reason));
@@ -44,38 +44,38 @@ export abstract class Sender<TFunction, HFunction> {
       }
    }
 
-   answer(requestId: number, msg: Message) {
-      let data = prepareResult(requestId, msg.stringify());
+   answer(requestId: number, msg: Message): void {
+      const data = prepareResult(requestId, msg.stringify());
       this.sendRequest(data, requestId);
    }
 
-   error(requestId: number, reason: string | Error) {
+   error(requestId: number, reason: string | Error): void {
       if (typeof reason !== 'string') {
          reason = reason.message;
       }
-      let data = prepareError(requestId, reason);
+      const data = prepareError(requestId, reason);
       this.sendRequest(data, requestId);
    }
 
-   async sendFunction<U extends Message>(ctor: () => U, type: TFunction, msg: Message) {
-      let promise = new Promise<string>((resolve, reject) => {
-         let requestId = this.getNextRequestId();
-         let data = this.prepare(type, msg.stringify(), requestId);
+   async sendFunction<U extends Message>(ctor: () => U, type: TFunction, msg: Message): Promise<U> {
+      const promise = new Promise<string>((resolve, reject) => {
+         const requestId = this.getNextRequestId();
+         const data = this.prepare(type, msg.stringify(), requestId);
          this.sendRequest(data, requestId, resolve, reject);
       });
       const result = await promise;
-      let msgResult = ctor();
+      const msgResult = ctor();
       return msgResult.parse(result);
    }
 
-   protected handleRequests(data: string | ArrayBuffer) {
+   protected handleRequests(data: string | ArrayBuffer): boolean {
       // Call the handler function
-      let request = parseRequest(data);
+      const request = parseRequest(data);
       if (request === false) {
          return false;
       }
 
-      let foundRequest = this.requests[request.requestId];
+      const foundRequest = this.requests[request.requestId];
       if (foundRequest) {
          // Free the request
          delete this.requests[request.requestId];
@@ -112,7 +112,7 @@ export abstract class Sender<TFunction, HFunction> {
       let oldest = new Date().valueOf();
       let oldestId = 0;
       while (this.requests[this.nextRequestId]) {
-         let request = this.requests[this.nextRequestId];
+         const request = this.requests[this.nextRequestId];
          if (oldest > request.time) {
             oldest = request.time;
             oldestId = this.nextRequestId;
@@ -129,7 +129,7 @@ export abstract class Sender<TFunction, HFunction> {
             this.nextRequestId++;
          }
       }
-      let next = this.nextRequestId;
+      const next = this.nextRequestId;
       this.nextRequestId = ((this.nextRequestId + 1) % requestCacheSize) || 1;
       return next;
    }

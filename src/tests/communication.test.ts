@@ -7,7 +7,7 @@ import { ServerFunction, ServerFunctions, ClientFunction, ClientFunctions } from
 console.log('\x1b[33mStarting tests: Functions tests\x1b[0m');
 
 function testServerEnums() {
-   let functions = Object.keys(ServerFunction).map(p => +p).filter(p => !isNaN(p));
+   const functions = Object.keys(ServerFunction).map(p => +p).filter(p => !isNaN(p));
    functions.forEach(p => {
       if (!ServerFunctions.getApi(p)) {
          throw new Error(`Missing api-definition for ServerFunction.${ServerFunction[p]}`);
@@ -20,7 +20,7 @@ function testServerEnums() {
 }
 
 function testClientEnums() {
-   let functions = Object.keys(ClientFunction).map(p => +p).filter(p => !isNaN(p));
+   const functions = Object.keys(ClientFunction).map(p => +p).filter(p => !isNaN(p));
    functions.forEach(p => {
       if (!ClientFunctions.getApi(p)) {
          throw new Error(`Missing api-definition for ServerFunction.${ServerFunction[p]}`);

@@ -42,14 +42,14 @@ function parseData<T>(data: string | ArrayBuffer): T {
       return JSON.parse(data) as T;
    }
    // Arraybuffer
-   let view = new DataView(data);
-   let packet = view.getUint8(0) as PacketType;
-   let requestId = view.getUint8(1);
-   let content = data.slice(packet === PacketType.Result ? 2 : 4);
+   const view = new DataView(data);
+   const packet = view.getUint8(0) as PacketType;
+   const requestId = view.getUint8(1);
+   const content = data.slice(packet === PacketType.Result ? 2 : 4);
 
    if (packet === PacketType.Message) {
       // IClientMessage | IServerMessage
-      let type = view.getUint16(2);
+      const type = view.getUint16(2);
       return {
          type: type,
          data: content,
@@ -72,9 +72,9 @@ function createPacket(
    requestId?: number,
    type?: ServerFunction | ClientFunction
 ) {
-   let offset = packet === PacketType.Result ? 2 : 4;
-   let buffer = new ArrayBuffer(data.byteLength + offset);
-   let view = new DataView(buffer);
+   const offset = packet === PacketType.Result ? 2 : 4;
+   const buffer = new ArrayBuffer(data.byteLength + offset);
+   const view = new DataView(buffer);
    view.setUint8(0, packet);
    view.setUint8(1, requestId || 0);
    if (packet === PacketType.Message) {
@@ -110,7 +110,7 @@ function prepareData(json: IRequest | IClientMessage | IServerMessage): string |
 function parseMessage<T extends IClientMessage | IServerMessage>(
    data: string | ArrayBuffer
 ): T | false {
-   let json = parseData<T>(data);
+   const json = parseData<T>(data);
    if ('data' in json) {
       return json;
    }
@@ -118,7 +118,7 @@ function parseMessage<T extends IClientMessage | IServerMessage>(
 }
 
 export function parseRequest(data: string | ArrayBuffer): IRequest | false {
-   let json = parseData<IRequest>(data);
+   const json = parseData<IRequest>(data);
    if ('error' in json) {
       return json;
    }
@@ -129,28 +129,32 @@ export function parseRequest(data: string | ArrayBuffer): IRequest | false {
    return false;
 }
 
-export function prepareError(requestId: number, error: string) {
-   let json: IRequestError = {
+export function prepareError(requestId: number, error: string): string | ArrayBuffer {
+   const json: IRequestError = {
       requestId,
       error
    };
    return prepareData(json);
 }
 
-export function prepareResult(requestId: number, result: string | ArrayBuffer) {
-   let json: IRequestResult = {
+export function prepareResult(requestId: number, result: string | ArrayBuffer): string | ArrayBuffer {
+   const json: IRequestResult = {
       requestId,
       result
    };
    return prepareData(json);
 }
 
-export function parseClientMessage(data: string | ArrayBuffer) {
+export function parseClientMessage(data: string | ArrayBuffer): false | IClientMessage {
    return parseMessage<IClientMessage>(data);
 }
 
-export function prepareClientMessage(type: ServerFunction, data: string | ArrayBuffer, requestId: number | false) {
-   let json: IClientMessage = {
+export function prepareClientMessage(
+   type: ServerFunction,
+   data: string | ArrayBuffer,
+   requestId: number | false
+): string | ArrayBuffer {
+   const json: IClientMessage = {
       type,
       requestId: requestId ? requestId : undefined,
       data
@@ -158,12 +162,16 @@ export function prepareClientMessage(type: ServerFunction, data: string | ArrayB
    return prepareData(json);
 }
 
-export function parseServerMessage(data: string | ArrayBuffer) {
+export function parseServerMessage(data: string | ArrayBuffer): false | IServerMessage {
    return parseMessage<IServerMessage>(data);
 }
 
-export function prepareServerMessage(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
-   let json: IServerMessage = {
+export function prepareServerMessage(
+   type: ClientFunction,
+   data: string | ArrayBuffer,
+   requestId: number | false
+): string | ArrayBuffer {
+   const json: IServerMessage = {
       type,
       requestId: requestId ? requestId : undefined,
       data

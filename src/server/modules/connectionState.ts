@@ -14,10 +14,10 @@ function checkConnection(info: ConnectInfo): ClientInfo | string {
    return ClientInfo.fromConnectInfo(info, 0, UserRole.Guest, new Date());
 }
 
-export function connectionState() {
+export function connectionState(): void {
 
    clients.on(ServerFunction.Connect, async (info, client) => {
-      let clientInfo = checkConnection(info);
+      const clientInfo = checkConnection(info);
       // Analyze the connection info
       if (typeof clientInfo === 'string') {
          // Close the connection after a short timeout to allow error to be delivered!
@@ -41,7 +41,7 @@ export function connectionState() {
 
    clients.onChangedClient((client) => {
       // The clients have changed (notify the other clients)
-      let clientInfo = client.getClientInfo();
+      const clientInfo = client.getClientInfo();
       clients.forEach((dest) => {
          if (dest.id !== client.id) {
             dest.call(ClientFunction.ClientChanged, clientInfo);
@@ -58,4 +58,4 @@ export function connectionState() {
    clients.on(ServerFunction.GetClientInfos, async () => {
       return clients.map(client => client.getClientInfo());
    });
-};
+}
