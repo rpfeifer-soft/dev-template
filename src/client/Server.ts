@@ -72,18 +72,18 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    initServer(url: string, ctor: () => Message, msgInit: Message) {
       // Register the correct handler
-      let server = this;
-      server.socket = new WebSocket(url);
-      server.socket.binaryType = 'arraybuffer';
+      let serverBase = this;
+      serverBase.socket = new WebSocket(url);
+      serverBase.socket.binaryType = 'arraybuffer';
 
       return new Promise<Message>((resolve, reject) => {
-         server.socket.onopen = function () {
-            server.callInit(ctor, msgInit)
+         serverBase.socket.onopen = function () {
+            serverBase.callInit(ctor, msgInit)
                .then(msg => resolve(msg))
                .catch(error => reject(error));
          };
          // tslint:disable-next-line: typedef
-         server.socket.onmessage = async (event) => {
+         serverBase.socket.onmessage = async (event) => {
             let data = event.data;
             if (event.data instanceof Blob) {
                data = await new Response(event.data).arrayBuffer();
@@ -163,9 +163,9 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    }
 }
 
-class Server extends ImplementsClient(ServerBase) {
+class ServerClass extends ImplementsClient(ServerBase) {
    // One singleton
-   public static readonly instance: Server = new Server();
+   public static readonly instance: ServerClass = new ServerClass();
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    callInit(ctor: () => Message, msgInit: Message): Promise<Message> {
@@ -173,8 +173,8 @@ class Server extends ImplementsClient(ServerBase) {
    }
 }
 
-export default Server.instance as Pick<
-   Server,
+// The singleton is the return
+export const server = ServerClass.instance as Pick<
+   ServerClass,
    'init' | 'on' | 'off' | 'call' |
-   'me' | 'setMe' | 'onChangeMe'
->;
+   'me' | 'setMe' | 'onChangeMe'>;

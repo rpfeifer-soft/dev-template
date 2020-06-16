@@ -1,7 +1,7 @@
 /** @format */
 
 import registerServiceWorker from './registerServiceWorker';
-import Server from './Server.js';
+import { server } from './Server.js';
 import ConnectInfo from '../shared/data/ConnectInfo.js';
 import connectionState from './app/ConnectionState.js';
 import userLogin from './app/UserLogin.js';
@@ -36,7 +36,7 @@ let connectInfo = new ConnectInfo(
 connectInfo.browser = navigator.userAgent;
 connectInfo.time = new Date();
 
-Server.init(baseURI + 'ws', connectInfo)
+server.init(baseURI + 'ws', connectInfo)
    .then(clientInfo => {
       connectionState(clientInfo);
       userLogin();

@@ -1,7 +1,7 @@
 /** @format */
 
 import ClientInfo from '../../shared/data/ClientInfo.js';
-import Server from '../Server.js';
+import { server } from '../Server.js';
 import { ClientFunction, ServerFunction } from '../../shared/Functions.js';
 import registerDebug from './Debug.js';
 
@@ -14,33 +14,33 @@ export default async function connectionState(info: ClientInfo) {
    let all: IClientMap = {};
 
    // Allow debugging
-   registerDebug('me', () => Server.me);
+   registerDebug('me', () => server.me);
    registerDebug('all', () => all);
 
    // handle change to current instance
-   Server.onChangeMe(() => {
-      if (Server.me) {
-         all[Server.me.id] = Server.me;
+   server.onChangeMe(() => {
+      if (server.me) {
+         all[server.me.id] = server.me;
       }
    });
-   Server.setMe(info);
+   server.setMe(info);
 
    // Register handlers
-   Server.on(ClientFunction.ClientChanged, async (client: ClientInfo) => {
-      let me = Server.me;
+   server.on(ClientFunction.ClientChanged, async (client: ClientInfo) => {
+      let me = server.me;
       if (me && me.id === client.id) {
-         Server.setMe(client);
+         server.setMe(client);
       } else {
          all[client.id] = client;
       }
    });
 
-   Server.on(ClientFunction.ClientsRemoved, async (ids: number[]) => {
+   server.on(ClientFunction.ClientsRemoved, async (ids: number[]) => {
       ids.forEach(id => delete all[id]);
    });
 
    // Get the starting infos
    all = {};
-   let clientInfos = await Server.call(ServerFunction.GetClientInfos);
+   let clientInfos = await server.call(ServerFunction.GetClientInfos);
    clientInfos.forEach(clientInfo => all[clientInfo.id] = clientInfo);
 };
