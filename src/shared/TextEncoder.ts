@@ -1,5 +1,3 @@
 /** @format */
-
-import { TextEncoder } from 'util';
-
-export default TextEncoder;
+// Solely exported to remove the import for browser packaging
+export { TextEncoder } from 'util';

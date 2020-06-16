@@ -2,7 +2,7 @@
 
 import ws from 'ws';
 import WSTool from '../shared/WSTool.js';
-import Sender from '../shared/Sender.js';
+import { Sender } from '../shared/Sender.js';
 import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/Functions.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 

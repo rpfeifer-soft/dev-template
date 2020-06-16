@@ -1,8 +1,8 @@
 /** @format */
 /* eslint-disable no-bitwise */
 
-import TextEncoder from './TextEncoder.js';
-import TextDecoder from './TextDecoder.js';
+import { TextEncoder } from './TextEncoder.js';
+import { TextDecoder } from './TextDecoder.js';
 
 export class ByteArray {
    private size = 0;

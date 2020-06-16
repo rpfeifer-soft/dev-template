@@ -13,7 +13,7 @@ interface IRequests {
    };
 }
 
-abstract class Sender<TFunction, HFunction> {
+export abstract class Sender<TFunction, HFunction> {
    // The pending requests
    protected requests: IRequests = {};
    protected nextRequestId = 1;
@@ -142,5 +142,3 @@ abstract class Sender<TFunction, HFunction> {
 
    protected abstract socketSend(data: string | ArrayBuffer): void;
 }
-
-export default Sender;
