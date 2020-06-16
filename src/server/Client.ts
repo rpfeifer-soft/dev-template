@@ -4,7 +4,7 @@ import ws from 'ws';
 import WSTool from '../shared/WSTool.js';
 import Sender from '../shared/Sender.js';
 import { ClientFunction, ImplementsServerClient, ServerFunction } from '../shared/Functions.js';
-import ClientInfo from '../shared/data/ClientInfo.js';
+import { ClientInfo } from '../shared/data/ClientInfo.js';
 
 interface ClientBase extends ClientInfo { }
 class ClientBase extends Sender<ClientFunction, ServerFunction> {

@@ -7,7 +7,7 @@ import {
    ServerFunction, ClientFunction,
    IClientHandler, ImplementsClient
 } from '../shared/Functions.js';
-import ClientInfo from '../shared/data/ClientInfo.js';
+import { ClientInfo } from '../shared/data/ClientInfo.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T): Promise<U> | void;

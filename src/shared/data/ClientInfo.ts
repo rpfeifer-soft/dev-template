@@ -2,7 +2,7 @@
 
 import { createJsonFactory, jsonDateSerializer } from '../serialize/factories.js';
 import { UserRole, Language } from '../types.js';
-import ConnectInfo from './ConnectInfo.js';
+import { ConnectInfo } from './ConnectInfo.js';
 
 interface IClientInfo extends Omit<Required<ConnectInfo>, 'authKey' | 'time'> {
    id: number;
@@ -39,7 +39,7 @@ class ClientInfo {
       });
    }
 };
-export default ClientInfo;
+export { ClientInfo };
 
 const empty: IClientInfo = {
    browser: '',

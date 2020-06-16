@@ -20,7 +20,7 @@ class ConnectInfo {
       this.version = version;
    }
 };
-export default ConnectInfo;
+export { ConnectInfo };
 
 export const fConnectInfo = createJsonFactory<ConnectInfo, IConnectInfo>(
    () => new ConnectInfo('', ''), {
