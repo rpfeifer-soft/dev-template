@@ -74,7 +74,5 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    }
 }
 
-class Client extends ImplementsServerClient(ClientBase) {
+export class Client extends ImplementsServerClient(ClientBase) {
 }
-
-export default Client;

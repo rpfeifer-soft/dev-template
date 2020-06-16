@@ -1,12 +1,12 @@
 /** @format */
 
 // read options
-import options from './Options.js';
 import express from 'express';
-import Clients from './Clients.js';
-import getIndexHtml from './Index.js';
-import connectionState from './modules/ConnectionState.js';
-import userLogin from './modules/UserLogin.js';
+import { options } from './Options.js';
+import { clients } from './Clients.js';
+import { index } from './Index.js';
+import { connectionState } from './modules/ConnectionState.js';
+import { userLogin } from './modules/UserLogin.js';
 
 const server = express();
 
@@ -16,7 +16,7 @@ server.listen(options.getPort(), () => {
    server.use('/', express.static(options.getProdPath()));
 
    server.get('/', (req, res) => {
-      res.send(getIndexHtml());
+      res.send(index());
    });
 
    // eslint-disable-next-line no-console
@@ -27,4 +27,4 @@ server.listen(options.getPort(), () => {
    userLogin();
 });
 
-Clients.init({ port: options.getPortWebSockets() });
+clients.init({ port: options.getPortWebSockets() });

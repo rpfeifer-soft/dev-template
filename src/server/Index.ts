@@ -1,7 +1,7 @@
 /** @format */
-import options from './Options.js';
+import { options } from './Options.js';
 
-export default function getIndexHtml() {
+export function index() {
    return `<!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,6 +1,6 @@
 /** @format */
 
-import Clients from '../Clients.js';
+import { clients } from '../Clients.js';
 import { ServerFunction } from '../../shared/communication-api.js';
 import { UserRole } from '../../shared/types.js';
 
@@ -13,20 +13,20 @@ function getUserRole(userName: string) {
    return userName === 'René' ? UserRole.Admin | UserRole.User : UserRole.User;
 }
 
-export default function userLogin() {
+export function userLogin() {
 
-   Clients.on(ServerFunction.SetUser, async (userName, client) => {
+   clients.on(ServerFunction.SetUser, async (userName, client) => {
       if (client.userRole !== UserRole.Guest) {
          throw new Error('UserName must not be changed after login!');
       }
       client.userName = userName;
       // Notify the other clients
-      Clients.changedClient(client);
+      clients.changedClient(client);
       // Update was successful
       return client.getClientInfo();
    });
 
-   Clients.on(ServerFunction.SendAuthCode, async (_, client) => {
+   clients.on(ServerFunction.SendAuthCode, async (_, client) => {
       if (client.userRole !== UserRole.Guest) {
          throw new Error('Already logged in!');
       }
@@ -38,7 +38,7 @@ export default function userLogin() {
       return true;
    });
 
-   Clients.on(ServerFunction.Login, async (authCode, client) => {
+   clients.on(ServerFunction.Login, async (authCode, client) => {
       if (client.userRole !== UserRole.Guest) {
          throw new Error('Already logged in!');
       }
@@ -51,19 +51,19 @@ export default function userLogin() {
       // Set the user-role
       client.userRole = getUserRole(client.userName);
       // Notify the other clients
-      Clients.changedClient(client);
+      clients.changedClient(client);
       // Update this client
       return client.getClientInfo();
    });
 
-   Clients.on(ServerFunction.Logoff, async (_, client) => {
+   clients.on(ServerFunction.Logoff, async (_, client) => {
       if (client.userRole === UserRole.Guest) {
          throw new Error('Not logged in!');
       }
       // Set the user-role
       client.userRole = UserRole.Guest;
       // Notify the other clients
-      Clients.changedClient(client);
+      clients.changedClient(client);
       // Update this client
       return client.getClientInfo();
    });

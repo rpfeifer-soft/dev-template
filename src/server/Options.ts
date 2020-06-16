@@ -66,6 +66,4 @@ class Options {
    }
 }
 
-const options = new Options();
-
-export default options;
+export const options = new Options();

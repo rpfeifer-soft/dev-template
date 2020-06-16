@@ -1,7 +1,7 @@
 /** @format */
 
 import ws from 'ws';
-import Client from './Client.js';
+import { Client } from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
 import { ServerFunction, IServerHandler, ImplementsServer } from '../shared/communication-api.js';
 import { parseClientMessage } from '../shared/websocket-api.js';
@@ -74,32 +74,32 @@ class ClientsBase implements IServerHandler<Client> {
    // Init the instance
    init(options: ws.ServerOptions) {
       // Register the correct handler
-      let clients = this;
-      clients.server = new ws.Server(options);
+      let clientsBase = this;
+      clientsBase.server = new ws.Server(options);
 
-      clients.server.on('connection', (socket) => {
+      clientsBase.server.on('connection', (socket) => {
          // Add the client
-         clients.addClient(socket);
+         clientsBase.addClient(socket);
       });
 
-      clients.interval = setInterval(() => {
+      clientsBase.interval = setInterval(() => {
          let closedIds: number[] = [];
-         clients.clients.forEach(client => {
+         clientsBase.clients.forEach(client => {
             if (!client.check()) {
                client.close();
                closedIds.push(client.id);
             }
          });
          if (closedIds.length > 0) {
-            clients.clients = clients.clients
+            clientsBase.clients = clientsBase.clients
                .filter(client => closedIds.indexOf(client.id) === -1);
             // Notify the clients
-            clients.removedClients(closedIds);
+            clientsBase.removedClients(closedIds);
          }
-      }, clients.intervalLength);
+      }, clientsBase.intervalLength);
 
-      clients.server.on('close', () => {
-         clearInterval(clients.interval);
+      clientsBase.server.on('close', () => {
+         clearInterval(clientsBase.interval);
       });
    }
 
@@ -221,7 +221,7 @@ class Clients extends ImplementsServer<Client>()(ClientsBase) {
    public static readonly instance: Clients = new Clients();
 }
 
-export default Clients.instance as Pick<
+export const clients = Clients.instance as Pick<
    Clients,
    'init' | 'ready' | 'on' | 'off' | 'add' |
    'map' | 'filter' | 'forEach' |
