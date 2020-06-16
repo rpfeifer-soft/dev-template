@@ -1,6 +1,6 @@
 /** @format */
 
-import Message from './Message.js';
+import { Message } from './Message.js';
 
 type Schema<TClass, TInterface> = [
    () => TClass,

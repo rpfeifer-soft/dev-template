@@ -36,4 +36,4 @@ namespace Message {
    }
 }
 
-export default Message;
+export { Message };

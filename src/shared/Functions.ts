@@ -1,6 +1,6 @@
 /** @format */
 
-import Message from './serialize/Message.js';
+import { Message } from './serialize/Message.js';
 import ConnectInfo, { fConnectInfo } from './data/ConnectInfo.js';
 import ClientInfo, { fClientInfo } from './data/ClientInfo.js';
 import { fVoid, fBool, fNumber, fString } from './serialize/serializers.js';

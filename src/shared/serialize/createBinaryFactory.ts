@@ -1,6 +1,6 @@
 /** @format */
 
-import Message from './Message.js';
+import { Message } from './Message.js';
 import ByteArray from '../ByteArray.js';
 
 // Special data implementation

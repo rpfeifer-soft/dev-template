@@ -1,7 +1,7 @@
 /** @format */
 
 import ByteArray from '../ByteArray.js';
-import Message from './Message.js';
+import { Message } from './Message.js';
 
 class VoidClass extends Message {
    parse(data: ArrayBuffer) {
