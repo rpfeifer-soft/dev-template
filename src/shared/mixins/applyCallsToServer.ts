@@ -4,10 +4,10 @@ import { ServerFunctions, ServerFunction } from '../communication-api.js';
 import { ISender } from '../Sender.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ServerServerConstructor = new (...args: any[]) => ISender<ServerFunction>;
+type SenderServerConstructor = new (...args: any[]) => ISender<ServerFunction>;
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function applyCallsToServer<TBase extends ServerServerConstructor>(Base: TBase) {
+export function applyCallsToServer<TBase extends SenderServerConstructor>(Base: TBase) {
 
    type CallArgs<T> = ServerFunctions.Parameter<T> extends void
       ? [T] : [T, ServerFunctions.Parameter<T>];

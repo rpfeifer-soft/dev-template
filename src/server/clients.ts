@@ -3,7 +3,8 @@
 import ws from 'ws';
 import { Client } from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
-import { ServerFunction, IServerHandler, implementsServer } from '../shared/communication-api.js';
+import { ServerFunction, } from '../shared/communication-api.js';
+import { applyListenersOnServer, IServerHandler } from '../shared/mixins/applyListenersOnServer.js';
 import { parseClientMessage } from '../shared/websocket-api.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
@@ -215,7 +216,7 @@ class ClientsBase implements IServerHandler<Client> {
    }
 }
 
-class Clients extends implementsServer<Client, typeof ClientsBase>(ClientsBase) {
+class Clients extends applyListenersOnServer<Client, typeof ClientsBase>(ClientsBase) {
    // One singleton
    public static readonly instance: Clients = new Clients();
 }
