@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-namespace */
 /** @format */
 
-import { Message, IMessageFactory } from './serialize/Message.js';
+import { IMessageFactory } from './serialize/Message.js';
 import { ConnectInfo, fConnectInfo } from './data/ConnectInfo.js';
 import { ClientInfo, fClientInfo } from './data/ClientInfo.js';
 import { fVoid, fBool, fNumber, fString } from './serialize/serializers.js';
@@ -126,44 +125,4 @@ export namespace ClientFunctions {
    export function getReturns(type: ClientFunction): IMessageFactory<unknown> | undefined {
       return getApi(type)[1];
    }
-}
-
-type InitReturn = ServerFunctions.Returns<ServerFunction.Connect> extends undefined
-   ? void
-   : Promise<Message>;
-
-export interface IClientHandler {
-
-   initServer: (url: string, ctor: () => Message, msgInit: Message) => InitReturn;
-
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ClientConstructor = new (...args: any[]) => IClientHandler;
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function applyInitForClient<TBase extends ClientConstructor>(Base: TBase) {
-
-   type ReturnArg<T> = ServerFunctions.Returns<T> extends void
-      ? void : Promise<ServerFunctions.Returns<T>>;
-
-   return class extends Base {
-
-      init(url: string, data: ServerFunctions.Parameter<ServerFunction.Connect>): ReturnArg<ServerFunction.Connect>;
-      init(url: string, data: unknown): unknown {
-         const factoryParam = ServerFunctions.getParameter(ServerFunction.Connect);
-         const factoryReturn = ServerFunctions.getReturns(ServerFunction.Connect);
-
-         const msg = factoryParam.pack(data);
-
-         if (!factoryReturn) {
-            return;
-         }
-         const pack = factoryReturn.pack;
-         const ctor = () => pack();
-
-         return this.initServer(url, ctor, msg)
-            .then(resultMsg => factoryReturn ? factoryReturn.unpack(resultMsg) : resultMsg);
-      }
-   };
 }

@@ -4,7 +4,8 @@ import { Message } from '../shared/serialize/Message.js';
 import { Sender } from '../shared/Sender.js';
 import { applyCallsToServer } from '../shared/mixins/applyCallsToServer.js';
 import { applyListenersOnClient } from '../shared/mixins/applyListenersOnClient.js';
-import { ServerFunction, ClientFunction, applyInitForClient } from '../shared/communication-api.js';
+import { applyInitForClient } from '../shared/mixins/applyInitForClient.js';
+import { ServerFunction, ClientFunction } from '../shared/communication-api.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { parseServerMessage, prepareClientMessage } from '../shared/websocket-api.js';
 
