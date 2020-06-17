@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-namespace */
 /** @format */
 
@@ -77,11 +76,11 @@ export namespace ServerFunctions {
       return apiDefs[type];
    }
 
-   export function getParameter(type: ServerFunction) {
+   export function getParameter(type: ServerFunction): IMessageFactory<unknown> {
       return getApi(type)[0];
    }
 
-   export function getReturns(type: ServerFunction) {
+   export function getReturns(type: ServerFunction): IMessageFactory<unknown> | undefined {
       return getApi(type)[1];
    }
 }
@@ -120,11 +119,11 @@ export namespace ClientFunctions {
       return apiDefs[type];
    }
 
-   export function getParameter(type: ClientFunction) {
+   export function getParameter(type: ClientFunction): IMessageFactory<unknown> {
       return getApi(type)[0];
    }
 
-   export function getReturns(type: ClientFunction) {
+   export function getReturns(type: ClientFunction): IMessageFactory<unknown> | undefined {
       return getApi(type)[1];
    }
 }
@@ -138,9 +137,10 @@ export interface IServerHandler<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ServerConstructor<T = unknown> = new (...args: any[]) => T & IServerHandler<T>;
+type ServerConstructor<T> = new (...args: any[]) => IServerHandler<T>;
 
-export function implementsServer<T>() {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function implementsServer<T, TBase extends ServerConstructor<T>>(Base: TBase) {
    type Action<I> = (msg: I, client: T) => void;
    type Func<I, O> = (msg: I, client: T) => Promise<O>;
 
@@ -149,32 +149,30 @@ export function implementsServer<T>() {
       : Func<ServerFunctions.Parameter<T>, ServerFunctions.Returns<T>>
    ];
 
-   return function <TBase extends ServerConstructor>(Base: TBase) {
-      return class extends Base {
-         // FUNCTIONS
-         on(...args: OnArgs<ServerFunction.Connect>): void;
-         on(...args: OnArgs<ServerFunction.GetClientInfos>): void;
-         on(...args: OnArgs<ServerFunction.SetUser>): void;
-         on(...args: OnArgs<ServerFunction.SendAuthCode>): void;
-         on(...args: OnArgs<ServerFunction.Login>): void;
-         on(...args: OnArgs<ServerFunction.Logoff>): void;
+   return class extends Base {
+      // FUNCTIONS
+      on(...args: OnArgs<ServerFunction.Connect>): void;
+      on(...args: OnArgs<ServerFunction.GetClientInfos>): void;
+      on(...args: OnArgs<ServerFunction.SetUser>): void;
+      on(...args: OnArgs<ServerFunction.SendAuthCode>): void;
+      on(...args: OnArgs<ServerFunction.Login>): void;
+      on(...args: OnArgs<ServerFunction.Logoff>): void;
 
-         on(type: ServerFunction, handler: Func<unknown, unknown> | Action<unknown>) {
-            const factoryParam = ServerFunctions.getParameter(type);
-            const factoryReturn = ServerFunctions.getReturns(type);
+      on(type: ServerFunction, handler: Func<unknown, unknown> | Action<unknown>): void {
+         const factoryParam = ServerFunctions.getParameter(type);
+         const factoryReturn = ServerFunctions.getReturns(type);
 
-            const ctorParameter = () => factoryParam.pack();
+         const ctorParameter = () => factoryParam.pack();
 
-            this.onFunction(type, ctorParameter, (data: Message, client: T) => {
-               const promise = handler(factoryParam.unpack(data), client);
-               if (!promise || !factoryReturn) {
-                  return;
-               }
-               const pack = factoryReturn.pack;
-               return promise.then(msg => pack(msg));
-            });
-         }
-      };
+         this.onFunction(type, ctorParameter, (data: Message, client: T) => {
+            const promise = handler(factoryParam.unpack(data), client);
+            if (!promise || !factoryReturn) {
+               return;
+            }
+            const pack = factoryReturn.pack;
+            return promise.then(msg => pack(msg));
+         });
+      }
    };
 }
 
@@ -192,9 +190,10 @@ export interface ISenderHandler<TMethod, TFunction> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ServerClientConstructor<T = {}> = new (...args: any[]) =>
-   T & ISenderHandler<ClientFunction, ClientFunction>;
+type ServerClientConstructor = new (...args: any[]) =>
+   ISenderHandler<ClientFunction, ClientFunction>;
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function implementsServerClient<TBase extends ServerClientConstructor>(Base: TBase) {
 
    type CallArgs<T> = ClientFunctions.Parameter<T> extends void
@@ -243,8 +242,9 @@ export interface IClientHandler extends ISenderHandler<ServerFunction, ServerFun
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ClientConstructor<T = unknown> = new (...args: any[]) => T & IClientHandler;
+type ClientConstructor = new (...args: any[]) => IClientHandler;
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function implementsClient<TBase extends ClientConstructor>(Base: TBase) {
    type Action<I> = (msg: I) => void;
    type Func<I, O> = (msg: I) => Promise<O>;
@@ -262,7 +262,7 @@ export function implementsClient<TBase extends ClientConstructor>(Base: TBase) {
    return class extends Base {
 
       init(url: string, data: ServerFunctions.Parameter<ServerFunction.Connect>): ReturnArg<ServerFunction.Connect>;
-      init(url: string, data: unknown) {
+      init(url: string, data: unknown): unknown {
          const factoryParam = ServerFunctions.getParameter(ServerFunction.Connect);
          const factoryReturn = ServerFunctions.getReturns(ServerFunction.Connect);
 
@@ -283,7 +283,7 @@ export function implementsClient<TBase extends ClientConstructor>(Base: TBase) {
       on(...args: OnArgs<ClientFunction.ClientChanged>): void;
       on(...args: OnArgs<ClientFunction.ClientsRemoved>): void;
 
-      on(type: ClientFunction, handler: Func<unknown, unknown> | Action<unknown>) {
+      on(type: ClientFunction, handler: Func<unknown, unknown> | Action<unknown>): void {
          const factoryParam = ClientFunctions.getParameter(type);
          const factoryReturn = ClientFunctions.getReturns(type);
 

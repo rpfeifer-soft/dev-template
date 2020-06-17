@@ -215,7 +215,7 @@ class ClientsBase implements IServerHandler<Client> {
    }
 }
 
-class Clients extends implementsServer<Client>()(ClientsBase) {
+class Clients extends implementsServer<Client, typeof ClientsBase>(ClientsBase) {
    // One singleton
    public static readonly instance: Clients = new Clients();
 }
