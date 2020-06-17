@@ -69,7 +69,7 @@ type Packing<T> =
 export type Parameter<T> = First<Packing<T>>;
 export type Returns<T> = Second<Packing<T>>;
 
-export function getApi(type: ServerFunction): ApiTuple {
+function getApi(type: ServerFunction): ApiTuple {
    return apiDefs[type];
 }
 

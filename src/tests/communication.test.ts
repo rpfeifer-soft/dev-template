@@ -11,7 +11,9 @@ console.log('\x1b[33mStarting tests: Functions tests\x1b[0m');
 function testServerEnums() {
    const functions = Object.keys(ServerFunction).map(p => +p).filter(p => !isNaN(p));
    functions.forEach(p => {
-      if (!ServerFunctions.getApi(p)) {
+      try {
+         ServerFunctions.getParameter(p);
+      } catch {
          throw new Error(`Missing api-definition for ServerFunction.${ServerFunction[p]}`);
       }
       // eslint-disable-next-line no-bitwise
@@ -24,7 +26,9 @@ function testServerEnums() {
 function testClientEnums() {
    const functions = Object.keys(ClientFunction).map(p => +p).filter(p => !isNaN(p));
    functions.forEach(p => {
-      if (!ClientFunctions.getApi(p)) {
+      try {
+         ClientFunctions.getParameter(p);
+      } catch {
          throw new Error(`Missing api-definition for ClientFunction.${ClientFunction[p]}`);
       }
       // eslint-disable-next-line no-bitwise
