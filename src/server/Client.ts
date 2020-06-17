@@ -2,7 +2,8 @@
 
 import ws from 'ws';
 import { Sender } from '../shared/Sender.js';
-import { ClientFunction, implementsServerClient, ServerFunction } from '../shared/communication-api.js';
+import { ClientFunction, ServerFunction } from '../shared/communication-api.js';
+import { applyCallsToClient } from '../shared/mixins/applyCallsToClient.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
 
@@ -75,5 +76,5 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    }
 }
 
-export class Client extends implementsServerClient(ClientBase) {
+export class Client extends applyCallsToClient(ClientBase) {
 }

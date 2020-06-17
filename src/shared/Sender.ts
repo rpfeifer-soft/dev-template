@@ -13,7 +13,20 @@ interface IRequests {
    };
 }
 
-export abstract class Sender<TFunction, HFunction> {
+export interface ISender<TFunction> {
+   pushMethod: (
+      type: TFunction,
+      msg: Message
+   ) => void;
+
+   sendFunction: (
+      ctor: () => Message,
+      type: TFunction,
+      msg: Message
+   ) => Promise<Message>;
+}
+
+export abstract class Sender<TFunction, HFunction> implements ISender<TFunction> {
    // The pending requests
    protected requests: IRequests = {};
    protected nextRequestId = 1;

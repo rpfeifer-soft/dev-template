@@ -6,6 +6,7 @@ import { Message, IMessageFactory } from './serialize/Message.js';
 import { ConnectInfo, fConnectInfo } from './data/ConnectInfo.js';
 import { ClientInfo, fClientInfo } from './data/ClientInfo.js';
 import { fVoid, fBool, fNumber, fString } from './serialize/serializers.js';
+import { ISender } from './Sender.js';
 
 // Helper types
 type Unpack<T> =
@@ -176,61 +177,11 @@ export function implementsServer<T, TBase extends ServerConstructor<T>>(Base: TB
    };
 }
 
-export interface ISenderHandler<TMethod, TFunction> {
-   pushMethod: (
-      type: TMethod,
-      msg: Message
-   ) => void;
-
-   sendFunction: (
-      ctor: () => Message,
-      type: TFunction,
-      msg: Message
-   ) => Promise<Message>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ServerClientConstructor = new (...args: any[]) =>
-   ISenderHandler<ClientFunction, ClientFunction>;
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function implementsServerClient<TBase extends ServerClientConstructor>(Base: TBase) {
-
-   type CallArgs<T> = ClientFunctions.Parameter<T> extends void
-      ? [T] : [T, ClientFunctions.Parameter<T>];
-   type ReturnArg<T> = ClientFunctions.Returns<T> extends void
-      ? void : Promise<ClientFunctions.Returns<T>>;
-
-   return class extends Base {
-      // FUNCTIONS
-      call(...args: CallArgs<ClientFunction.GetVersion>): ReturnArg<ClientFunction.GetVersion>;
-      call(...args: CallArgs<ClientFunction.ClientChanged>): ReturnArg<ClientFunction.ClientChanged>;
-      call(...args: CallArgs<ClientFunction.ClientsRemoved>): ReturnArg<ClientFunction.ClientsRemoved>;
-
-      call(type: ClientFunction, data?: unknown): Promise<unknown> | void {
-         const factoryParam = ClientFunctions.getParameter(type);
-         const factoryReturn = ClientFunctions.getReturns(type);
-
-         const msg = factoryParam.pack(data);
-
-         if (factoryReturn) {
-            const pack = factoryReturn.pack;
-            const unpack = factoryReturn.unpack;
-            const ctorReturnType = () => pack();
-            return this.sendFunction(ctorReturnType, type, msg)
-               .then(resultMsg => unpack(resultMsg));
-         } else {
-            return this.pushMethod(type, msg);
-         }
-      }
-   };
-}
-
 type InitReturn = ServerFunctions.Returns<ServerFunction.Connect> extends undefined
    ? void
    : Promise<Message>;
 
-export interface IClientHandler extends ISenderHandler<ServerFunction, ServerFunction> {
+export interface IClientHandler extends ISender<ServerFunction> {
 
    initServer: (url: string, ctor: () => Message, msgInit: Message) => InitReturn;
 
