@@ -4,8 +4,7 @@ import { Message, IMessagesFactory, IMessageFactory, fromJSON, toJSON } from './
 
 type Schema<TClass, TInterface> = [
    () => TClass,
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
+   Record<keyof TInterface, boolean | ((write: boolean, value: unknown) => unknown)>
 ];
 
 // Special data implementation
@@ -148,15 +147,12 @@ export function createJsonFactory<TClass, TInterface>(
 }
 
 // Toolfunctions
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function jsonDateSerializer(
-   write: boolean,
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   value: any): any {
+export function jsonDateSerializer(write: boolean, value: unknown): unknown {
    if (write) {
-      return value !== undefined ? value.getTime() : undefined;
+      const date = value as Date;
+      return date !== undefined ? date.getTime() : undefined;
    } else {
-      return value !== undefined ? new Date(value) : undefined;
+      const time = value as number;
+      return time !== undefined ? new Date(time) : undefined;
    }
 }
