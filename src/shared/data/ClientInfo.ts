@@ -4,15 +4,16 @@ import { createJsonFactory, jsonDateSerializer } from '../serialize/factories.js
 import { UserRole, Language } from '../types.js';
 import { ConnectInfo } from './ConnectInfo.js';
 
-interface IClientInfo extends Omit<Required<ConnectInfo>, 'authKey' | 'time'> {
+interface IClientInfo extends Omit<Required<ConnectInfo>, 'authKey' | 'time' | 'type'> {
    id: number;
    userName: string;
    userRole: UserRole;
    startTime: Date;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ClientInfo extends IClientInfo { }
+interface ClientInfo extends IClientInfo {
+   type: 'ClientInfo';
+}
 class ClientInfo {
    constructor(info: IClientInfo) {
       this.browser = info.browser;

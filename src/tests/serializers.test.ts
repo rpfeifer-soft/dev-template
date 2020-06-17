@@ -115,8 +115,9 @@ interface IInit {
    test?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface Init extends IInit { }
+interface Init extends IInit {
+   type: 'Init';
+}
 class Init {
    constructor(url = '', browser?: string, time?: Date) {
       this.url = url;

@@ -2,16 +2,19 @@
 
 import { Message, IMessagesFactory, IMessageFactory, fromJSON, toJSON } from './Message.js';
 
+export interface IJsonObject {
+   type: string;
+}
+
 type Schema<TClass, TInterface> = [
    () => TClass,
    Record<keyof TInterface, boolean | ((write: boolean, value: unknown) => unknown)>
 ];
 
 // Special data implementation
-class Json<TClass, TInterface> extends Message {
+class Json<TClass extends IJsonObject, TInterface> extends Message {
    data?: TClass;
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Schema<TClass, TInterface>;
 
    constructor(schema: Schema<TClass, TInterface>, data?: TClass) {
@@ -25,7 +28,7 @@ class Json<TClass, TInterface> extends Message {
       if (typeof (data) !== 'string') {
          throw new Error('ArrayBuffer not support for generic data!');
       }
-      const json = fromJSON(data);
+      const json = fromJSON(data) as IJsonObject | undefined;
       if (json === undefined) {
          this.data = undefined;
       } else {
@@ -130,7 +133,7 @@ class JsonArrayClass<TClass> extends Message {
    }
 }
 
-export function createJsonFactory<TClass, TInterface>(
+export function createJsonFactory<TClass extends IJsonObject, TInterface>(
    ctor: () => TClass,
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>

@@ -13,8 +13,9 @@ interface IConnectInfo {
    time?: Date;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ConnectInfo extends IConnectInfo { }
+interface ConnectInfo extends IConnectInfo {
+   type: 'ConnectInfo';
+}
 class ConnectInfo {
    constructor(sessionId: string, version: string) {
       this.sessionId = sessionId;
