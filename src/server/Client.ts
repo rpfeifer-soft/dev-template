@@ -7,8 +7,9 @@ import { applyCallsToClient } from '../shared/mixins/applyCallsToClient.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ClientBase extends ClientInfo { }
+interface ClientBase extends ClientInfo {
+   id: number;
+}
 class ClientBase extends Sender<ClientFunction, ServerFunction> {
    // The id of the client
    public id: number;

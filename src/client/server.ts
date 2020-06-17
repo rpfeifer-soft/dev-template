@@ -69,7 +69,6 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> {
    }
 
    // Init the instance
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    initServer(url: string, ctor: () => Message, msgInit: Message) {
       // Register the correct handler
       this.socket = new WebSocket(url);
@@ -169,7 +168,6 @@ class ServerClass extends
    // One singleton
    public static readonly instance: ServerClass = new ServerClass();
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    callInit(ctor: () => Message, msgInit: Message): Promise<Message> {
       return this.sendFunction(ctor, ServerFunction.Connect, msgInit);
    }

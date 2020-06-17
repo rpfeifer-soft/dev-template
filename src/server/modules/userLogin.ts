@@ -2,15 +2,14 @@
 
 import { clients } from '../clients.js';
 import { ServerFunction } from '../../shared/api.js';
-import { UserRole } from '../../shared/types.js';
+import { UserRole, userRoles } from '../../shared/types.js';
 
 function getAuthCode(userName: string) {
    return userName.split('').reverse().join('');
 }
 
 function getUserRole(userName: string) {
-   // eslint-disable-next-line no-bitwise
-   return userName === 'René' ? UserRole.Admin | UserRole.User : UserRole.User;
+   return userName === 'René' ? userRoles(UserRole.Admin, UserRole.User) : UserRole.User;
 }
 
 export function userLogin(): void {

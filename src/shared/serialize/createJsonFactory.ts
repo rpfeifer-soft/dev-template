@@ -135,8 +135,7 @@ class JsonArrayClass<TClass> extends Message {
 
 export function createJsonFactory<TClass extends IJsonObject, TInterface>(
    ctor: () => TClass,
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
+   schema: Record<keyof TInterface, boolean | ((write: boolean, value: unknown) => unknown)>
 ): IMessagesFactory<TClass> {
    const factory: IMessagesFactory<TClass> = {
       pack: (value) => new Json<TClass, TInterface>([ctor, schema], value),
