@@ -1,7 +1,7 @@
 /** @format */
 
 import { clients } from '../clients.js';
-import { ServerFunction } from '../../shared/communication-api.js';
+import { ServerFunction } from '../../shared/api.js';
 import { UserRole } from '../../shared/types.js';
 
 function getAuthCode(userName: string) {

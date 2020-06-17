@@ -1,6 +1,6 @@
 /** @format */
 
-import { ServerFunction, ServerFunctions } from '../communication-api.js';
+import { ServerFunction, Returns, Parameter, getParameter, getReturns } from '../apiServer.js';
 import { Message } from '../serialize/Message.js';
 
 export interface IServerHandler<T> {
@@ -19,9 +19,9 @@ export function applyListenersOnServer<T, TBase extends ServerConstructor<T>>(Ba
    type Action<I> = (msg: I, client: T) => void;
    type Func<I, O> = (msg: I, client: T) => Promise<O>;
 
-   type OnArgs<T> = [T, ServerFunctions.Returns<T> extends void
-      ? Action<ServerFunctions.Parameter<T>>
-      : Func<ServerFunctions.Parameter<T>, ServerFunctions.Returns<T>>
+   type OnArgs<T> = [T, Returns<T> extends void
+      ? Action<Parameter<T>>
+      : Func<Parameter<T>, Returns<T>>
    ];
 
    return class extends Base {
@@ -34,8 +34,8 @@ export function applyListenersOnServer<T, TBase extends ServerConstructor<T>>(Ba
       on(...args: OnArgs<ServerFunction.Logoff>): void;
 
       on(type: ServerFunction, handler: Func<unknown, unknown> | Action<unknown>): void {
-         const factoryParam = ServerFunctions.getParameter(type);
-         const factoryReturn = ServerFunctions.getReturns(type);
+         const factoryParam = getParameter(type);
+         const factoryReturn = getReturns(type);
 
          const ctorParameter = () => factoryParam.pack();
 

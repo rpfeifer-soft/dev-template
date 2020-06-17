@@ -2,7 +2,7 @@
 
 import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { server } from '../server.js';
-import { ClientFunction, ServerFunction } from '../../shared/communication-api.js';
+import { ClientFunction, ServerFunction } from '../../shared/api.js';
 import { registerDebug } from './registerDebug.js';
 
 interface IClientMap {

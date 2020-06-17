@@ -1,7 +1,7 @@
 /** @format */
 
 import { server } from '../server.js';
-import { ServerFunction } from '../../shared/communication-api.js';
+import { ServerFunction } from '../../shared/api.js';
 import { registerDebug } from './registerDebug.js';
 
 class UserLogin {
@@ -29,8 +29,8 @@ class UserLogin {
          .catch(error => console.error(error));
    }
 }
-let data = new UserLogin();
+const data = new UserLogin();
 
-export async function userLogin() {
+export async function userLogin(): Promise<void> {
    registerDebug('login', () => data);
 };

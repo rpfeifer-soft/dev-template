@@ -3,7 +3,7 @@
 import ws from 'ws';
 import { Client } from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
-import { ServerFunction, } from '../shared/communication-api.js';
+import { ServerFunction, } from '../shared/api.js';
 import { applyListenersOnServer, IServerHandler } from '../shared/mixins/applyListenersOnServer.js';
 import { parseClientMessage } from '../shared/websocket-api.js';
 

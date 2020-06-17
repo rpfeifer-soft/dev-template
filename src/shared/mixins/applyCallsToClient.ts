@@ -1,6 +1,6 @@
 /** @format */
 
-import { ClientFunctions, ClientFunction } from '../communication-api.js';
+import { ClientFunction, Parameter, Returns, getParameter, getReturns } from '../apiClient.js';
 import { ISender } from '../Sender.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,10 +9,10 @@ type SenderClientConstructor = new (...args: any[]) => ISender<ClientFunction>;
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function applyCallsToClient<TBase extends SenderClientConstructor>(Base: TBase) {
 
-   type CallArgs<T> = ClientFunctions.Parameter<T> extends void
-      ? [T] : [T, ClientFunctions.Parameter<T>];
-   type ReturnArg<T> = ClientFunctions.Returns<T> extends void
-      ? void : Promise<ClientFunctions.Returns<T>>;
+   type CallArgs<T> = Parameter<T> extends void
+      ? [T] : [T, Parameter<T>];
+   type ReturnArg<T> = Returns<T> extends void
+      ? void : Promise<Returns<T>>;
 
    return class extends Base {
       // FUNCTIONS
@@ -21,8 +21,8 @@ export function applyCallsToClient<TBase extends SenderClientConstructor>(Base: 
       call(...args: CallArgs<ClientFunction.ClientsRemoved>): ReturnArg<ClientFunction.ClientsRemoved>;
 
       call(type: ClientFunction, data?: unknown): Promise<unknown> | void {
-         const factoryParam = ClientFunctions.getParameter(type);
-         const factoryReturn = ClientFunctions.getReturns(type);
+         const factoryParam = getParameter(type);
+         const factoryReturn = getReturns(type);
 
          const msg = factoryParam.pack(data);
 

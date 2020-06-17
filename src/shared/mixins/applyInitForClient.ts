@@ -1,9 +1,9 @@
 /** @format */
 
-import { ServerFunctions, ServerFunction } from '../communication-api.js';
+import { ServerFunction, Returns, Parameter, getParameter, getReturns } from '../apiServer.js';
 import { Message } from '../serialize/Message.js';
 
-type InitReturn = ServerFunctions.Returns<ServerFunction.Connect> extends undefined
+type InitReturn = Returns<ServerFunction.Connect> extends undefined
    ? void
    : Promise<Message>;
 
@@ -19,15 +19,15 @@ type ClientConstructor = new (...args: any[]) => IClientHandler;
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function applyInitForClient<TBase extends ClientConstructor>(Base: TBase) {
 
-   type ReturnArg<T> = ServerFunctions.Returns<T> extends void
-      ? void : Promise<ServerFunctions.Returns<T>>;
+   type ReturnArg<T> = Returns<T> extends void
+      ? void : Promise<Returns<T>>;
 
    return class extends Base {
 
-      init(url: string, data: ServerFunctions.Parameter<ServerFunction.Connect>): ReturnArg<ServerFunction.Connect>;
+      init(url: string, data: Parameter<ServerFunction.Connect>): ReturnArg<ServerFunction.Connect>;
       init(url: string, data: unknown): unknown {
-         const factoryParam = ServerFunctions.getParameter(ServerFunction.Connect);
-         const factoryReturn = ServerFunctions.getReturns(ServerFunction.Connect);
+         const factoryParam = getParameter(ServerFunction.Connect);
+         const factoryReturn = getReturns(ServerFunction.Connect);
 
          const msg = factoryParam.pack(data);
 
