@@ -3,14 +3,13 @@
 import { ServerFunction, Returns, Parameter, getParameter, getReturns } from '../apiServer.js';
 import { Message } from '../serialize/Message.js';
 
-type InitReturn = Returns<ServerFunction.Connect> extends undefined
-   ? void
-   : Promise<Message>;
-
 export interface IClientHandler {
-
-   initServer: (url: string, ctor: () => Message, msgInit: Message) => InitReturn;
-
+   initServer: (
+      url: string,
+      ctor: () => Message, msgInit: Message
+   ) => (Returns<ServerFunction.Connect> extends undefined
+      ? void
+      : Promise<Message>);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
