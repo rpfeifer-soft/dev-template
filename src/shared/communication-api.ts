@@ -6,7 +6,6 @@ import { Message, IMessageFactory } from './serialize/Message.js';
 import { ConnectInfo, fConnectInfo } from './data/ConnectInfo.js';
 import { ClientInfo, fClientInfo } from './data/ClientInfo.js';
 import { fVoid, fBool, fNumber, fString } from './serialize/serializers.js';
-import { ISender } from './Sender.js';
 
 // Helper types
 type Unpack<T> =
@@ -181,7 +180,7 @@ type InitReturn = ServerFunctions.Returns<ServerFunction.Connect> extends undefi
    ? void
    : Promise<Message>;
 
-export interface IClientHandler extends ISender<ServerFunction> {
+export interface IClientHandler {
 
    initServer: (url: string, ctor: () => Message, msgInit: Message) => InitReturn;
 
@@ -205,8 +204,6 @@ export function implementsClient<TBase extends ClientConstructor>(Base: TBase) {
       : Func<ClientFunctions.Parameter<T>, ClientFunctions.Returns<T>>
    ];
 
-   type CallArgs<T> = ServerFunctions.Parameter<T> extends void
-      ? [T] : [T, ServerFunctions.Parameter<T>];
    type ReturnArg<T> = ServerFunctions.Returns<T> extends void
       ? void : Promise<ServerFunctions.Returns<T>>;
 
@@ -248,31 +245,6 @@ export function implementsClient<TBase extends ClientConstructor>(Base: TBase) {
             const pack = factoryReturn.pack;
             return promise.then(msg => pack(msg));
          });
-      }
-
-      // FUNCTIONS
-      call(...args: CallArgs<ServerFunction.Connect>): ReturnArg<ServerFunction.Connect>;
-      call(...args: CallArgs<ServerFunction.GetClientInfos>): ReturnArg<ServerFunction.GetClientInfos>;
-      call(...args: CallArgs<ServerFunction.SetUser>): ReturnArg<ServerFunction.SetUser>;
-      call(...args: CallArgs<ServerFunction.SendAuthCode>): ReturnArg<ServerFunction.SendAuthCode>;
-      call(...args: CallArgs<ServerFunction.Login>): ReturnArg<ServerFunction.Login>;
-      call(...args: CallArgs<ServerFunction.Logoff>): ReturnArg<ServerFunction.Logoff>;
-
-      call(type: ServerFunction, data?: unknown): Promise<unknown> | void {
-         const factoryParam = ServerFunctions.getParameter(type);
-         const factoryReturn = ServerFunctions.getReturns(type);
-
-         const msg = factoryParam.pack(data);
-
-         if (factoryReturn) {
-            const pack = factoryReturn.pack;
-            const unpack = factoryReturn.unpack;
-            const ctorReturnType = () => pack();
-            return this.sendFunction(ctorReturnType, type, msg)
-               .then(resultMsg => unpack(resultMsg));
-         } else {
-            return this.pushMethod(type, msg);
-         }
       }
    };
 }

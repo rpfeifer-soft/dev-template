@@ -2,6 +2,7 @@
 
 import { Message } from '../shared/serialize/Message.js';
 import { Sender } from '../shared/Sender.js';
+import { applyCallsToServer } from '../shared/mixins/applyCallsToServer.js';
 import {
    ServerFunction, ClientFunction,
    IClientHandler, implementsClient
@@ -162,7 +163,7 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    }
 }
 
-class ServerClass extends implementsClient(ServerBase) {
+class ServerClass extends implementsClient(applyCallsToServer(ServerBase)) {
    // One singleton
    public static readonly instance: ServerClass = new ServerClass();
 
