@@ -4,12 +4,12 @@ import { ByteArray } from './ByteArray.js';
 import { Message, IMessageFactory } from './Message.js';
 
 class VoidClass extends Message {
-   parse(data: ArrayBuffer) {
+   parse() {
       return this;
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       return bytes.getArrayBuffer();
    }
 }

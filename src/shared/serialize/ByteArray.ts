@@ -21,7 +21,7 @@ export class ByteArray {
    }
 
    public getArrayBuffer(): ArrayBuffer {
-      let buffer = new Uint8Array(this.size);
+      const buffer = new Uint8Array(this.size);
       let offset = 0;
       this.arrays.forEach(p => {
          buffer.set(p, offset);
@@ -33,38 +33,38 @@ export class ByteArray {
       return buffer.buffer;
    }
 
-   public addBuffer(buffer: ArrayBuffer) {
-      let array = new Uint8Array(buffer);
+   public addBuffer(buffer: ArrayBuffer): this {
+      const array = new Uint8Array(buffer);
       this.arrays.push(array);
       this.size += array.length;
       return this;
    }
 
-   public addUint8(byte: number) {
+   public addUint8(byte: number): this {
       this.arrays.push(new Uint8Array([byte]));
       this.size++;
       return this;
    }
 
    public getUint8(): number {
-      let value = this.read[this.offset];
+      const value = this.read[this.offset];
       this.offset++;
       return value;
    }
 
-   public addUint16(word: number) {
+   public addUint16(word: number): this {
       this.arrays.push(new Uint8Array([(word >> 8) & 0xff, word & 0xff]));
       this.size += 2;
       return this;
    }
 
    public getUint16(): number {
-      let value = (this.read[this.offset] << 8) + this.read[this.offset + 1];
+      const value = (this.read[this.offset] << 8) + this.read[this.offset + 1];
       this.offset += 2;
       return value;
    }
 
-   public addUint32(word: number) {
+   public addUint32(word: number): this {
       this.arrays.push(new Uint8Array([
          (word >> 24) & 0xff, (word >> 16) & 0xff, (word >> 8) & 0xff, word & 0xff]));
       this.size += 4;
@@ -72,16 +72,16 @@ export class ByteArray {
    }
 
    public getUint32(): number {
-      let value =
+      const value =
          (this.read[this.offset] << 24) + (this.read[this.offset + 1] << 16) +
          (this.read[this.offset + 2] << 8) + this.read[this.offset + 3];
       this.offset += 4;
       return value >>> 0;
    }
 
-   public addNumber(value: number | undefined) {
-      let buffer = new Uint8Array(8);
-      let view = new DataView(buffer.buffer);
+   public addNumber(value: number | undefined): this {
+      const buffer = new Uint8Array(8);
+      const view = new DataView(buffer.buffer);
       view.setFloat64(0, value === undefined ? NaN : value);
       this.arrays.push(buffer);
       this.size += 8;
@@ -89,30 +89,30 @@ export class ByteArray {
    }
 
    public getNumber(): number | undefined {
-      let value = this.readDataView.getFloat64(this.offset);
+      const value = this.readDataView.getFloat64(this.offset);
       this.offset += 8;
       return isNaN(value) ? undefined : value;
    }
 
-   public addDate(value: Date | undefined) {
-      let time = value ? value.valueOf() : undefined;
+   public addDate(value: Date | undefined): this {
+      const time = value ? value.valueOf() : undefined;
       this.addNumber(time);
       return this;
    }
 
    public getDate(): Date | undefined {
-      let time = this.getNumber();
+      const time = this.getNumber();
       return time === undefined ? undefined : new Date(time);
    }
 
-   public addString(value: string | undefined) {
-      let encoder = new TextEncoder();
+   public addString(value: string | undefined): this {
+      const encoder = new TextEncoder();
       if (value === undefined) {
          // 127 is undefined
          this.addUint8(0x7f);
          return this;
       }
-      let buffer = encoder.encode(value);
+      const buffer = encoder.encode(value);
       if (buffer.length >= 127) {
          this.addUint32(0x80000000 | (buffer.length & 0x3fffffff));
       } else {
@@ -135,30 +135,30 @@ export class ByteArray {
       } else {
          this.offset++;
       }
-      let decoder = new TextDecoder();
-      let value = decoder.decode(this.read.slice(this.offset, this.offset + length));
+      const decoder = new TextDecoder();
+      const value = decoder.decode(this.read.slice(this.offset, this.offset + length));
       this.offset += length;
       return value;
    }
 
-   public addBoolean(value: boolean | undefined) {
+   public addBoolean(value: boolean | undefined): this {
       this.addUint8(value === undefined ? 2 : (value ? 1 : 0));
       return this;
    }
 
    public getBoolean(): boolean | undefined {
-      let value = this.getUint8();
+      const value = this.getUint8();
       return value === 2 ? undefined : (value ? true : false);
    }
 
    public addArray<T>(
       array: T[] | undefined,
       add: (item: T) => void
-   ) {
+   ): this {
       if (array === undefined) {
          this.addNumber(undefined);
       } else {
-         let count = array.length;
+         const count = array.length;
          this.addNumber(count);
          for (let i = 0; i < count; i++) {
             add(array[i]);
@@ -170,13 +170,13 @@ export class ByteArray {
    public getArray<T>(
       get: () => T | undefined
    ): T[] | undefined {
-      let count = this.getNumber();
+      const count = this.getNumber();
       if (count === undefined) {
          return undefined;
       }
-      let array: T[] = [];
+      const array: T[] = [];
       for (let i = 0; i < count; i++) {
-         let item = get();
+         const item = get();
          if (item !== undefined) {
             array.push(item);
          }

@@ -9,13 +9,13 @@ class NumberClass extends Message {
    }
 
    parse(data: ArrayBuffer) {
-      let bytes = new ByteArray(data);
+      const bytes = new ByteArray(data);
       this.data = bytes.getNumber();
       return this;
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addNumber(this.data);
       return bytes.getArrayBuffer();
    }
@@ -27,13 +27,13 @@ class NumberArrayClass extends Message {
    }
 
    parse(data: ArrayBuffer) {
-      let bytes = new ByteArray(data);
+      const bytes = new ByteArray(data);
       this.data = bytes.getArray(() => bytes.getNumber());
       return this;
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addArray(this.data, (item) => bytes.addNumber(item));
       return bytes.getArrayBuffer();
    }
@@ -42,7 +42,7 @@ class NumberArrayClass extends Message {
 export const fNumber: IMessagesFactory<number> = {
    pack: (value) => new NumberClass(value),
    unpack: (msg: NumberClass) => msg.data,
-   array: {
+   array: <IMessagesFactory<number[]>>{
       pack: (value) => new NumberArrayClass(value),
       unpack: (msg: NumberArrayClass) => msg.data,
    }

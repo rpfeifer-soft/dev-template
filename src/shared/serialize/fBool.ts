@@ -9,13 +9,13 @@ class BoolClass extends Message {
    }
 
    parse(data: ArrayBuffer) {
-      let bytes = new ByteArray(data);
+      const bytes = new ByteArray(data);
       this.data = bytes.getBoolean();
       return this;
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addBoolean(this.data);
       return bytes.getArrayBuffer();
    }
@@ -27,13 +27,13 @@ class BoolArrayClass extends Message {
    }
 
    parse(data: ArrayBuffer) {
-      let bytes = new ByteArray(data);
+      const bytes = new ByteArray(data);
       this.data = bytes.getArray(() => bytes.getBoolean());
       return this;
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addArray(this.data, (item) => bytes.addBoolean(item));
       return bytes.getArrayBuffer();
    }
@@ -42,7 +42,7 @@ class BoolArrayClass extends Message {
 export const fBool: IMessagesFactory<boolean> = {
    pack: (value) => new BoolClass(value),
    unpack: (msg: BoolClass) => msg.data,
-   array: {
+   array: <IMessagesFactory<boolean[]>>{
       pack: (value) => new BoolArrayClass(value),
       unpack: (msg: BoolArrayClass) => msg.data,
    }

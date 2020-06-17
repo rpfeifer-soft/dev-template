@@ -11,7 +11,8 @@ interface IClientInfo extends Omit<Required<ConnectInfo>, 'authKey' | 'time'> {
    startTime: Date;
 }
 
-interface ClientInfo extends IClientInfo { };
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ClientInfo extends IClientInfo { }
 class ClientInfo {
    constructor(info: IClientInfo) {
       this.browser = info.browser;
@@ -38,7 +39,7 @@ class ClientInfo {
          ...info
       });
    }
-};
+}
 export { ClientInfo };
 
 const empty: IClientInfo = {

@@ -18,8 +18,11 @@ export interface IMessagesFactory<T> extends IMessageFactory<T> {
    array: IMessageFactory<T[]>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function toJSON(value: any): string {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function toJSON(
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   value: any
+): string {
    if (value === undefined) {
       return 'undefined';
    }

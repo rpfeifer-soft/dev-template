@@ -13,13 +13,14 @@ interface IConnectInfo {
    time?: Date;
 }
 
-interface ConnectInfo extends IConnectInfo { };
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ConnectInfo extends IConnectInfo { }
 class ConnectInfo {
    constructor(sessionId: string, version: string) {
       this.sessionId = sessionId;
       this.version = version;
    }
-};
+}
 export { ConnectInfo };
 
 export const fConnectInfo = createJsonFactory<ConnectInfo, IConnectInfo>(

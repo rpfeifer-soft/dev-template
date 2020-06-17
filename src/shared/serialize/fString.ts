@@ -9,13 +9,13 @@ class StringClass extends Message {
    }
 
    parse(data: ArrayBuffer) {
-      let bytes = new ByteArray(data);
+      const bytes = new ByteArray(data);
       this.data = bytes.getString();
       return this;
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addString(this.data);
       return bytes.getArrayBuffer();
    }
@@ -27,13 +27,13 @@ class StringArrayClass extends Message {
    }
 
    parse(data: ArrayBuffer) {
-      let bytes = new ByteArray(data);
+      const bytes = new ByteArray(data);
       this.data = bytes.getArray(() => bytes.getString());
       return this;
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addArray(this.data, (item) => bytes.addString(item));
       return bytes.getArrayBuffer();
    }
@@ -42,7 +42,7 @@ class StringArrayClass extends Message {
 export const fString: IMessagesFactory<string> = {
    pack: (value) => new StringClass(value),
    unpack: (msg: StringClass) => msg.data,
-   array: {
+   array: <IMessagesFactory<string[]>>{
       pack: (value) => new StringArrayClass(value),
       unpack: (msg: StringArrayClass) => msg.data,
    }

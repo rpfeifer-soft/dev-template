@@ -36,8 +36,8 @@ class Binary<TClass> extends Message {
       if (typeof (data) === 'string') {
          throw new Error('String not support for generic data!');
       }
-      let bytes = data instanceof ByteArray ? data : new ByteArray(data);
-      let empty = bytes.getBoolean();
+      const bytes = data instanceof ByteArray ? data : new ByteArray(data);
+      const empty = bytes.getBoolean();
       if (empty) {
          this.data = undefined;
       } else {
@@ -48,7 +48,7 @@ class Binary<TClass> extends Message {
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addBoolean(this.data ? false : true);
       if (this.data) {
          this.writeTo(this.data, bytes);
@@ -74,9 +74,9 @@ class BinaryArrayClass<TClass> extends Message {
    }
 
    parse(data: ArrayBuffer) {
-      let bytes = new ByteArray(data);
+      const bytes = new ByteArray(data);
       this.data = bytes.getArray(() => {
-         let msg = this.factory.pack();
+         const msg = this.factory.pack();
          msg.parse(bytes);
          return this.factory.unpack(msg);
       });
@@ -84,10 +84,10 @@ class BinaryArrayClass<TClass> extends Message {
    }
 
    stringify() {
-      let bytes = new ByteArray();
+      const bytes = new ByteArray();
       bytes.addArray(this.data, (item) => {
-         let msg = this.factory.pack(item);
-         let buffer = msg.stringify();
+         const msg = this.factory.pack(item);
+         const buffer = msg.stringify();
          if (typeof (buffer) === 'string') {
             throw new Error('Unsupported serialization type: Binary expected!');
          }
@@ -101,8 +101,8 @@ export function createBinaryFactory<TClass>(
    ctor: (() => TClass),
    readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
    writeTo: (data: TClass, bytes: ByteArray) => void
-) {
-   let factory: IMessagesFactory<TClass> = {
+): IMessageFactory<TClass> {
+   const factory: IMessagesFactory<TClass> = {
       pack: (value) => new Binary<TClass>(ctor, readFrom, writeTo, value),
       unpack: (msg: Binary<TClass>) => msg.data,
       array: {
@@ -111,4 +111,4 @@ export function createBinaryFactory<TClass>(
       }
    };
    return factory;
-};
+}

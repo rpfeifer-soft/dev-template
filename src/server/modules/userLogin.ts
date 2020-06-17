@@ -13,7 +13,7 @@ function getUserRole(userName: string) {
    return userName === 'René' ? UserRole.Admin | UserRole.User : UserRole.User;
 }
 
-export function userLogin() {
+export function userLogin(): void {
 
    clients.on(ServerFunction.SetUser, async (userName, client) => {
       if (client.userRole !== UserRole.Guest) {

@@ -26,16 +26,16 @@ class Json<TClass, TInterface> extends Message {
       if (typeof (data) !== 'string') {
          throw new Error('ArrayBuffer not support for generic data!');
       }
-      let json = fromJSON(data);
+      const json = fromJSON(data);
       if (json === undefined) {
          this.data = undefined;
       } else {
-         let entries = Object.entries(this.schema[1]);
+         const entries = Object.entries(this.schema[1]);
          if (!this.data) {
             this.data = this.schema[0]();
          }
-         let object = this.data;
-         let assign = (key: string, value: unknown) => {
+         const object = this.data;
+         const assign = (key: string, value: unknown) => {
             if (value !== undefined) {
                object[key] = value;
             }
@@ -54,11 +54,11 @@ class Json<TClass, TInterface> extends Message {
    }
 
    stringify(): string | ArrayBuffer {
-      let json = {};
-      let entries = Object.entries(this.schema[1]);
+      const json = {};
+      const entries = Object.entries(this.schema[1]);
       if (this.data) {
-         let object = this.data;
-         let assign = (key: string, value: unknown) => {
+         const object = this.data;
+         const assign = (key: string, value: unknown) => {
             if (value !== undefined) {
                json[key] = value;
             }
@@ -97,16 +97,16 @@ class JsonArrayClass<TClass> extends Message {
       if (typeof (data) !== 'string') {
          throw new Error('ArrayBuffer not support for generic data!');
       }
-      let jsonArray = fromJSON(data) as string[];
+      const jsonArray = fromJSON(data) as string[];
       if (jsonArray === undefined) {
          this.data = undefined;
       } else {
          this.data = [];
-         let items = this.data;
+         const items = this.data;
          jsonArray.forEach((json) => {
-            let msg = this.factory.pack();
+            const msg = this.factory.pack();
             msg.parse(json);
-            let item = this.factory.unpack(msg);
+            const item = this.factory.unpack(msg);
             if (item !== undefined) {
                items.push(item);
             }
@@ -119,9 +119,9 @@ class JsonArrayClass<TClass> extends Message {
       if (this.data === undefined) {
          return toJSON(this.data);
       }
-      let jsonArray = this.data.map((item) => {
-         let msg = this.factory.pack(item);
-         let json = msg.stringify();
+      const jsonArray = this.data.map((item) => {
+         const msg = this.factory.pack(item);
+         const json = msg.stringify();
          if (typeof (json) !== 'string') {
             throw new Error('Unsupported serialization type: Json expected!');
          }
@@ -135,8 +135,8 @@ export function createJsonFactory<TClass, TInterface>(
    ctor: () => TClass,
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
-) {
-   let factory: IMessagesFactory<TClass> = {
+): IMessageFactory<TClass> {
+   const factory: IMessagesFactory<TClass> = {
       pack: (value) => new Json<TClass, TInterface>([ctor, schema], value),
       unpack: (msg: Json<TClass, TInterface>) => msg.data,
       array: {
@@ -145,12 +145,15 @@ export function createJsonFactory<TClass, TInterface>(
       }
    };
    return factory;
-};
+}
 
 // Toolfunctions
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function jsonDateSerializer(write: boolean, value: any) {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function jsonDateSerializer(
+   write: boolean,
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   value: any): any {
    if (write) {
       return value !== undefined ? value.getTime() : undefined;
    } else {

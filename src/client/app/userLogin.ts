@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /** @format */
 
 import { server } from '../server.js';
@@ -33,4 +34,4 @@ const data = new UserLogin();
 
 export async function userLogin(): Promise<void> {
    registerDebug('login', () => data);
-};
+}

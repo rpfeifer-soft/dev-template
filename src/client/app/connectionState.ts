@@ -9,7 +9,7 @@ interface IClientMap {
    [id: number]: ClientInfo;
 }
 
-export async function connectionState(info: ClientInfo) {
+export async function connectionState(info: ClientInfo): Promise<void> {
    // Init with the default values
    let all: IClientMap = {};
 
@@ -27,7 +27,7 @@ export async function connectionState(info: ClientInfo) {
 
    // Register handlers
    server.on(ClientFunction.ClientChanged, async (client: ClientInfo) => {
-      let me = server.me;
+      const me = server.me;
       if (me && me.id === client.id) {
          server.setMe(client);
       } else {
@@ -41,6 +41,6 @@ export async function connectionState(info: ClientInfo) {
 
    // Get the starting infos
    all = {};
-   let clientInfos = await server.call(ServerFunction.GetClientInfos);
+   const clientInfos = await server.call(ServerFunction.GetClientInfos);
    clientInfos.forEach(clientInfo => all[clientInfo.id] = clientInfo);
-};
+}

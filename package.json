@@ -12,7 +12,7 @@
    "scripts": {
       "clean": "docker-compose down && rimraf ./dist",
       "compile": "tsc -b src",
-      "lint": "eslint src/**/*.ts",
+      "lint": "eslint src --ext ts",
       "watch": "tsc -b -w src & rollup -c -w",
       "devenv": "npm run compile && rollup -c --environment DEVENV && docker-compose build && (npm run watch & docker-compose up)",
       "nodemon": "nodemon",
