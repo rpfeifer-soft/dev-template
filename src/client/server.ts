@@ -3,10 +3,8 @@
 import { Message } from '../shared/serialize/Message.js';
 import { Sender } from '../shared/Sender.js';
 import { applyCallsToServer } from '../shared/mixins/applyCallsToServer.js';
-import {
-   ServerFunction, ClientFunction,
-   IClientHandler, implementsClient
-} from '../shared/communication-api.js';
+import { applyListenersOnClient } from '../shared/mixins/applyListenersOnClient.js';
+import { ServerFunction, ClientFunction, applyInitForClient } from '../shared/communication-api.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { parseServerMessage, prepareClientMessage } from '../shared/websocket-api.js';
 
@@ -52,7 +50,7 @@ class Handlers {
 
 type DOnChangeMe = () => void;
 
-class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClientHandler {
+class ServerBase extends Sender<ServerFunction, ClientFunction> {
    public dOnChangeMe: DOnChangeMe;
 
    // The server to use
@@ -163,7 +161,10 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> implements IClie
    }
 }
 
-class ServerClass extends implementsClient(applyCallsToServer(ServerBase)) {
+class ServerClass extends
+   applyInitForClient(
+      applyListenersOnClient(
+         applyCallsToServer(ServerBase))) {
    // One singleton
    public static readonly instance: ServerClass = new ServerClass();
 
