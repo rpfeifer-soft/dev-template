@@ -101,7 +101,7 @@ export function createBinaryFactory<TClass>(
    ctor: (() => TClass),
    readFrom: (bytes: ByteArray, data: TClass, opt: (key: string) => void) => void,
    writeTo: (data: TClass, bytes: ByteArray) => void
-): IMessageFactory<TClass> {
+): IMessagesFactory<TClass> {
    const factory: IMessagesFactory<TClass> = {
       pack: (value) => new Binary<TClass>(ctor, readFrom, writeTo, value),
       unpack: (msg: Binary<TClass>) => msg.data,

@@ -135,7 +135,7 @@ export function createJsonFactory<TClass, TInterface>(
    ctor: () => TClass,
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    schema: Record<keyof TInterface, boolean | ((write: boolean, value: any) => any)>
-): IMessageFactory<TClass> {
+): IMessagesFactory<TClass> {
    const factory: IMessagesFactory<TClass> = {
       pack: (value) => new Json<TClass, TInterface>([ctor, schema], value),
       unpack: (msg: Json<TClass, TInterface>) => msg.data,
