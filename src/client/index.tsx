@@ -37,7 +37,7 @@ connectInfo.browser = navigator.userAgent;
 connectInfo.time = new Date();
 
 server.init(baseURI + 'ws', connectInfo)
-   .then(info => server.setMe(info))
+   .then(info => app.onInit(info))
    .catch(error => console.error(error));
 
 // tslint:disable-next-line: no-string-literal

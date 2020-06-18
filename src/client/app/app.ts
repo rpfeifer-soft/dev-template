@@ -3,6 +3,7 @@
 import { server } from '../server.js';
 import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { addLogin } from './addLogin.js';
+import { addConnections } from './addConnections.js';
 
 class BaseApp {
    browser: string;
@@ -32,8 +33,15 @@ class BaseApp {
          this.startTime = clientInfo.startTime;
       }
    }
+
+   onInit(clientInfo: ClientInfo): void {
+      server.setMe(clientInfo);
+   }
 }
 
-const App = addLogin(BaseApp);
+const App =
+   addConnections(
+      addLogin(BaseApp)
+   );
 
 export const app = new App();
