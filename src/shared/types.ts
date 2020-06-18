@@ -19,3 +19,6 @@ export function hasRole(role: UserRole, testRole: UserRole): boolean {
 export enum Language {
    German = 1
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Constructor = new (...args: any[]) => any;

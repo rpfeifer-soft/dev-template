@@ -26,6 +26,7 @@ export function connectionState(): void {
       }
 
       // Copy the needed values
+      client.browser = clientInfo.browser;
       client.sessionId = clientInfo.sessionId;
       client.startTime = clientInfo.startTime;
       client.userName = clientInfo.userName;

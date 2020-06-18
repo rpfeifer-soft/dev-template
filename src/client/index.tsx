@@ -3,8 +3,8 @@
 import { register as registerServiceWorker } from './registerServiceWorker';
 import { server } from './server.js';
 import { ConnectInfo } from '../shared/data/ConnectInfo.js';
-import { connectionState } from './app/connectionState.js';
-import { userLogin } from './app/userLogin.js';
+import { app } from './app/app.js';
+import { registerDebug } from './app/registerDebug.js';
 
 function uuidv4() {
    return (String([1e7]) + String(-1e3) + String(-4e3) + String(-8e3) + String(-1e11))
@@ -37,11 +37,11 @@ connectInfo.browser = navigator.userAgent;
 connectInfo.time = new Date();
 
 server.init(baseURI + 'ws', connectInfo)
-   .then(clientInfo => {
-      connectionState(clientInfo);
-      userLogin();
-   })
+   .then(info => server.setMe(info))
    .catch(error => console.error(error));
 
 // tslint:disable-next-line: no-string-literal
 registerServiceWorker(window['isProduction'], '');
+
+// Allow to access the app here
+registerDebug('app', () => app);
