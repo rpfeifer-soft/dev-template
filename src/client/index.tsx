@@ -4,7 +4,7 @@ import { register as registerServiceWorker } from './registerServiceWorker';
 import { server } from './server.js';
 import { ConnectInfo } from '../shared/data/ConnectInfo.js';
 import { app } from './app/app.js';
-import { registerDebug } from './app/registerDebug.js';
+import { registerDebug } from './registerDebug.js';
 
 function uuidv4() {
    return (String([1e7]) + String(-1e3) + String(-4e3) + String(-8e3) + String(-1e11))
