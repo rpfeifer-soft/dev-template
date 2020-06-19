@@ -8,6 +8,7 @@ import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
 import { clients } from '../clients.js';
 import { ServerFunction } from '../../shared/api.js';
 import { addConnections } from './addConnections.js';
+import { addLanguage } from './addLanguage.js';
 
 function checkConnection(info: ConnectInfo): ClientInfo | string {
    if (info.version !== options.getVersion()) {
@@ -66,7 +67,9 @@ const userLogin: IUserLogin = {
 
 const Env =
    addConnections(
-      addLogin(EnvBase, userLogin)
+      addLanguage(
+         addLogin(EnvBase, userLogin)
+      )
    );
 
 export const env = new Env();

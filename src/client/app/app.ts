@@ -4,6 +4,7 @@ import { server } from '../server.js';
 import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { addLogin } from './addLogin.js';
 import { addConnections } from './addConnections.js';
+import { addLanguage } from './addLanguage.js';
 
 class BaseApp {
    browser: string;
@@ -41,7 +42,9 @@ class BaseApp {
 
 const App =
    addConnections(
-      addLogin(BaseApp)
+      addLanguage(
+         addLogin(BaseApp)
+      )
    );
 
 export const app = new App();

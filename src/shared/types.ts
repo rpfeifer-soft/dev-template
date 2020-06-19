@@ -17,7 +17,8 @@ export function hasRole(role: UserRole, testRole: UserRole): boolean {
 }
 
 export enum Language {
-   German = 1
+   German = 1,
+   English = 2
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

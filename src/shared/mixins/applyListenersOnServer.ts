@@ -29,6 +29,7 @@ export function applyListenersOnServer<T, TBase extends ServerConstructor<T>>(Ba
       on(...args: OnArgs<ServerFunction.Connect>): void;
       on(...args: OnArgs<ServerFunction.GetClientInfos>): void;
       on(...args: OnArgs<ServerFunction.SetUser>): void;
+      on(...args: OnArgs<ServerFunction.SetLanguage>): void;
       on(...args: OnArgs<ServerFunction.SendAuthCode>): void;
       on(...args: OnArgs<ServerFunction.Login>): void;
       on(...args: OnArgs<ServerFunction.Logoff>): void;
