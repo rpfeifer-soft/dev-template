@@ -5,8 +5,7 @@ import express from 'express';
 import { options } from './options.js';
 import { clients } from './clients.js';
 import { index } from './index.js';
-import { connectionState } from './env/connectionState.js';
-import { userLogin } from './env/userLogin.js';
+import { env } from './env/env.js';
 
 const server = express();
 
@@ -22,9 +21,8 @@ server.listen(options.getPort(), () => {
    // eslint-disable-next-line no-console
    console.log(`Listening on port ${options.getPort()}`);
 
-   // Connection state module
-   connectionState();
-   userLogin();
+   // Init the env
+   env.onInit();
 });
 
 clients.init({ port: options.getPortWebSockets() });
