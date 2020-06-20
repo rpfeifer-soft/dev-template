@@ -19,5 +19,6 @@
       "preserveConstEnums": true,
       "composite": true
    },
-   "include": ["**/*.test.ts", "**/*.ts"]
+   "include": ["**/*.test.ts", "**/*.ts"],
+   "exclude": []
 }

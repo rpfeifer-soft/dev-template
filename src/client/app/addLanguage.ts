@@ -2,7 +2,7 @@
 /** @format */
 
 import { Constructor, Language } from '../../shared/types.js';
-import { ClientInfo } from '../../shared/data/ClientInfo.js';
+import { ClientInfo } from '../../shared/data/data.js';
 import { server } from '../server.js';
 import { ServerFunction } from '../../shared/api.js';
 
@@ -15,13 +15,16 @@ export function addLanguage<T extends Constructor>(Base: T) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       constructor(...args: any[]) {
          super(...args);
-         this.language = Language.German;
+         // Read from storage
+         this.language = Number(localStorage.getItem('language') || Language.German);
       }
 
       updateMe(clientInfo?: ClientInfo): void {
          super.updateMe(clientInfo);
          if (clientInfo) {
-            this.language = clientInfo.language;
+            this.language = clientInfo.language || Language.German;
+            // Save to storage
+            localStorage.setItem('language', String(this.language));
          }
       }
 

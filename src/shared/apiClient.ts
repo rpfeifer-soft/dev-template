@@ -1,7 +1,7 @@
 /** @format */
 
 import { IMessageFactory } from './serialize/Message.js';
-import { ClientInfo, fClientInfo } from './data/ClientInfo.js';
+import { ClientInfo, fClientInfo } from './data/data.js';
 import { fVoid, fNumber, fString } from './serialize/serializers.js';
 
 // Helper types

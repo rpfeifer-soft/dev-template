@@ -1,36 +1,31 @@
 /** @format */
 
-import { createJsonFactory, jsonDateSerializer } from '../serialize/factories.js';
-import { Language } from '../types.js';
+import { createBinaryFactory } from '../serialize/factories.js';
+import { ByteArray } from '../serialize/ByteArray.js';
 
-interface IConnectInfo {
-   sessionId: string;
-   version: string;
-   authKey?: string;
-   userName?: string;
-   language?: Language;
-   browser?: string;
-   time?: Date;
-}
-
-interface ConnectInfo extends IConnectInfo {
-   type: 'ConnectInfo';
-}
 class ConnectInfo {
-   constructor(sessionId: string, version: string) {
-      this.sessionId = sessionId;
-      this.version = version;
+   browser: string;
+   version: string;
+
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   readFrom(bytes: ByteArray, opt: (key: string) => void): void {
+      this.browser = bytes.getString() || '';
+      this.version = bytes.getString() || '';
+   }
+
+   writeTo(bytes: ByteArray): void {
+      bytes.addString(this.browser);
+      bytes.addString(this.version);
+   }
+
+   getFactory() {
+      return createBinaryFactory<ConnectInfo>(() => new ConnectInfo(),
+         (bytes: ByteArray, data: ConnectInfo, opt: (key: string) => void) => {
+            data.readFrom(bytes, opt);
+         },
+         (data: ConnectInfo, bytes: ByteArray) => {
+            data.writeTo(bytes);
+         });
    }
 }
 export { ConnectInfo };
-
-export const fConnectInfo = createJsonFactory<ConnectInfo, IConnectInfo>(
-   () => new ConnectInfo('', ''), {
-   sessionId: true,
-   version: true,
-   authKey: true,
-   userName: true,
-   language: true,
-   browser: true,
-   time: jsonDateSerializer
-});

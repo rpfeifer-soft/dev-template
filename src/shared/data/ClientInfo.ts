@@ -1,66 +1,50 @@
 /** @format */
 
-import { createJsonFactory, jsonDateSerializer } from '../serialize/factories.js';
-import { UserRole, Language } from '../types.js';
-import { ConnectInfo } from './ConnectInfo.js';
+import { createBinaryFactory } from '../serialize/factories.js';
+import { ByteArray } from '../serialize/ByteArray.js';
+import { ConnectInfo } from './data.js';
 
-interface IClientInfo extends Omit<Required<ConnectInfo>, 'authKey' | 'time' | 'type'> {
-   id: number;
-   userName: string;
-   userRole: UserRole;
-   startTime: Date;
-}
-
-interface ClientInfo extends IClientInfo {
-   type: 'ClientInfo';
-}
 class ClientInfo {
-   constructor(info: IClientInfo) {
-      this.browser = info.browser;
-      this.id = info.id;
-      this.language = info.language;
-      this.sessionId = info.sessionId;
-      this.startTime = info.startTime;
-      this.userName = info.userName;
-      this.userRole = info.userRole;
+   id: number;
+   startTime: Date;
+   version: string;
+   browser: string;
+
+   connect(info: ConnectInfo) {
       this.version = info.version;
+      this.browser = info.browser;
    }
 
-   static fromConnectInfo(
-      info: ConnectInfo,
-      id: number,
-      userRole: UserRole,
-      startTime: Date
-   ) {
-      return new ClientInfo({
-         id, userRole, startTime,
-         userName: info.userName || '',
-         language: info.language || Language.German,
-         browser: info.browser || '',
-         ...info
-      });
+   set(info: ClientInfo) {
+      this.id = info.id;
+      this.startTime = info.startTime;
+      this.version = info.version;
+      this.browser = info.browser;
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   readFrom(bytes: ByteArray, opt: (key: string) => void): void {
+      this.id = bytes.getNumber() || 0;
+      this.startTime = bytes.getDate() || new Date();
+      this.version = bytes.getString() || '';
+      this.browser = bytes.getString() || '';
+   }
+
+   writeTo(bytes: ByteArray): void {
+      bytes.addNumber(this.id);
+      bytes.addDate(this.startTime);
+      bytes.addString(this.version);
+      bytes.addString(this.browser);
+   }
+
+   getFactory() {
+      return createBinaryFactory<ClientInfo>(() => new ClientInfo(),
+         (bytes: ByteArray, data: ClientInfo, opt: (key: string) => void) => {
+            data.readFrom(bytes, opt);
+         },
+         (data: ClientInfo, bytes: ByteArray) => {
+            data.writeTo(bytes);
+         });
    }
 }
 export { ClientInfo };
-
-const empty: IClientInfo = {
-   browser: '',
-   id: 0,
-   language: Language.German,
-   sessionId: '',
-   startTime: new Date(),
-   userName: '',
-   userRole: UserRole.Guest,
-   version: ''
-};
-export const fClientInfo = createJsonFactory<ClientInfo, IClientInfo>(
-   () => new ClientInfo(empty), {
-   browser: true,
-   id: true,
-   language: true,
-   sessionId: true,
-   startTime: jsonDateSerializer,
-   userName: true,
-   userRole: true,
-   version: true
-});

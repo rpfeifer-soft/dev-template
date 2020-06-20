@@ -2,26 +2,9 @@
 
 import { register as registerServiceWorker } from './registerServiceWorker';
 import { server } from './server.js';
-import { ConnectInfo } from '../shared/data/ConnectInfo.js';
+import { ConnectInfo } from '../shared/data/data.js';
 import { app } from './app/app.js';
 import { registerDebug } from './registerDebug.js';
-
-function uuidv4() {
-   return (String([1e7]) + String(-1e3) + String(-4e3) + String(-8e3) + String(-1e11))
-      .replace(/[018]/g, c =>
-         (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
-      );
-}
-
-function getSessionId() {
-   let sessionId = localStorage.getItem('SessionId');
-   if (!sessionId) {
-      // Create a new session id
-      sessionId = uuidv4();
-      localStorage.setItem('SessionId', sessionId);
-   }
-   return sessionId;
-}
 
 let baseURI = document.baseURI.substr(location.protocol.length);
 if (location.protocol === 'http:') {
@@ -31,10 +14,14 @@ if (location.protocol === 'http:') {
 }
 
 let versionNode = document.querySelector('meta[name="version"]');
-let connectInfo = new ConnectInfo(
-   getSessionId(), versionNode ? (versionNode.getAttribute('content') || '') : '');
+let connectInfo = new ConnectInfo();
+connectInfo.version = versionNode ? (versionNode.getAttribute('content') || '') : '';
 connectInfo.browser = navigator.userAgent;
-connectInfo.time = new Date();
+// addLanguage
+connectInfo.language = app.language;
+// addLogin
+connectInfo.sessionId = app.sessionId;
+connectInfo.userName = app.userName;
 
 server.init(baseURI + 'ws', connectInfo)
    .then(info => app.onInit(info))

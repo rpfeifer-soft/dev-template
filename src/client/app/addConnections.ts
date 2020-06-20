@@ -1,7 +1,7 @@
 /** @format */
 
 import { Constructor } from '../../shared/types.js';
-import { ClientInfo } from '../../shared/data/ClientInfo.js';
+import { ClientInfo } from '../../shared/data/data.js';
 import { server } from '../server.js';
 import { ClientFunction, ServerFunction } from '../../shared/api.js';
 

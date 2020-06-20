@@ -1,10 +1,10 @@
 /** @format */
 
 import { server } from '../server.js';
-import { ClientInfo } from '../../shared/data/ClientInfo.js';
-import { addLogin } from './addLogin.js';
-import { addConnections } from './addConnections.js';
+import { ClientInfo } from '../../shared/data/data.js';
 import { addLanguage } from './addLanguage.js';
+import { addConnections } from './addConnections.js';
+import { addLogin } from './addLogin.js';
 
 class BaseApp {
    browser: string;
@@ -28,7 +28,7 @@ class BaseApp {
 
    updateMe(clientInfo?: ClientInfo): void {
       if (clientInfo) {
-         this.browser = clientInfo.browser;
+         this.browser = clientInfo.browser || '';
          this.id = clientInfo.id;
          this.version = clientInfo.version;
          this.startTime = clientInfo.startTime;
@@ -41,9 +41,11 @@ class BaseApp {
 }
 
 const App =
-   addConnections(
-      addLanguage(
-         addLogin(BaseApp)
+   addLogin(
+      addConnections(
+         addLanguage(
+            BaseApp
+         )
       )
    );
 
