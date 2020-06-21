@@ -4,7 +4,15 @@ import { createBinaryFactory } from '../serialize/factories.js';
 import { ByteArray } from '../serialize/ByteArray.js';
 import { Language } from '../types.js';
 
-class ConnectInfo {
+interface IConnectInfo {
+   version: string;
+   browser: string;
+   language?: Language;
+   sessionId: string;
+   userName?: string;
+}
+
+class ConnectInfo implements IConnectInfo {
    version: string;
    browser: string;
    language?: Language;
@@ -15,13 +23,7 @@ class ConnectInfo {
       // Do not allow to create the object via new - use create instead
    }
 
-   static create(info: {
-      version: string;
-      browser: string;
-      language?: Language;
-      sessionId: string;
-      userName?: string;
-   }): ConnectInfo {
+   static create(info: IConnectInfo): ConnectInfo {
       const connectInfo = new ConnectInfo();
       connectInfo.version = info.version;
       connectInfo.browser = info.browser;

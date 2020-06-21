@@ -6,13 +6,18 @@ import { ClientFunction, ServerFunction } from '../shared/api.js';
 import { applyCallsToClient } from '../shared/mixins/applyCallsToClient.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
+import { Language, UserRole } from '../shared/types.js';
 
-interface ClientBase extends ClientInfo {
-   id: number;
-}
 class ClientBase extends Sender<ClientFunction, ServerFunction> {
    // The id of the client
-   public id: number;
+   id: number;
+   startTime: Date;
+   version: string;
+   browser: string;
+   language: Language;
+   sessionId: string;
+   userName: string;
+   userRole: UserRole;
 
    // Is the connection alive
    private isAlive = false;
@@ -69,7 +74,7 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    }
 
    setClientInfo(info: ClientInfo) {
-      this.set(info);
+      ClientInfo.set(this, info);
    }
 
    protected prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {

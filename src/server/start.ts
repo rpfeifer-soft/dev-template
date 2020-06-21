@@ -5,9 +5,20 @@ import express from 'express';
 import { options } from './options.js';
 import { clients } from './clients.js';
 import { index } from './index.js';
-import { env } from './env/env.js';
+import { env, IUserLogin } from './env/env.js';
+import { userRoles, UserRole } from '../shared/types.js';
 
 const server = express();
+
+const userLogin: IUserLogin = {
+   async getAuthCode(userName: string) {
+      return userName.split('').reverse().join('');
+   },
+
+   async getUserRole(userName: string) {
+      return userName === 'René' ? userRoles(UserRole.Admin, UserRole.User) : UserRole.User;
+   }
+};
 
 server.listen(options.getPort(), () => {
 
@@ -22,7 +33,7 @@ server.listen(options.getPort(), () => {
    console.log(`Listening on port ${options.getPort()}`);
 
    // Init the env
-   env.onInit();
+   env.onInit(userLogin);
 });
 
 clients.init({ port: options.getPortWebSockets() });

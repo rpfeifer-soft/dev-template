@@ -5,7 +5,17 @@ import { ByteArray } from '../serialize/ByteArray.js';
 import { ConnectInfo } from './ConnectInfo.js';
 import { Language, UserRole } from '../types.js';
 
-class ClientInfo {
+interface IClientInfo {
+   id: number;
+   startTime: Date;
+   version: string;
+   browser: string;
+   language: Language;
+   sessionId: string;
+   userName: string;
+   userRole: UserRole;
+}
+class ClientInfo implements IClientInfo {
    id: number;
    startTime: Date;
    version: string;
@@ -30,9 +40,9 @@ class ClientInfo {
       return clientInfo;
    }
 
-   static copy(info: ClientInfo) {
+   static copy(info: IClientInfo) {
       const clientInfo = new ClientInfo();
-      clientInfo.set(info);
+      ClientInfo.set(clientInfo, info);
       return clientInfo;
    }
 
@@ -46,15 +56,15 @@ class ClientInfo {
          });
    }
 
-   set(info: ClientInfo) {
-      this.id = info.id;
-      this.startTime = info.startTime;
-      this.version = info.version;
-      this.browser = info.browser;
-      this.language = info.language;
-      this.sessionId = info.sessionId;
-      this.userName = info.userName;
-      this.userRole = info.userRole;
+   static set(clientInfo: IClientInfo, info: IClientInfo) {
+      clientInfo.id = info.id;
+      clientInfo.startTime = info.startTime;
+      clientInfo.version = info.version;
+      clientInfo.browser = info.browser;
+      clientInfo.language = info.language;
+      clientInfo.sessionId = info.sessionId;
+      clientInfo.userName = info.userName;
+      clientInfo.userRole = info.userRole;
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
