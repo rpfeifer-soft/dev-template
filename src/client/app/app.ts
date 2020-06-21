@@ -2,10 +2,13 @@
 
 import { server } from '../server.js';
 import { ClientInfo } from '../../shared/data/ClientInfo.js';
-import { addConnections } from './addConnections.js';
 import { addLogin } from './addLogin.js';
 import { Language } from '../../shared/types.js';
-import { ServerFunction } from '../../shared/api.js';
+import { ServerFunction, ClientFunction } from '../../shared/api.js';
+
+export interface IClientMap {
+   [id: number]: ClientInfo;
+}
 
 class BaseApp {
    browser: string;
@@ -13,6 +16,7 @@ class BaseApp {
    version: string;
    startTime: Date;
    language: Language;
+   allClients: IClientMap = {};
 
    constructor() {
       // Use default values for initialization
@@ -20,9 +24,8 @@ class BaseApp {
       this.id = 0;
       this.version = '';
       this.startTime = new Date();
-
-      // Read from storage
       this.language = Number(localStorage.getItem('language') || Language.German);
+      this.allClients = {};
 
       // Initialize first
       this.updateMe(server.me);
@@ -38,6 +41,7 @@ class BaseApp {
          this.version = clientInfo.version;
          this.startTime = clientInfo.startTime;
          this.language = clientInfo.language;
+         this.allClients[clientInfo.id] = clientInfo;
          // Save to storage
          localStorage.setItem('language', String(this.language));
       }
@@ -52,14 +56,32 @@ class BaseApp {
 
    onInit(clientInfo: ClientInfo): void {
       server.setMe(clientInfo);
+
+      // Register handlers
+      server.on(ClientFunction.ClientChanged, async (client: ClientInfo) => {
+         const me = server.me;
+         if (me && me.id === client.id) {
+            server.setMe(client);
+         } else {
+            this.allClients[client.id] = client;
+         }
+      });
+
+      server.on(ClientFunction.ClientsRemoved, async (ids: number[]) => {
+         ids.forEach(id => delete this.allClients[id]);
+      });
+
+      server.call(ServerFunction.GetClientInfos)
+         .then(clientInfos => {
+            clientInfos.forEach(info =>
+               this.allClients[info.id] = clientInfo);
+         });
    }
 }
 
 const App =
    addLogin(
-      addConnections(
-         BaseApp
-      )
+      BaseApp
    );
 
 export const app = new App();

@@ -5,8 +5,7 @@ import { options } from '../options.js';
 import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
 import { clients } from '../clients.js';
-import { ServerFunction } from '../../shared/api.js';
-import { addConnections } from './addConnections.js';
+import { ServerFunction, ClientFunction } from '../../shared/api.js';
 import { addLogin, IUserLogin } from './addLogin.js';
 import { userRoles, UserRole, Language } from '../../shared/types.js';
 
@@ -50,6 +49,7 @@ class EnvBase {
          return client.getClientInfo();
       });
 
+      // LANGUAGE
       clients.on(ServerFunction.SetLanguage, async (language, client) => {
          if (client.language !== language) {
             if (typeof (Language[language]) !== 'string' ||
@@ -62,6 +62,27 @@ class EnvBase {
          }
          // Update was successful
          return client.getClientInfo();
+      });
+
+      // CONNECTIONS
+      clients.onChangedClient((client) => {
+         // The clients have changed (notify the other clients)
+         const clientInfo = client.getClientInfo();
+         clients.forEach((dest) => {
+            if (dest.id !== client.id) {
+               dest.call(ClientFunction.ClientChanged, clientInfo);
+            }
+         });
+      });
+
+      clients.onRemovedClients((ids: number[]) => {
+         clients.forEach((dest) => {
+            dest.call(ClientFunction.ClientsRemoved, ids);
+         });
+      });
+
+      clients.on(ServerFunction.GetClientInfos, async () => {
+         return clients.map(client => client.getClientInfo());
       });
    }
 }
@@ -78,9 +99,8 @@ const userLogin: IUserLogin = {
 
 const Env =
    addLogin(
-      addConnections(
-         EnvBase
-      ), userLogin
+      EnvBase
+      , userLogin
    );
 
 export const env = new Env();
