@@ -6,10 +6,9 @@ import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
 import { clients } from '../clients.js';
 import { ServerFunction } from '../../shared/api.js';
-import { addLanguage } from './addLanguage.js';
 import { addConnections } from './addConnections.js';
 import { addLogin, IUserLogin } from './addLogin.js';
-import { userRoles, UserRole } from '../../shared/types.js';
+import { userRoles, UserRole, Language } from '../../shared/types.js';
 
 function checkConnection(info: ConnectInfo): ClientInfo | string {
    if (info.version !== options.getVersion()) {
@@ -24,6 +23,10 @@ class EnvBase {
 
    constructor() {
       this.version = options.getVersion() || '';
+      this.startTime = new Date();
+   }
+
+   onInit() {
       this.startTime = new Date();
 
       clients.on(ServerFunction.Connect, async (info, client) => {
@@ -46,10 +49,20 @@ class EnvBase {
          // Return the actual client info
          return client.getClientInfo();
       });
-   }
 
-   onInit() {
-      this.startTime = new Date();
+      clients.on(ServerFunction.SetLanguage, async (language, client) => {
+         if (client.language !== language) {
+            if (typeof (Language[language]) !== 'string' ||
+               Language[Language[language]] !== language) {
+               throw new Error('Unsupported language');
+            }
+            client.language = language;
+            // Notify the other clients
+            clients.changedClient(client);
+         }
+         // Update was successful
+         return client.getClientInfo();
+      });
    }
 }
 
@@ -66,9 +79,7 @@ const userLogin: IUserLogin = {
 const Env =
    addLogin(
       addConnections(
-         addLanguage(
-            EnvBase
-         )
+         EnvBase
       ), userLogin
    );
 
