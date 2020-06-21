@@ -4,7 +4,7 @@ import ws from 'ws';
 import { Sender } from '../shared/Sender.js';
 import { ClientFunction, ServerFunction } from '../shared/api.js';
 import { applyCallsToClient } from '../shared/mixins/applyCallsToClient.js';
-import { ClientInfo } from '../shared/data/data.js';
+import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
 
 interface ClientBase extends ClientInfo {
@@ -65,9 +65,11 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    }
 
    getClientInfo() {
-      const clientInfo = new ClientInfo();
-      clientInfo.set(this);
-      return clientInfo;
+      return ClientInfo.copy(this);
+   }
+
+   setClientInfo(info: ClientInfo) {
+      this.set(info);
    }
 
    protected prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {

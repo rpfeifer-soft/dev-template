@@ -6,7 +6,7 @@ import { applyCallsToServer } from '../shared/mixins/applyCallsToServer.js';
 import { applyListenersOnClient } from '../shared/mixins/applyListenersOnClient.js';
 import { applyInitForClient } from '../shared/mixins/applyInitForClient.js';
 import { ServerFunction, ClientFunction } from '../shared/api.js';
-import { ClientInfo } from '../shared/data/data.js';
+import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { parseServerMessage, prepareClientMessage } from '../shared/websocket-api.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {

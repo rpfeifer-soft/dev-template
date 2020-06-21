@@ -2,7 +2,7 @@
 
 import { register as registerServiceWorker } from './registerServiceWorker';
 import { server } from './server.js';
-import { ConnectInfo } from '../shared/data/data.js';
+import { ConnectInfo } from '../shared/data/ConnectInfo.js';
 import { app } from './app/app.js';
 import { registerDebug } from './registerDebug.js';
 
@@ -14,14 +14,13 @@ if (location.protocol === 'http:') {
 }
 
 let versionNode = document.querySelector('meta[name="version"]');
-let connectInfo = new ConnectInfo();
-connectInfo.version = versionNode ? (versionNode.getAttribute('content') || '') : '';
-connectInfo.browser = navigator.userAgent;
-// addLanguage
-connectInfo.language = app.language;
-// addLogin
-connectInfo.sessionId = app.sessionId;
-connectInfo.userName = app.userName;
+let connectInfo = ConnectInfo.create({
+   version: versionNode ? (versionNode.getAttribute('content') || '') : '',
+   browser: navigator.userAgent,
+   language: app.language,
+   sessionId: app.sessionId,
+   userName: app.userName
+});
 
 server.init(baseURI + 'ws', connectInfo)
    .then(info => app.onInit(info))

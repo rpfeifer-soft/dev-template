@@ -2,7 +2,8 @@
 /** @format */
 
 import { options } from '../options.js';
-import { ConnectInfo, ClientInfo } from '../../shared/data/data.js';
+import { ClientInfo } from '../../shared/data/ClientInfo.js';
+import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
 import { clients } from '../clients.js';
 import { ServerFunction } from '../../shared/api.js';
 import { addLanguage } from './addLanguage.js';
@@ -14,9 +15,7 @@ function checkConnection(info: ConnectInfo): ClientInfo | string {
    if (info.version !== options.getVersion()) {
       return `Version mismatch: ${info.version} <> ${options.getVersion()}`;
    }
-   const clientInfo = new ClientInfo();
-   clientInfo.connect(info);
-   return clientInfo;
+   return ClientInfo.connect(info);
 }
 
 class EnvBase {
@@ -36,16 +35,11 @@ class EnvBase {
             throw new Error(clientInfo);
          }
 
-         // Copy the needed values
-         client.browser = clientInfo.browser;
-         client.startTime = clientInfo.startTime;
-         client.version = clientInfo.version;
-         // addLanguage
-         client.language = clientInfo.language;
-         // addLogin
-         client.userName = clientInfo.userName;
-         client.userRole = clientInfo.userRole;
-         client.sessionId = clientInfo.sessionId;
+         // Copy the needed values (after saving own values)
+         clientInfo.id = client.id;
+         clientInfo.startTime = client.startTime;
+
+         client.setClientInfo(clientInfo);
          // Add to the list of clients (generates a unique id for the client)
          clients.add(client);
 

@@ -1,7 +1,7 @@
 /** @format */
 
 import { server } from '../server.js';
-import { ClientInfo } from '../../shared/data/data.js';
+import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { addLanguage } from './addLanguage.js';
 import { addConnections } from './addConnections.js';
 import { addLogin } from './addLogin.js';

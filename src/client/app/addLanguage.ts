@@ -2,7 +2,7 @@
 /** @format */
 
 import { Constructor, Language } from '../../shared/types.js';
-import { ClientInfo } from '../../shared/data/data.js';
+import { ClientInfo } from '../../shared/data/ClientInfo.js';
 import { server } from '../server.js';
 import { ServerFunction } from '../../shared/api.js';
 
