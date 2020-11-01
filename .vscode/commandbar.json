@@ -1,0 +1,16 @@
+{
+   "skipTerminateQuickPick": true,
+   "skipSwitchToOutput": false,
+   "skipErrorMessage": true,
+   "commands": [
+      {
+         "text": "☯ Stage",
+         "tooltip": "Stage all files",
+         "color": "yellow",
+         "command": "npm run stage",
+         "alignment": "left",
+         "skipTerminateQuickPick": true,
+         "priority": 0
+      }
+   ]
+}

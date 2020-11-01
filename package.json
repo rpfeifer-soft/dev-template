@@ -21,6 +21,7 @@
       "start": "node dist/server/start.js",
       "list": "ps aux | grep ${npm_package_name}",
       "test": "tsc --project ./src/tsconfig.test.json && rollup -c ./src/rollup.test.js && node ./test/all.js && rimraf ./test",
+      "stage": "(node i18n.js check && node i18n.js update && git add -A) || npm run translate",
       "push": "(node i18n.js check && git push) || npm run translate",
       "check": "npm run compile && npm run test",
       "build": "npm run compile && rollup -c",
