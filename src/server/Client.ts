@@ -7,6 +7,7 @@ import { applyCallsToClient } from '../shared/mixins/applyCallsToClient.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
 import { Language, UserRole } from '../shared/types.js';
+import { t, useLocale } from '../shared/i18n/ttag.js';
 
 class ClientBase extends Sender<ClientFunction, ServerFunction> {
    // The id of the client
@@ -44,7 +45,7 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
             data = new Uint8Array(data).buffer;
          }
          if (typeof (data) !== 'string' && !(data instanceof ArrayBuffer)) {
-            throw new Error('Unsupport ws-socket data format!');
+            throw new Error(t`Nicht unterstütztes Websocket-Format!`);
          }
          if (!this.handleRequests(data)) {
             handleClientMessage(this, data);
@@ -67,6 +68,10 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
    close() {
       this.server.terminate();
       this.isAlive = false;
+   }
+
+   useLocale() {
+      useLocale(this.language);
    }
 
    getClientInfo() {

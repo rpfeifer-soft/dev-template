@@ -7,6 +7,7 @@ import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
 import { clients } from '../clients.js';
 import { ServerFunction, ClientFunction } from '../../shared/api.js';
 import { UserRole, Language } from '../../shared/types.js';
+import { t } from '../../shared/i18n/ttag.js';
 
 export interface IUserLogin {
    getAuthCode(userName: string): Promise<string>;
@@ -15,7 +16,8 @@ export interface IUserLogin {
 
 function checkConnection(info: ConnectInfo): ClientInfo | string {
    if (info.version !== options.getVersion()) {
-      return `Version mismatch: ${info.version} <> ${options.getVersion()}`;
+      // translate: version mismatches
+      return t`Unterschiedliche Versionen: ${info.version} <> ${options.getVersion()}`;
    }
    return ClientInfo.connect(info);
 }
@@ -58,7 +60,7 @@ class Env {
          if (client.language !== language) {
             if (typeof (Language[language]) !== 'string' ||
                Language[Language[language]] !== language) {
-               throw new Error('Unsupported language');
+               throw new Error(t`Nicht unterstützte Sprache!`);
             }
             client.language = language;
             // Notify the other clients
@@ -92,7 +94,7 @@ class Env {
       // LOGIN
       clients.on(ServerFunction.SetUser, async (userName, client) => {
          if (client.userRole !== UserRole.Guest) {
-            throw new Error('UserName must not be changed after login!');
+            throw new Error(t`Änderung des Benutzer erst nach Abmeldung möglich!`);
          }
          client.userName = userName;
          // Notify the other clients
@@ -103,10 +105,10 @@ class Env {
 
       clients.on(ServerFunction.SendAuthCode, async (_, client) => {
          if (client.userRole !== UserRole.Guest) {
-            throw new Error('Already logged in!');
+            throw new Error(t`Sie sind bereits angemeldet!`);
          }
          if (!client.userName) {
-            throw new Error('UserName not given!');
+            throw new Error(t`Benutzername fehlt!`);
          }
          // eslint-disable-next-line no-console
          console.log('AuthCode', await userLogin.getAuthCode(client.userName));
@@ -115,13 +117,13 @@ class Env {
 
       clients.on(ServerFunction.Login, async (authCode, client) => {
          if (client.userRole !== UserRole.Guest) {
-            throw new Error('Already logged in!');
+            throw new Error(t`Sie sind bereits angemeldet!`);
          }
          if (!client.userName) {
-            throw new Error('UserName not given!');
+            throw new Error(t`Benutzername fehlt!`);
          }
          if (authCode !== await userLogin.getAuthCode(client.userName)) {
-            throw new Error('Login failed!');
+            throw new Error(t`Anmeldung fehlgeschlagen!`);
          }
          // Set the user-role
          client.userRole = await userLogin.getUserRole(client.userName);
@@ -133,7 +135,7 @@ class Env {
 
       clients.on(ServerFunction.Logoff, async (_, client) => {
          if (client.userRole === UserRole.Guest) {
-            throw new Error('Not logged in!');
+            throw new Error(t`Sie sind nicht angemeldet!`);
          }
          // Set the user-role
          client.userRole = UserRole.Guest;

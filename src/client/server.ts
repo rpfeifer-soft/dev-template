@@ -8,6 +8,7 @@ import { applyInitForClient } from '../shared/mixins/applyInitForClient.js';
 import { ServerFunction, ClientFunction } from '../shared/api.js';
 import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { parseServerMessage, prepareClientMessage } from '../shared/websocket-api.js';
+import { t } from '../shared/i18n/ttag.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T): Promise<U> | void;
@@ -87,7 +88,7 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> {
                data = await new Response(event.data).arrayBuffer();
             }
             if (typeof (data) !== 'string' && !(data instanceof ArrayBuffer)) {
-               throw new Error('Unsupport ws-socket data format!');
+               throw new Error(t`Nicht unterstütztes Websocket-Format!`);
             }
             if (!this.handleRequests(data)) {
                this.handleClientMessage(data);

@@ -121,7 +121,9 @@ class ClientsBase implements IServerHandler<Client> {
       const functionHandlers = this.handlers.getFunctions(clientMessage.type);
       if (functionHandlers) {
          functionHandlers.forEach(handlerData => {
-
+            // Prepare the language
+            client.useLocale();
+            // Now handle the message
             client.handleMessage(
                clientMessage.type,
                handlerData.ctor,

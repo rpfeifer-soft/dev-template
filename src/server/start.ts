@@ -7,6 +7,7 @@ import { clients } from './clients.js';
 import { index } from './index.js';
 import { env, IUserLogin } from './env/env.js';
 import { userRoles, UserRole } from '../shared/types.js';
+import { t } from '../shared/i18n/ttag.js';
 
 const server = express();
 
@@ -30,7 +31,7 @@ server.listen(options.getPort(), () => {
    });
 
    // eslint-disable-next-line no-console
-   console.log(`Listening on port ${options.getPort()}`);
+   console.log(t`Lausche an Port ${options.getPort()}`);
 
    // Init the env
    env.onInit(userLogin);
