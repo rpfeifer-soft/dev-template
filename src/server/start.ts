@@ -31,7 +31,7 @@ server.listen(options.getPort(), () => {
    });
 
    // eslint-disable-next-line no-console
-   console.log(t`Lauschen an Port ${options.getPort()}`);
+   console.log(t`Lauscher an Port ${options.getPort()}`);
 
    // Init the env
    env.onInit(userLogin);
