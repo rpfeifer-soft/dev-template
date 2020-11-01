@@ -2,6 +2,10 @@
 
 Template to start a new web-application (Docker+Rollup+Typescript)!
 
+![GitHub package.json version](https://img.shields.io/github/package-json/v/rpfeifer-soft/dev-template)
+![GitHub last commit](https://img.shields.io/github/last-commit/rpfeifer-soft/dev-template?style=plastic)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/rpfeifer-soft/dev-template/Node.js%20CI)
+
 ## Contents
 
 - Server/Client
