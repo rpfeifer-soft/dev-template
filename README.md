@@ -14,6 +14,7 @@ Template to start a new web-application (Docker+Rollup+Typescript)!
 - VSCode debugging
 - Rollup
 - WebSocket channel
+- i18n via ttag
 
 ## Start development
 
