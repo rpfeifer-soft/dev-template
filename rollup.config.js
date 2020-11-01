@@ -1,6 +1,7 @@
 /** @format */
 
 import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
 import externalGlobals from 'rollup-plugin-external-globals';
 import { terser } from 'rollup-plugin-terser';
@@ -21,6 +22,9 @@ export default {
          './TextDecoder.js': 'TextDecoder',
       }),
       resolve(),
+      replace({
+         'process.env.NODE_ENV': production ? "'production'" : "'debug'",
+      }),
       commonjs(),
       production && terser(),
    ],

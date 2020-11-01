@@ -11,7 +11,9 @@
    "githubAccount": "https://github.com/rpfeifer-soft",
    "scripts": {
       "clean": "docker-compose down && rimraf ./dist",
-      "compile": "tsc -b src",
+      "i18n": "node i18n.js",
+      "translate": "ttag web src/shared/i18n/en.po",
+      "compile": "npm run i18n && tsc -b src",
       "lint": "eslint src --ext ts",
       "watch": "tsc -b -w src & rollup -c -w",
       "devenv": "npm run compile && rollup -c --environment DEVENV && docker-compose build && (npm run watch & docker-compose up)",
@@ -37,12 +39,15 @@
    "homepage": "https://github.com/rpfeifer-soft/dev-template#readme",
    "dependencies": {
       "express": "^4.17.1",
+      "ts-node": "^8.10.2",
+      "ttag": "^1.7.22",
       "ws": "^7.3.0"
    },
    "devDependencies": {
       "@rollup/plugin-commonjs": "^12.0.0",
       "@rollup/plugin-multi-entry": "^3.0.1",
       "@rollup/plugin-node-resolve": "^8.0.0",
+      "@rollup/plugin-replace": "^2.3.4",
       "@types/express": "^4.17.6",
       "@types/node": "^14.0.1",
       "@types/tape": "^4.13.0",
@@ -53,12 +58,14 @@
       "eslint-config-google": "^0.14.0",
       "eslint-config-prettier": "^6.11.0",
       "eslint-plugin-jsdoc": "^26.0.1",
+      "glob": "^7.1.6",
       "prettier": "^2.0.5",
       "rimraf": "^3.0.2",
       "rollup": "^2.10.2",
       "rollup-plugin-external-globals": "^0.5.0",
       "rollup-plugin-terser": "^5.3.0",
       "tape": "^5.0.0",
+      "ttag-cli": "^1.8.3",
       "typescript": "^3.9.2",
       "wscat": "^4.0.0"
    }

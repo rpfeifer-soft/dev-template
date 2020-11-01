@@ -4,15 +4,21 @@ import ws from 'ws';
 import { Sender } from '../shared/Sender.js';
 import { ClientFunction, ServerFunction } from '../shared/api.js';
 import { applyCallsToClient } from '../shared/mixins/applyCallsToClient.js';
-import { ClientInfo } from '../shared/data/data.js';
+import { ClientInfo } from '../shared/data/ClientInfo.js';
 import { prepareServerMessage } from '../shared/websocket-api.js';
+import { Language, UserRole } from '../shared/types.js';
+import { t, useLocale } from '../shared/i18n/ttag.js';
 
-interface ClientBase extends ClientInfo {
-   id: number;
-}
 class ClientBase extends Sender<ClientFunction, ServerFunction> {
    // The id of the client
-   public id: number;
+   id: number;
+   startTime: Date;
+   version: string;
+   browser: string;
+   language: Language;
+   sessionId: string;
+   userName: string;
+   userRole: UserRole;
 
    // Is the connection alive
    private isAlive = false;
@@ -39,7 +45,7 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
             data = new Uint8Array(data).buffer;
          }
          if (typeof (data) !== 'string' && !(data instanceof ArrayBuffer)) {
-            throw new Error('Unsupport ws-socket data format!');
+            throw new Error(t`Nicht unterstütztes Websocket-Format!`);
          }
          if (!this.handleRequests(data)) {
             handleClientMessage(this, data);
@@ -64,10 +70,16 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
       this.isAlive = false;
    }
 
+   useLocale() {
+      useLocale(this.language);
+   }
+
    getClientInfo() {
-      const clientInfo = new ClientInfo();
-      clientInfo.set(this);
-      return clientInfo;
+      return ClientInfo.copy(this);
+   }
+
+   setClientInfo(info: ClientInfo) {
+      ClientInfo.set(this, info);
    }
 
    protected prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
