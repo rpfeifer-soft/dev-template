@@ -29,7 +29,7 @@ module.exports = {
       sourceType: "module",
    },
    plugins: ["@typescript-eslint"],
-   ignorePatterns: ["i18n.js", "*.cjs"],
+   ignorePatterns: ["i18n.js", "*.cjs", "src/shared/i18n/*.ts"],
    rules: {
       "require-jsdoc": "off",
       "@typescript-eslint/dot-notation": "error",
