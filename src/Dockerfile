@@ -8,6 +8,7 @@ COPY ./package.json /app/
 RUN npm install --loglevel=error
 
 COPY ./src /app/src/
+COPY ./i18n.js /app/
 COPY ./rollup.*.js /app/
 COPY ./install/secrets.json /app/install/
 
