@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Plural-Forms: nplurals = 2; plural = (n != 1);\n"
 "Language: de\n"
-"mime-version: 1.0\n"
+"MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/server/env/env.ts:126
@@ -14,12 +14,6 @@ msgstr "Login failed!"
 #: src/server/env/env.ts:123
 msgid "Benutzername fehlt!"
 msgstr "Username is missing!"
-
-#: src/server/start.ts:34
-#. eslint-disable-next-line no-console
-#, javascript-format
-msgid "Lausche an Port ${ 0 }"
-msgstr "Listening on port ${0}"
 
 #: src/server/env/env.ts:63
 msgid "Nicht unterstützte Sprache!"
@@ -48,3 +42,9 @@ msgstr "Version mismatch: ${0} <> ${1}"
 #: src/server/env/env.ts:97
 msgid "Änderung des Benutzer erst nach Abmeldung möglich!"
 msgstr "No change of the user before log off!"
+
+#: src/server/start.ts:34
+#. eslint-disable-next-line no-console
+#, javascript-format
+msgid "Lauschen an Port ${ 0 }"
+msgstr "Listening on port ${0}"

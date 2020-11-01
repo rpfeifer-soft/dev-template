@@ -11,8 +11,7 @@
    "githubAccount": "https://github.com/rpfeifer-soft",
    "scripts": {
       "clean": "docker-compose down && rimraf ./dist",
-      "i18n": "node i18n.js",
-      "translate": "ttag web src/shared/i18n/en.po",
+      "i18n": "node i18n.js check || (node i18n update && node i18n translate && node i18n check)",
       "compile": "npm run i18n && tsc -b src",
       "lint": "eslint src --ext ts",
       "watch": "tsc -b -w src & rollup -c -w",
@@ -67,6 +66,7 @@
       "tape": "^5.0.1",
       "ttag-cli": "^1.8.6",
       "typescript": "^3.9.7",
-      "wscat": "^4.0.1"
+      "wscat": "^4.0.1",
+      "yargs": "^16.1.0"
    }
 }
