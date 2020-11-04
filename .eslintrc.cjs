@@ -25,11 +25,11 @@ module.exports = {
    ],
    parser: "@typescript-eslint/parser",
    parserOptions: {
-      project: "./src/tsconfig.test.json",
+      project: "./src/tsconfig.eslint.json",
       sourceType: "module",
    },
    plugins: ["@typescript-eslint"],
-   ignorePatterns: ["i18n.js", "*.cjs", "src/shared/i18n/*.ts"],
+   ignorePatterns: ["i18n.js", "*.cjs", "src/shared/i18n/*.ts", "rollup.config.js"],
    rules: {
       "require-jsdoc": "off",
       "@typescript-eslint/dot-notation": "error",
@@ -70,6 +70,7 @@ module.exports = {
       "@typescript-eslint/quotes": ["error", "single"],
       "@typescript-eslint/semi": ["error", "always"],
       "@typescript-eslint/type-annotation-spacing": "error",
+      "@typescript-eslint/explicit-module-boundary-types": "error",
       "brace-style": ["error", "1tbs"],
       camelcase: "error",
       "comma-dangle": "off",

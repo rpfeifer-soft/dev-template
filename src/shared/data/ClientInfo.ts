@@ -40,12 +40,13 @@ class ClientInfo implements IClientInfo {
       return clientInfo;
    }
 
-   static copy(info: IClientInfo) {
+   static copy(info: IClientInfo): ClientInfo {
       const clientInfo = new ClientInfo();
       ClientInfo.set(clientInfo, info);
       return clientInfo;
    }
 
+   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
    static getFactory() {
       return createBinaryFactory<ClientInfo>(() => new ClientInfo(),
          (bytes: ByteArray, data: ClientInfo, opt: (key: string) => void) => {
@@ -56,7 +57,7 @@ class ClientInfo implements IClientInfo {
          });
    }
 
-   static set(clientInfo: IClientInfo, info: IClientInfo) {
+   static set(clientInfo: IClientInfo, info: IClientInfo): void {
       clientInfo.id = info.id;
       clientInfo.startTime = info.startTime;
       clientInfo.version = info.version;

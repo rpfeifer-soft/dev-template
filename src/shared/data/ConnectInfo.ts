@@ -33,6 +33,7 @@ class ConnectInfo implements IConnectInfo {
       return connectInfo;
    }
 
+   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
    static getFactory() {
       return createBinaryFactory<ConnectInfo>(() => new ConnectInfo(),
          (bytes: ByteArray, data: ConnectInfo, opt: (key: string) => void) => {
