@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /** @format */
 
-import { options } from '../options.js';
-import { ClientInfo } from '../../shared/data/ClientInfo.js';
-import { ConnectInfo } from '../../shared/data/ConnectInfo.js';
-import { clients } from '../clients.js';
-import { ServerFunction, ClientFunction } from '../../shared/api.js';
-import { UserRole, Language } from '../../shared/types.js';
-import { t } from '../../shared/i18n/ttag.js';
+import { options } from './options.js';
+import { ClientInfo } from '../shared/data/ClientInfo.js';
+import { ConnectInfo } from '../shared/data/ConnectInfo.js';
+import { clients } from './clients.js';
+import { ServerFunction, ClientFunction } from '../shared/api.js';
+import { UserRole, Language } from '../shared/types.js';
+import { t } from '../shared/i18n/ttag.js';
 
 export interface IUserLogin {
    getAuthCode(userName: string): Promise<string>;
@@ -22,7 +22,7 @@ function checkConnection(info: ConnectInfo): ClientInfo | string {
    return ClientInfo.connect(info);
 }
 
-class Env {
+class Environment {
    version: string;
    startTime: Date;
 
@@ -146,4 +146,4 @@ class Env {
       });
    }
 }
-export const env = new Env();
+export const environment = new Environment();

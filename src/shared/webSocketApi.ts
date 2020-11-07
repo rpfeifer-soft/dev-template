@@ -87,20 +87,14 @@ function createPacket(
 function prepareData(json: IRequest | IClientMessage | IServerMessage): string | ArrayBuffer {
    if ('result' in json) {
       // IRequestResult
-      if (json.result instanceof ArrayBuffer) {
-         // Pack to array
-         return createPacket(PacketType.Result, json.result, json.requestId);
-      } else {
-         return JSON.stringify(json);
-      }
+      return json.result instanceof ArrayBuffer
+         ? createPacket(PacketType.Result, json.result, json.requestId)
+         : JSON.stringify(json);
    } else if ('data' in json) {
       // IClientMessage or IServerMessage
-      if (json.data instanceof ArrayBuffer) {
-         // Pack to array
-         return createPacket(PacketType.Message, json.data, json.requestId, json.type);
-      } else {
-         return JSON.stringify(json);
-      }
+      return json.data instanceof ArrayBuffer
+         ? createPacket(PacketType.Message, json.data, json.requestId, json.type)
+         : JSON.stringify(json);
    } else {
       // IRequestError
       return JSON.stringify(json);

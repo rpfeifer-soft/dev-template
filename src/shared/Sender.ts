@@ -1,6 +1,6 @@
 /** @format */
 
-import { IBaseMessage, prepareError, prepareResult, parseRequest } from './websocket-api.js';
+import { IBaseMessage, prepareError, prepareResult, parseRequest } from './webSocketApi.js';
 import { Message } from './serialize/Message.js';
 
 interface IRequests {

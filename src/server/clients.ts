@@ -5,7 +5,7 @@ import { Client } from './Client.js';
 import { Message } from '../shared/serialize/Message.js';
 import { ServerFunction, } from '../shared/api.js';
 import { applyListenersOnServer, IServerHandler } from '../shared/mixins/applyListenersOnServer.js';
-import { parseClientMessage } from '../shared/websocket-api.js';
+import { parseClientMessage } from '../shared/webSocketApi.js';
 
 interface IFunctionHandler<T extends Message, U extends Message> {
    (msg: T, client: Client): Promise<U> | void;
@@ -92,7 +92,7 @@ class ClientsBase implements IServerHandler<Client> {
          });
          if (closedIds.length > 0) {
             this.clients = this.clients
-               .filter(client => closedIds.indexOf(client.id) === -1);
+               .filter(client => !closedIds.includes(client.id));
             // Notify the clients
             this.removedClients(closedIds);
          }

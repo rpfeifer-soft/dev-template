@@ -6,16 +6,16 @@ msgstr ""
 "mime-version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/server/env/env.ts:126
+#: src/server/environment.ts:126
 msgid "Anmeldung fehlgeschlagen!"
 msgstr "Login failed!"
 
-#: src/server/env/env.ts:111
-#: src/server/env/env.ts:123
+#: src/server/environment.ts:111
+#: src/server/environment.ts:123
 msgid "Benutzername fehlt!"
 msgstr "Username is missing!"
 
-#: src/server/env/env.ts:63
+#: src/server/environment.ts:63
 msgid "Nicht unterstützte Sprache!"
 msgstr "Language not supported!"
 
@@ -24,22 +24,22 @@ msgstr "Language not supported!"
 msgid "Nicht unterstütztes Websocket-Format!"
 msgstr "Websocket-format not supported!"
 
-#: src/server/env/env.ts:108
-#: src/server/env/env.ts:120
+#: src/server/environment.ts:108
+#: src/server/environment.ts:120
 msgid "Sie sind bereits angemeldet!"
 msgstr "You are already logged in!"
 
-#: src/server/env/env.ts:138
+#: src/server/environment.ts:138
 msgid "Sie sind nicht angemeldet!"
 msgstr "You are not logged in!"
 
-#: src/server/env/env.ts:20
+#: src/server/environment.ts:20
 #. translate: version mismatches
 #, javascript-format
 msgid "Unterschiedliche Versionen: ${ 0 } <> ${ 1 }"
 msgstr "Version mismatch: ${0} <> ${1}"
 
-#: src/server/env/env.ts:97
+#: src/server/environment.ts:97
 msgid "Änderung des Benutzer erst nach Abmeldung möglich!"
 msgstr "No change of the user before log off!"
 

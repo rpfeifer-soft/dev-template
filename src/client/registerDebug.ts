@@ -9,7 +9,7 @@ export function registerDebug(key: string, handler: () => unknown): void {
       const app = document.getElementById('app');
       if (app) {
          const node = document.createElement('button');
-         node.innerText = key;
+         node.textContent = key;
          node.onclick = () => {
             // eslint-disable-next-line no-console
             console.log(handler());

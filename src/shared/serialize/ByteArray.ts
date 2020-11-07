@@ -53,7 +53,7 @@ export class ByteArray {
    }
 
    public addUint16(word: number): this {
-      this.arrays.push(new Uint8Array([(word >> 8) & 0xff, word & 0xff]));
+      this.arrays.push(new Uint8Array([(word >> 8) & 0xFF, word & 0xFF]));
       this.size += 2;
       return this;
    }
@@ -66,7 +66,7 @@ export class ByteArray {
 
    public addUint32(word: number): this {
       this.arrays.push(new Uint8Array([
-         (word >> 24) & 0xff, (word >> 16) & 0xff, (word >> 8) & 0xff, word & 0xff]));
+         (word >> 24) & 0xFF, (word >> 16) & 0xFF, (word >> 8) & 0xFF, word & 0xFF]));
       this.size += 4;
       return this;
    }
@@ -82,7 +82,7 @@ export class ByteArray {
    public addNumber(value: number | undefined): this {
       const buffer = new Uint8Array(8);
       const view = new DataView(buffer.buffer);
-      view.setFloat64(0, value === undefined ? NaN : value);
+      view.setFloat64(0, value === undefined ? Number.NaN : value);
       this.arrays.push(buffer);
       this.size += 8;
       return this;
@@ -91,7 +91,7 @@ export class ByteArray {
    public getNumber(): number | undefined {
       const value = this.readDataView.getFloat64(this.offset);
       this.offset += 8;
-      return isNaN(value) ? undefined : value;
+      return Number.isNaN(value) ? undefined : value;
    }
 
    public addDate(value: Date | undefined): this {
@@ -109,12 +109,12 @@ export class ByteArray {
       const encoder = new TextEncoder();
       if (value === undefined) {
          // 127 is undefined
-         this.addUint8(0x7f);
+         this.addUint8(0x7F);
          return this;
       }
       const buffer = encoder.encode(value);
       if (buffer.length >= 127) {
-         this.addUint32(0x80000000 | (buffer.length & 0x3fffffff));
+         this.addUint32(0x80000000 | (buffer.length & 0x3FFFFFFF));
       } else {
          this.addUint8(buffer.length);
       }
@@ -125,13 +125,13 @@ export class ByteArray {
 
    public getString(): string | undefined {
       let length = this.read[this.offset];
-      if (length === 0x7f) {
+      if (length === 0x7F) {
          this.offset++;
          return undefined;
       }
       if (length & 0x80) {
          // long string
-         length = this.getUint32() & 0x3fffffff;
+         length = this.getUint32() & 0x3FFFFFFF;
       } else {
          this.offset++;
       }
@@ -160,8 +160,8 @@ export class ByteArray {
       } else {
          const count = array.length;
          this.addNumber(count);
-         for (let i = 0; i < count; i++) {
-            add(array[i]);
+         for (let index = 0; index < count; index++) {
+            add(array[index]);
          }
       }
       return this;
@@ -175,7 +175,7 @@ export class ByteArray {
          return undefined;
       }
       const array: T[] = [];
-      for (let i = 0; i < count; i++) {
+      for (let index = 0; index < count; index++) {
          const item = get();
          if (item !== undefined) {
             array.push(item);

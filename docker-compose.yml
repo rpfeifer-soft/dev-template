@@ -3,7 +3,7 @@ version: "3.1"
 services:
 
   server:
-    container_name: server
+    container_name: dev-server
     build: 
       context: .
       dockerfile: ./src/dev.Dockerfile
@@ -22,7 +22,7 @@ services:
       - ./src/server/secrets.json:/app/options.json
   
   nginx:
-    container_name: nginx
+    container_name: dev-nginx
     image: nginx
     ports:
       - "80:80"

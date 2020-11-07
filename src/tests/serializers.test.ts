@@ -131,7 +131,7 @@ class Init {
    }
 }
 
-const jInit = createJsonFactory<Init, IInit>(() => new Init(), {
+const jsonInit = createJsonFactory<Init, IInit>(() => new Init(), {
    url: true,
    browser: true,
    time: jsonDateSerializer,
@@ -171,7 +171,7 @@ function testObject(assert: test.Test, factory: IMessageFactory<Init>) {
 }
 
 test('Serialize object data (JSON)', (assert) => {
-   testObject(assert, jInit);
+   testObject(assert, jsonInit);
 });
 
 test('Serialize object data (Binary)', (assert) => {
@@ -197,7 +197,7 @@ function testObjects(assert: test.Test, factory: IMessageFactory<Init[]>) {
 }
 
 test('Serialize objects data (Json)', (assert) => {
-   testObjects(assert, jInit.array);
+   testObjects(assert, jsonInit.array);
 });
 
 test('Serialize objects data (Binary)', (assert) => {

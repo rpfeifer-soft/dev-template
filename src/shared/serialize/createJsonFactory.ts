@@ -26,7 +26,7 @@ class Json<TClass extends IJsonObject, TInterface> extends Message {
 
    parse(data: string | ArrayBuffer) {
       if (typeof (data) !== 'string') {
-         throw new Error('ArrayBuffer not support for generic data!');
+         throw new TypeError('ArrayBuffer not support for generic data!');
       }
       const json = fromJSON(data) as IJsonObject | undefined;
       if (json === undefined) {
@@ -97,7 +97,7 @@ class JsonArrayClass<TClass> extends Message {
 
    parse(data: string | ArrayBuffer) {
       if (typeof (data) !== 'string') {
-         throw new Error('ArrayBuffer not support for generic data!');
+         throw new TypeError('ArrayBuffer not support for generic data!');
       }
       const jsonArray = fromJSON(data) as string[];
       if (jsonArray === undefined) {
@@ -125,7 +125,7 @@ class JsonArrayClass<TClass> extends Message {
          const msg = this.factory.pack(item);
          const json = msg.stringify();
          if (typeof (json) !== 'string') {
-            throw new Error('Unsupported serialization type: Json expected!');
+            throw new TypeError('Unsupported serialization type: Json expected!');
          }
          return json;
       });

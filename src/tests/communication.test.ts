@@ -9,7 +9,7 @@ import * as ClientFunctions from '../shared/apiClient.js';
 console.log('\x1b[33mStarting tests: Functions tests\x1b[0m');
 
 function testServerEnums() {
-   const functions = Object.keys(ServerFunction).map(p => +p).filter(p => !isNaN(p));
+   const functions = Object.keys(ServerFunction).map(p => +p).filter(p => !Number.isNaN(p));
    functions.forEach(p => {
       try {
          ServerFunctions.getParameter(p);
@@ -24,7 +24,7 @@ function testServerEnums() {
 }
 
 function testClientEnums() {
-   const functions = Object.keys(ClientFunction).map(p => +p).filter(p => !isNaN(p));
+   const functions = Object.keys(ClientFunction).map(p => +p).filter(p => !Number.isNaN(p));
    functions.forEach(p => {
       try {
          ClientFunctions.getParameter(p);

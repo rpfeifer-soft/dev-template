@@ -34,7 +34,7 @@ class Binary<TClass> extends Message {
 
    parse(data: string | ArrayBuffer | ByteArray) {
       if (typeof (data) === 'string') {
-         throw new Error('String not support for generic data!');
+         throw new TypeError('String not support for generic data!');
       }
       const bytes = data instanceof ByteArray ? data : new ByteArray(data);
       const empty = bytes.getBoolean();
@@ -89,7 +89,7 @@ class BinaryArrayClass<TClass> extends Message {
          const msg = this.factory.pack(item);
          const buffer = msg.stringify();
          if (typeof (buffer) === 'string') {
-            throw new Error('Unsupported serialization type: Binary expected!');
+            throw new TypeError('Unsupported serialization type: Binary expected!');
          }
          bytes.addBuffer(buffer);
       });

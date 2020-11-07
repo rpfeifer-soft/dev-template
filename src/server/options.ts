@@ -16,7 +16,7 @@ class Options {
 
    constructor() {
       if (!process.env.SECRETS) {
-         throw Error('No secrets-file specified!');
+         throw new Error('No secrets-file specified!');
       }
       this.secrets = JSON.parse(
          fs.readFileSync(process.env.SECRETS, {

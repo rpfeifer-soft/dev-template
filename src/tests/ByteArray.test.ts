@@ -84,8 +84,8 @@ testUint32(0);
 testUint32(255);
 testUint32(65535);
 testUint32(65536);
-testUint32(0xffffffff);
-testUint32(-1, 0xffffffff);
+testUint32(0xFFFFFFFF);
+testUint32(-1, 0xFFFFFFFF);
 
 function testNumber(value: number | undefined, expected?: number) {
    test('Test number (' + value + ')', (assert) => {
@@ -131,13 +131,13 @@ testDate(undefined);
 testDate(new Date());
 testDate(new Date(1978, 11, 21, 19, 21, 10));
 
-function testString(value: string | undefined, len: number, expected?: string) {
-   test('Test string (' + (value === undefined ? 'undefined' : value.substr(0, 35)) + ')', (assert) => {
+function testString(value: string | undefined, length_: number, expected?: string) {
+   test('Test string (' + (value === undefined ? 'undefined' : value.slice(0, 35)) + ')', (assert) => {
       const bytes = new ByteArray();
       const src = value;
       bytes.addString(src);
       const buffer = bytes.getArrayBuffer();
-      assert.equals(buffer.byteLength, len);
+      assert.equals(buffer.byteLength, length_);
 
       const other = new ByteArray(buffer);
       const dest = other.getString();
