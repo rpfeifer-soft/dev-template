@@ -5,7 +5,8 @@
          "type": "node",
          "request": "attach",
          "name": "Debug Server...",
-         "remoteRoot": "/app/dist/server"
+         "localRoot": "${workspaceFolder}",
+         "remoteRoot": "/app"
       }
    ]
 }

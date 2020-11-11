@@ -1,6 +1,6 @@
 /** @format */
 
-import P2R from 'path-to-regexp';
+import { pathToRegexp, regexpToFunction, Key } from 'path-to-regexp';
 
 class UrlMatcher {
    // Ensure an empty instance
@@ -33,9 +33,9 @@ class UrlMatcher {
       }
 
       // Check for a match
-      const keys: P2R.Key[] = [];
-      const regExp = P2R.pathToRegexp(path, keys);
-      const check = P2R.regexpToFunction(regExp, keys);
+      const keys: Key[] = [];
+      const regExp = pathToRegexp(path, keys);
+      const check = regexpToFunction(regExp, keys);
       const result = check(this.url);
       if (!result) {
          return this;
