@@ -1,5 +1,6 @@
 /** @format */
 
+import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
 import commonjs from "@rollup/plugin-commonjs";
@@ -18,6 +19,7 @@ export default [
          file: "dist/prod/bundle.js",
          format: "es",
       },
+      context: "window",
       plugins: [
          externalGlobals({
             "./TextEncoder.js": "TextEncoder",
@@ -46,6 +48,7 @@ export default [
             "./TextDecoder.js": "TextDecoder",
          }),
          sourcemaps(),
+         json(),
          resolve({
             preferBuiltins: false,
          }),

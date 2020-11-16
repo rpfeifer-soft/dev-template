@@ -44,6 +44,7 @@
    },
    "homepage": "https://github.com/rpfeifer-soft/dev-template#readme",
    "dependencies": {
+      "device-detector-js": "^2.2.5",
       "express": "^4.17.1",
       "path-to-regexp": "^6.2.0",
       "ts-node": "^8.10.2",
@@ -52,6 +53,7 @@
    },
    "devDependencies": {
       "@rollup/plugin-commonjs": "^12.0.0",
+      "@rollup/plugin-json": "^4.1.0",
       "@rollup/plugin-multi-entry": "^3.0.1",
       "@rollup/plugin-node-resolve": "^8.4.0",
       "@rollup/plugin-replace": "^2.3.4",

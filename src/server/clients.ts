@@ -168,6 +168,10 @@ class ClientsBase implements IServerHandler<Client> {
    }
 
    changedClient(client: Client) {
+      // Update session dependant values
+      const info = client.getClientInfo();
+      this.clients.forEach(otherClient => otherClient.syncSessionInfo(info));
+
       if (this.dOnChangedClient) {
          this.dOnChangedClient(client);
       }

@@ -57,6 +57,16 @@ class App {
       server.onChangeMe(() => this.updateMe(server.me));
    }
 
+   syncSessionInfo(client: ClientInfo) {
+      Object.keys(this.allClients).forEach(key => {
+         const otherClient = this.allClients[+key];
+         if (ClientInfo.syncSession(otherClient, client)) {
+            // Update the object, so that mobx notifies the change
+            this.allClients[+key] = ClientInfo.copy(otherClient);
+         }
+      });
+
+   }
    updateMe(clientInfo?: ClientInfo): void {
       if (clientInfo) {
          this.browser = clientInfo.browser;
@@ -67,6 +77,8 @@ class App {
          this.allClients[clientInfo.id] = clientInfo;
          this.userName = clientInfo.userName;
          this.userRole = clientInfo.userRole;
+         // Sync session to the other clients
+         this.syncSessionInfo(clientInfo);
          // Save to storage
          localStorage.setItem('language', String(this.language));
          localStorage.setItem('userName', this.userName);
@@ -119,6 +131,7 @@ class App {
             server.setMe(client);
          } else {
             this.allClients[client.id] = client;
+            this.syncSessionInfo(client);
          }
       });
 

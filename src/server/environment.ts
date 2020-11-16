@@ -9,6 +9,10 @@ import { ServerFunction, ClientFunction } from '../shared/api.js';
 import { UserRole, Language } from '../shared/types.js';
 import { t } from '../shared/i18n/ttag.js';
 
+import DeviceDetector from 'device-detector-js';
+
+const deviceDetector = new DeviceDetector();
+
 export interface IUserLogin {
    getAuthCode(userName: string): Promise<string>;
    getUserRole(userName: string): Promise<UserRole>;
@@ -19,7 +23,12 @@ function checkConnection(info: ConnectInfo): ClientInfo | string {
       // translate: version mismatches
       return t`Unterschiedliche Versionen: ${info.version} <> ${options.getVersion()}`;
    }
-   return ClientInfo.connect(info);
+   const clientInfo = ClientInfo.connect(info);
+   if (clientInfo.browser) {
+      // Parse device infos
+      clientInfo.device = deviceDetector.parse(clientInfo.browser);
+   }
+   return clientInfo;
 }
 
 class Environment {

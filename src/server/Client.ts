@@ -82,6 +82,10 @@ class ClientBase extends Sender<ClientFunction, ServerFunction> {
       ClientInfo.set(this, info);
    }
 
+   syncSessionInfo(info: ClientInfo) {
+      ClientInfo.syncSession(this, info);
+   }
+
    protected prepare(type: ClientFunction, data: string | ArrayBuffer, requestId: number | false) {
       return prepareServerMessage(type, data, requestId);
    }

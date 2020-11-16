@@ -9,14 +9,14 @@ console.log('\x1b[33mStarting tests: ByteArray\x1b[0m');
 function testBoolean(value: boolean | undefined) {
    test('Test boolean (' + value + ')', (assert) => {
       const bytes = new ByteArray();
-      const src = value;
-      bytes.addBoolean(src);
+      const source = value;
+      bytes.addBoolean(source);
       const buffer = bytes.getArrayBuffer();
       assert.equals(buffer.byteLength, 1);
 
       const other = new ByteArray(buffer);
       const dest = other.getBoolean();
-      assert.equals(dest, src);
+      assert.equals(dest, source);
       assert.end();
    });
 }

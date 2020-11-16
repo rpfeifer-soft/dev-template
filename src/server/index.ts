@@ -17,7 +17,7 @@ export function index(): string {
 <link rel="manifest" href="content/manifest.json">
 <link rel="shortcut icon" href="content/favicon_web.png">
 <link rel="apple-touch-icon" href="content/favicon_ios.png">
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
 
 <link rel="stylesheet" href="content/app.css"></link>
 <title>${options.getTitle()}</title>
@@ -31,6 +31,6 @@ export function index(): string {
 <script type="text/javascript">
    window.isProduction = ${options.isProduction() ? 'true' : 'false'};
 </script>
-<script type="text/javascript" src="bundle.js"></script></body>
+<script type="module" src="bundle.js"></script></body>
 </html>`;
 }

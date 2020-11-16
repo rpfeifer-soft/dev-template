@@ -5,6 +5,16 @@ import { ByteArray } from '../serialize/ByteArray.js';
 import { ConnectInfo } from './ConnectInfo.js';
 import { Language, UserRole } from '../types.js';
 
+import { ClientResult } from 'device-detector-js/dist/parsers/client';
+import { DeviceResult } from 'device-detector-js/dist/parsers/device';
+import { Result as OperatingSystemResult } from 'device-detector-js/dist/parsers/operating-system';
+
+export type BrowserResult = {
+   client: ClientResult;
+   device: DeviceResult;
+   os: OperatingSystemResult;
+};
+
 interface IClientInfo {
    id: number;
    startTime: Date;
@@ -14,6 +24,7 @@ interface IClientInfo {
    sessionId: string;
    userName: string;
    userRole: UserRole;
+   device?: BrowserResult;
 }
 class ClientInfo implements IClientInfo {
    id: number;
@@ -24,6 +35,7 @@ class ClientInfo implements IClientInfo {
    sessionId: string;
    userName: string;
    userRole: UserRole;
+   device: BrowserResult | undefined;
 
    private constructor() {
       // Do not allow to create the object via new - use create instead
@@ -66,6 +78,23 @@ class ClientInfo implements IClientInfo {
       clientInfo.sessionId = info.sessionId;
       clientInfo.userName = info.userName;
       clientInfo.userRole = info.userRole;
+      clientInfo.device = info.device;
+   }
+
+   static syncSession(clientInfo: IClientInfo, info: ClientInfo): boolean {
+      if (clientInfo.sessionId !== info.sessionId) {
+         return false;
+      }
+      if (clientInfo.language === info.language &&
+         clientInfo.userName === info.userName &&
+         clientInfo.userRole === info.userRole
+      ) {
+         return false;
+      }
+      clientInfo.language = info.language;
+      clientInfo.userName = info.userName;
+      clientInfo.userRole = info.userRole;
+      return true;
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,6 +107,11 @@ class ClientInfo implements IClientInfo {
       this.sessionId = bytes.getString() || '';
       this.userName = bytes.getString() || '';
       this.userRole = bytes.getNumber() || UserRole.Guest;
+      this.device = undefined;
+      const device = bytes.getString();
+      if (device) {
+         this.device = JSON.parse(device);
+      }
    }
 
    writeTo(bytes: ByteArray): void {
@@ -89,6 +123,7 @@ class ClientInfo implements IClientInfo {
       bytes.addString(this.sessionId);
       bytes.addString(this.userName);
       bytes.addNumber(this.userRole);
+      bytes.addString(this.device ? JSON.stringify(this.device) : undefined);
    }
 }
 const fClientInfo = ClientInfo.getFactory();

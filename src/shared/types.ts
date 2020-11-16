@@ -23,3 +23,7 @@ export enum Language {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor = new (...args: any[]) => any;
+
+export async function timeout(ms: number): Promise<unknown> {
+   return new Promise(resolve => setTimeout(resolve, ms));
+}

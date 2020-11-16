@@ -1,5 +1,9 @@
 {
    "files": [],
+   "compilerOptions": {
+      "inlineSourceMap": true,
+      "inlineSources": true
+   },
    "references": [
       {
          "path": "./server"

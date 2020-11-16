@@ -10,6 +10,6 @@ export default {
       file: "test/all.js",
       format: "es",
    },
-   external: ["tape", "ws"],
+   external: ["tape", "ws", "util"],
    plugins: [multi(), resolve(), commonjs()],
 };
