@@ -16,5 +16,7 @@ export function registerDebug(key: string, handler: () => unknown): void {
          };
          app.appendChild(node);
       }
+   } else {  // Allow access to the object in production
+      window[key] = handler();
    }
 }

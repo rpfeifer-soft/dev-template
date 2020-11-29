@@ -29,7 +29,14 @@ module.exports = {
       sourceType: "module",
    },
    plugins: ["@typescript-eslint", "unicorn"],
-   ignorePatterns: ["i18n.js", "*.cjs", "src/shared/i18n/*.ts", "rollup.config.js", "rollup.test.js"],
+   ignorePatterns: [
+      "i18n.js",
+      "*.cjs",
+      "src/shared/i18n/*.ts",
+      "rollup.config.js",
+      "rollup.test.js",
+      "src/client/content/service-worker.js",
+   ],
    rules: {
       "require-jsdoc": "off",
       "unicorn/filename-case": [

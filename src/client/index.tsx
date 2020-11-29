@@ -24,7 +24,7 @@ server.init(baseURI + 'ws', connectInfo)
    .catch(error => console.error(error));
 
 // eslint-disable-next-line @typescript-eslint/dot-notation
-registerServiceWorker(window['isProduction'], '');
+registerServiceWorker(window['isProduction'], document.baseURI.replace(/\/$/g, ''));
 
 // Allow to access the app here
 registerDebug('app', () => app);

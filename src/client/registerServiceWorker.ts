@@ -90,7 +90,7 @@ export function register(isProduction: boolean, publicUrl: string): void {
       }
 
       window.addEventListener('load', () => {
-         const swUrl = `${publicUrl}/service-worker.js`;
+         const swUrl = `${publicUrl}/content/service-worker.js`;
 
          if (!isLocalhost) {
             // Is not local host. Just register service worker
