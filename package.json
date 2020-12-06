@@ -5,9 +5,7 @@
    "type": "module",
    "appid": "dev",
    "title": "Development template",
-   "dockerAccount": "rpfeifer/team-manager",
-   "prodServer": "iserver.local",
-   "prodBase": "Desktop/dev-template",
+   "dockerAccount": "rpfeifer/docker-image",
    "githubAccount": "https://github.com/rpfeifer-soft",
    "scripts": {
       "clean": "docker-compose down && rimraf ./dist",
@@ -29,9 +27,7 @@
       "stage": "(npm run lint && node i18n.js check && node i18n.js update && git add -A) || npm run translate",
       "check": "npm run compile && npm run test",
       "build": "npm run compile && rollup -c",
-      "publish": "npm run lint && npm run test && docker build . --file src/Dockerfile --no-cache --tag ${npm_package_dockerAccount}:${npm_package_appid} && docker push ${npm_package_dockerAccount}:${npm_package_appid}",
-      "scp": "scp -r install/secrets.json rpfeifer@${npm_package_prodServer}:${npm_package_prodBase}/secrets.json",
-      "ssh": "ssh ${npm_package_prodServer} -t \"cd ${npm_package_prodBase}; echo svn export --force ${npm_package_githubAccount}/${npm_package_name}/trunk/install .; zsh --login; echo;\""
+      "publish": "npm run lint && npm run test && docker build . --file src/Dockerfile --no-cache --tag ${npm_package_dockerAccount}:${npm_package_appid} && docker push ${npm_package_dockerAccount}:${npm_package_appid}"
    },
    "repository": {
       "type": "git",

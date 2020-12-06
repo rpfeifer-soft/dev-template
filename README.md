@@ -1,4 +1,4 @@
-# dev-template
+# Development template
 
 Template to start a new web-application (Docker+Rollup+Typescript)!
 
@@ -30,15 +30,6 @@ The options for debug-version lies in src/server-directory:
         "baseUrl": "http://localhost/",
         "prodPath": "/app/dist/prod/",
         "production": false
-    }
-
-The options for production code lies in install-directory:
-    {
-        "port": 3001,
-        "portWebSockets": 8080,
-        "baseUrl": "http://localhost:3000/",
-        "prodPath": "/app/dist/prod/",
-        "production": true
     }
 
 ### Either start by using terminals extension
