@@ -10,7 +10,6 @@ RUN npm install --loglevel=error
 COPY ./src /app/src/
 COPY ./i18n.js /app/
 COPY ./rollup.*.js /app/
-COPY ./src/empty_secrets.json /app/install/secrets.json
 
 RUN npm run build
 
