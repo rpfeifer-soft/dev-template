@@ -160,6 +160,11 @@ class ServerBase extends Sender<ServerFunction, ClientFunction> {
    ) {
       this.handlers.addFunction(type, ctor, handler as IFunctionHandler<T, U>);
    }
+
+   isConnected() {
+      return this.socket.readyState === WebSocket.OPEN ||
+         this.socket.readyState === WebSocket.CONNECTING;
+   }
 }
 
 class ServerClass extends
@@ -178,4 +183,4 @@ class ServerClass extends
 export const server = ServerClass.instance as Pick<
    ServerClass,
    'init' | 'on' | 'off' | 'call' |
-   'me' | 'setMe' | 'onChangeMe'>;
+   'me' | 'setMe' | 'onChangeMe' | 'isConnected'>;
