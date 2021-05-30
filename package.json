@@ -45,7 +45,7 @@
       "path-to-regexp": "^6.2.0",
       "ts-node": "^8.10.2",
       "ttag": "^1.7.23",
-      "ws": "^7.4.0"
+      "ws": "^7.4.6"
    },
    "devDependencies": {
       "@rollup/plugin-commonjs": "^12.0.0",
