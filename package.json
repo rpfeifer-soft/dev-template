@@ -41,7 +41,7 @@
    "homepage": "https://github.com/rpfeifer-soft/dev-template#readme",
    "dependencies": {
       "device-detector-js": "^2.2.5",
-      "express": "^4.17.1",
+      "express": "^4.18.2",
       "path-to-regexp": "^6.2.0",
       "ts-node": "^8.10.2",
       "ttag": "^1.7.23",
